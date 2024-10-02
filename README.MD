@@ -8,6 +8,7 @@ KNotify is a Kotlin library for sending native notifications across different op
 - Simple, unified API for sending notifications
 - Customizable notification title, message, and application icon
 - Automatic selection of the appropriate notifier based on the operating system
+- Application name customization for better identification
 
 ## Installation
 
@@ -33,14 +34,15 @@ Here's a simple example of how to use KNotify:
 import com.kdroid.knotify.NotifierFactory
 
 fun main() {
-    val notifier = NotifierFactory.getNotifier()
-
+    val appName = "MyApp"
+    val notifier = NotifierFactory.getNotifier(appName)
+    
     val title = "Hello from KNotify"
     val message = "This is a test notification"
     val appIcon = "/path/to/your/app/icon.png"
-
+    
     val success = notifier.notify(title, message, appIcon)
-
+    
     if (success) {
         println("Notification sent successfully")
     } else {
@@ -55,24 +57,25 @@ fun main() {
 
 ```kotlin
 interface Notifier {
-    fun notify(title: String, message: String, appIcon: String): Boolean
+    fun notify(title: String, message: String, appIcon: String?): Boolean
 }
 ```
 
 - `title`: The title of the notification
 - `message`: The message content of the notification
-- `appIcon`: The path to the application icon to display with the notification (Note: not supported on macOS)
+- `appIcon`: The path to the application icon to display with the notification (can be null)
 - Returns: `true` if the notification was successfully sent, `false` otherwise
 
 ### NotifierFactory
 
 ```kotlin
 object NotifierFactory {
-    fun getNotifier(): Notifier
+    fun getNotifier(appName: String): Notifier
 }
 ```
 
-- `getNotifier()`: Returns a platform-specific implementation of the `Notifier` interface based on the current operating system
+- `appName`: The name of the application sending the notification
+- Returns: A platform-specific implementation of the `Notifier` interface based on the current operating system
 
 ## Platform Support
 
@@ -80,9 +83,12 @@ object NotifierFactory {
 - Windows: Uses `WindowsNotifier`
 - macOS: Uses `MacNotifier`
 
-## Note
+Each platform-specific notifier is initialized with the provided `appName`.
 
-The `appIcon` parameter is not yet supported on macOS.
+## Notes
+
+- The `appIcon` parameter is optional (can be null) and is not yet supported on macOS.
+- An `UnsupportedOperationException` is thrown if the current operating system is not supported.
 
 ## Contributing
 
