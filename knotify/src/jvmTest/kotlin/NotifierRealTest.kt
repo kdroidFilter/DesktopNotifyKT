@@ -6,7 +6,7 @@ class NotifierRealTest {
 
     @Test
     fun testSendNotification() {
-        val notifier = NotifierFactory.getNotifier("My Application")
+        val notifier = NotifierFactory.getNotifier("Calculatrice")
 
         // Sélection de l'icône en fonction du système d'exploitation
         val iconPath = when {
