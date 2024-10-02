@@ -1,7 +1,10 @@
 plugins {
     alias(libs.plugins.multiplatform)
     id("convention.publication")
+    `maven-publish`
+
 }
+
 
 group = "com.kdroid.knotify"
 version = "0.1.0"
@@ -33,3 +36,13 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["kotlin"])
+            groupId = "com.github.kdroidFilter"
+            artifactId = "KNotify"
+            version = "0.1.0"
+        }
+    }
+}
