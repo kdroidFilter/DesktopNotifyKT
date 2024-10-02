@@ -3,8 +3,8 @@ package platform
 import Notifier
 import java.io.IOException
 
-internal class MacNotifier : Notifier {
-    override fun notify(title: String, message: String, appIcon: String): Boolean {
+internal class MacNotifier(private val appName: String) : Notifier {
+    override fun notify(title: String, message: String, appIcon: String?): Boolean {
         val osaPath = findOsascriptPath() ?: return false
 
         val script = "display notification \"$message\" with title \"$title\""

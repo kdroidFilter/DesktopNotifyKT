@@ -27,7 +27,7 @@ class NotifierTest {
     fun testGetNotifierForLinux() {
         every { OsUtils.getOsName() } returns "linux"
 
-        val notifier = NotifierFactory.getNotifier()
+        val notifier = NotifierFactory.getNotifier("linux app")
         assertTrue(notifier is LinuxNotifier)
     }
 
@@ -35,7 +35,7 @@ class NotifierTest {
     fun testGetNotifierForWindows() {
         every { OsUtils.getOsName() } returns "windows"
 
-        val notifier = NotifierFactory.getNotifier()
+        val notifier = NotifierFactory.getNotifier("windows app")
         assertTrue(notifier is WindowsNotifier)
     }
 
@@ -43,7 +43,7 @@ class NotifierTest {
     fun testGetNotifierForMac() {
         every { OsUtils.getOsName() } returns "mac"
 
-        val notifier = NotifierFactory.getNotifier()
+        val notifier = NotifierFactory.getNotifier("mac app")
         assertTrue(notifier is MacNotifier)
     }
 
@@ -52,7 +52,7 @@ class NotifierTest {
         every { OsUtils.getOsName() } returns "unsupportedos"
 
         assertFailsWith<UnsupportedOperationException> {
-            NotifierFactory.getNotifier()
+            NotifierFactory.getNotifier("unsupported os app")
         }
     }
 }

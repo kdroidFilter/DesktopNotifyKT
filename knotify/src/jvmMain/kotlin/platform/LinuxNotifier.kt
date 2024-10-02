@@ -8,10 +8,10 @@ import org.freedesktop.dbus.types.Variant
 import java.io.File
 import java.nio.file.Paths
 
-internal class LinuxNotifier : Notifier {
+internal class LinuxNotifier(private val appName: String) : Notifier {
 
-    override fun notify(title: String, message: String, appIcon: String): Boolean {
-        val iconPath = pathAbs(appIcon)
+    override fun notify(title: String, message: String, appIcon: String?): Boolean {
+        val iconPath = appIcon?.let { pathAbs(it) }
         val errors = mutableListOf<String>()
 
         // Test with D-Bus
@@ -29,7 +29,11 @@ internal class LinuxNotifier : Notifier {
             val hints = emptyMap<String, Variant<*>>()
             val expireTimeout = -1
 
-            notifications.Notify(appName, replacesId, iconPath, title, message, actions, hints, expireTimeout)
+            if (iconPath != null) {
+                notifications.Notify(appName, replacesId, iconPath, title, message, actions, hints, expireTimeout)
+            } else {
+                notifications.Notify(appName, replacesId, "", title, message, actions, hints, expireTimeout)
+            }
             conn.disconnect()
             return true
         } catch (e: Exception) {

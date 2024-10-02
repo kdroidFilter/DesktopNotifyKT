@@ -11,14 +11,15 @@ object NotifierFactory {
     /**
      * Returns a platform-specific implementation of the [Notifier] interface based on the current operating system.
      *
+     * @param appName The name of the application sending the notification.
      * @return An instance of [Notifier] appropriate for the current operating system.
      * @throws UnsupportedOperationException If the operating system is not supported.
      */
-    fun getNotifier(): Notifier {
+    fun getNotifier(appName: String): Notifier {
         return when {
-            OsUtils.isLinux() -> LinuxNotifier()
-            OsUtils.isWindows() -> WindowsNotifier()
-            OsUtils.isMac() -> MacNotifier()
+            OsUtils.isLinux() -> LinuxNotifier(appName)
+            OsUtils.isWindows() -> WindowsNotifier(appName)
+            OsUtils.isMac() -> MacNotifier(appName)
             else -> throw UnsupportedOperationException("Unsupported operating system: ${OsUtils.getOsName()}")
         }
     }

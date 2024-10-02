@@ -12,5 +12,5 @@ interface Notifier {
      *                Note: The `appIcon` parameter is not yet supported on macOS.
      * @return `true` if the notification was successfully sent, `false` otherwise.
      */
-    fun notify(title: String, message: String, appIcon: String): Boolean
+    fun notify(title: String, message: String, appIcon: String?): Boolean
 }
