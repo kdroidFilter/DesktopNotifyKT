@@ -1,3 +1,6 @@
+package platform
+
+import Notifier
 import java.io.File
 
 internal class WindowsNotifier : Notifier {

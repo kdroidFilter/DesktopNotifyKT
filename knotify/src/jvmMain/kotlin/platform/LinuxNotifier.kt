@@ -1,3 +1,6 @@
+package platform
+
+import Notifier
 import org.freedesktop.dbus.connections.impl.DBusConnection
 import org.freedesktop.dbus.interfaces.DBusInterface
 import org.freedesktop.dbus.types.UInt32
@@ -11,7 +14,7 @@ internal class LinuxNotifier : Notifier {
         val iconPath = pathAbs(appIcon)
         val errors = mutableListOf<String>()
 
-        // Essai avec D-Bus
+        // Test with D-Bus
         try {
             val conn = DBusConnection.getConnection(DBusConnection.DBusBusType.SESSION)
             val notifications = conn.getRemoteObject(
@@ -33,7 +36,7 @@ internal class LinuxNotifier : Notifier {
             errors.add("Erreur D-Bus : ${e.message}")
         }
 
-        // Essai avec notify-send
+        // Test with notify-send
         try {
             val sendCmd = findCommand("sw-notify-send")
                 ?: findCommand("notify-send")
@@ -49,7 +52,7 @@ internal class LinuxNotifier : Notifier {
             errors.add("Erreur notify-send : ${e.message}")
         }
 
-        // Essai avec kdialog
+        // Test with kdialog
         try {
             val sendCmd = findCommand("kdialog") ?: throw Exception("Aucune commande kdialog trouvée")
             val process = ProcessBuilder(sendCmd, "--title", title, "--passivepopup", message, "10", "--icon", iconPath).start()
@@ -85,7 +88,7 @@ internal class LinuxNotifier : Notifier {
         return null
     }
 
-    // Définition de l'interface D-Bus
+    // Definition of the D-Bus interface
     interface Notifications : DBusInterface {
         fun Notify(
             app_name: String,

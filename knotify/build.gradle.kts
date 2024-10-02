@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.kdroid.knotify"
-version = "1.0"
+version = "0.1.0"
 
 kotlin {
     jvm()
@@ -13,10 +13,6 @@ kotlin {
         jvmMain.dependencies {
             //unix like
             implementation ("com.github.hypfvieh:dbus-java:3.3.2")
-
-            //Windows
-            implementation("net.java.dev.jna:jna:5.12.1")
-            implementation("net.java.dev.jna:jna-platform:5.12.1")
 
             implementation("org.slf4j:slf4j-api:1.7.32")
             implementation("ch.qos.logback:logback-classic:1.2.11")

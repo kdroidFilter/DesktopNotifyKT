@@ -1,3 +1,6 @@
+package platform
+
+import Notifier
 import java.io.IOException
 
 internal class MacNotifier : Notifier {
@@ -9,7 +12,7 @@ internal class MacNotifier : Notifier {
 
         return try {
             val process = processBuilder.start()
-            process.waitFor() == 0 // Renvoie true si le script a réussi
+            process.waitFor() == 0 // Returns true if the script was successful
         } catch (e: IOException) {
             e.printStackTrace()
             false
@@ -19,7 +22,7 @@ internal class MacNotifier : Notifier {
         }
     }
 
-    // Méthode pour trouver le chemin de 'osascript'
+    // Method to find the path of 'osascript'
     private fun findOsascriptPath(): String? {
         return try {
             val process = ProcessBuilder("which", "osascript").start()
