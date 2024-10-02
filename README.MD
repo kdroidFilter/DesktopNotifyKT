@@ -11,13 +11,19 @@ KNotify is a Kotlin library for sending native notifications across different op
 
 ## Installation
 
-To use KNotify in your project, add the following dependency to your `build.gradle.kts` file:
+To use KNotify in your project, add the JitPack repository and the dependency to your `build.gradle.kts` file:
 
 ```kotlin
+repositories {
+    maven("https://jitpack.io")
+}
+
 dependencies {
-    implementation("com.kdroid:knotify:0.1.0")
+    implementation("com.github.kdroidFilter:knotify:Tag")
 }
 ```
+
+Replace `Tag` with the latest version of the library or a specific commit. You can find available versions on the JitPack page of the project.
 
 ## Usage
 
@@ -28,13 +34,13 @@ import com.kdroid.knotify.NotifierFactory
 
 fun main() {
     val notifier = NotifierFactory.getNotifier()
-    
+
     val title = "Hello from KNotify"
     val message = "This is a test notification"
     val appIcon = "/path/to/your/app/icon.png"
-    
+
     val success = notifier.notify(title, message, appIcon)
-    
+
     if (success) {
         println("Notification sent successfully")
     } else {
