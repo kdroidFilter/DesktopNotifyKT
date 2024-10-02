@@ -37,14 +37,12 @@ internal class WindowsNotifier(private val appName: String) : Notifier {
     }
 
     private fun getAppId(appName: String): String? {
-        // Commande PowerShell pour rechercher l'application par nom
+        // PowerShell command to find application by name
         val command = listOf("powershell", "-Command", "Get-StartApps | Where-Object {\$_.Name -like '*$appName*'}")
 
-        // Exécution de la commande via ProcessBuilder
         val processBuilder = ProcessBuilder(command)
         val process = processBuilder.start()
 
-        // Lecture de la sortie de la commande
         val reader = BufferedReader(InputStreamReader(process.inputStream))
         val errorReader = BufferedReader(InputStreamReader(process.errorStream))
 
@@ -55,36 +53,32 @@ internal class WindowsNotifier(private val appName: String) : Notifier {
             output.append(line).append("\n")
         }
 
-        // Vérifier si une erreur s'est produite
         val error = StringBuilder()
         while (errorReader.readLine().also { line = it } != null) {
             error.append(line).append("\n")
         }
 
-        // Fermeture des flux
         reader.close()
         errorReader.close()
 
-        // Si une erreur a été capturée, la retourner
         if (error.isNotEmpty()) {
             println("Erreur lors de l'exécution de la commande PowerShell : $error")
             return null
         }
 
-        // Recherche de l'application par nom dans la sortie
+        // Search for application by name in output
         val appList = output.lines()
         for (appLine in appList) {
             if (appLine.contains(appName, ignoreCase = true)) {
-                // Supposons que l'ID de l'application soit dans une colonne spécifique après le nom
                 val columns = appLine.trim().split("\\s+".toRegex())
                 if (columns.size > 1) {
-                    return columns.last() // L'ID est supposé être dans la dernière colonne
+                    return columns.last()
                 }
             }
         }
 
-        // Si l'application n'a pas été trouvée
-        println("Application $appName non trouvée.")
+        // If the application was not found
+        println("Application $appName not found")
         return null
     }
 
