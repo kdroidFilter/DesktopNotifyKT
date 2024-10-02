@@ -6,12 +6,12 @@ class NotifierRealTest {
 
     @Test
     fun testSendNotification() {
-        val notifier = NotifierFactory.getNotifier("Calculatrice")
+        val notifier = NotifierFactory.getNotifier("My Application")
 
-        // Sélection de l'icône en fonction du système d'exploitation
+        // Select the icon according to the operating system
         val iconPath = when {
             OsUtils.isWindows() -> "C:\\Windows\\IdentityCRL\\WLive48x48.png"
-            OsUtils.isLinux() -> "/usr/share/icons/hicolor/48x48/apps/test-icon.png"
+            OsUtils.isLinux() -> "/usr/share/icons/hicolor/48x48/apps/zenity.png"
             OsUtils.isMac() -> "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/Actions.icns"
             else -> throw UnsupportedOperationException("Operating system not supported for icons")
         }
@@ -22,7 +22,7 @@ class NotifierRealTest {
             iconPath
         )
 
-        // Vérifie que la notification a été envoyée avec succès
+        // Checks that the notification was sent successfully
         assertTrue(result, "Notification failed to send on this platform.")
     }
 }

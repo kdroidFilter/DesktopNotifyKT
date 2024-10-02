@@ -45,7 +45,7 @@ internal class LinuxNotifier(private val appName: String) : Notifier {
             val sendCmd = findCommand("sw-notify-send")
                 ?: findCommand("notify-send")
                 ?: throw Exception("Aucune commande notify-send trouvée")
-            val process = ProcessBuilder(sendCmd, title, message, "-i", iconPath).start()
+            val process = ProcessBuilder(sendCmd, "-a", appName, title, message, "-i", iconPath).start()
             val exitCode = process.waitFor()
             if (exitCode == 0) {
                 return true

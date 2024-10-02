@@ -17,7 +17,7 @@ internal class WindowsNotifier(private val appName: String) : Notifier {
             ${'$'}TemplateContent.SelectSingleNode('//image[@id="1"]').SetAttribute('src', ${'$'}image)
             ${'$'}TemplateContent.SelectSingleNode('//text[@id="1"]').InnerText = ${'$'}titleText
             ${'$'}TemplateContent.SelectSingleNode('//text[@id="2"]').InnerText = ${'$'}bodyText
-            ${'$'}AppId = '${getAppId(appName)}'
+            ${'$'}AppId = '${getAppId(appName) ?: "'{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\\WindowsPowerShell\\v1.0\\powershell.exe'"}'
             [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier(${'$'}AppId).Show(${'$'}TemplateContent)
         """.trimIndent()
 
