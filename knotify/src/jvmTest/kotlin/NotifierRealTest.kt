@@ -7,11 +7,10 @@ class NotifierRealTest {
     fun testSendNotification() {
         val notifier = NotifierFactory.getNotifier()
 
-        // Appelle la méthode notify directement, peu importe la plateforme
         val result = notifier.notify(
             "Test Notification",
             "This is a test message from the test suite.",
-            "" // Icône vide ou un chemin valide vers une icône si nécessaire
+            "C:\\Windows\\IdentityCRL\\WLive48x48.png"
         )
 
         // Vérifie que la notification a été envoyée avec succès
