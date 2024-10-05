@@ -7,7 +7,6 @@ import java.io.InputStreamReader
 
 internal class WindowsNotifier(private val appName: String) : Notifier {
     override fun notify(title: String, message: String, appIcon: String?): Boolean {
-        println(getAppId(appName))
         val script = """
             ${'$'}image = '$appIcon'
             ${'$'}bodyText = '$message'
@@ -17,7 +16,7 @@ internal class WindowsNotifier(private val appName: String) : Notifier {
             ${'$'}TemplateContent.SelectSingleNode('//image[@id="1"]').SetAttribute('src', ${'$'}image)
             ${'$'}TemplateContent.SelectSingleNode('//text[@id="1"]').InnerText = ${'$'}titleText
             ${'$'}TemplateContent.SelectSingleNode('//text[@id="2"]').InnerText = ${'$'}bodyText
-            ${'$'}AppId = '${getAppId(appName) ?: "'{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\\WindowsPowerShell\\v1.0\\powershell.exe'"}'
+            ${'$'}AppId = '${getAppId(appName)}'
             [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier(${'$'}AppId).Show(${'$'}TemplateContent)
         """.trimIndent()
 
@@ -72,14 +71,15 @@ internal class WindowsNotifier(private val appName: String) : Notifier {
             if (appLine.contains(appName, ignoreCase = true)) {
                 val columns = appLine.trim().split("\\s+".toRegex())
                 if (columns.size > 1) {
+                    println(columns.last())
                     return columns.last()
                 }
             }
         }
 
-        // If the application was not found
-        println("Application $appName not found")
-        return null
+        // If the application was not found, use powershell id instead
+        println("Application $appName not found, use powershell id instead")
+        return "{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\\WindowsPowerShell\\v1.0\\powershell.exe"
     }
 
 
