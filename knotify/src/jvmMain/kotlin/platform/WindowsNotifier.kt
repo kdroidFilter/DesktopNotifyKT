@@ -24,7 +24,9 @@ internal class WindowsNotifier(private val appName: String) : Notifier {
         tempFile.writeText(script)
 
         try {
-            val process = Runtime.getRuntime().exec("powershell.exe -ExecutionPolicy Bypass -File ${tempFile.absolutePath}")
+            val processBuilder = ProcessBuilder("powershell.exe", "-ExecutionPolicy", "Bypass", "-File", tempFile.absolutePath)
+            processBuilder.redirectErrorStream(true) // Combine stderr and stdout if needed
+            val process = processBuilder.start()
             val exitCode = process.waitFor()
             return exitCode == 0
         } catch (e: Exception) {
