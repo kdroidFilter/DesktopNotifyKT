@@ -36,13 +36,13 @@ import com.kdroid.knotify.NotifierFactory
 fun main() {
     val appName = "MyApp"
     val notifier = NotifierFactory.getNotifier(appName)
-    
+
     val title = "Hello from KNotify"
     val message = "This is a test notification"
     val appIcon = "/path/to/your/app/icon.png"
-    
+
     val success = notifier.notify(title, message, appIcon)
-    
+
     if (success) {
         println("Notification sent successfully")
     } else {
@@ -50,6 +50,16 @@ fun main() {
     }
 }
 ```
+
+### Important Note for Windows Users
+
+On Windows, the `appName` parameter must match the name of your application as it appears in the Start menu. To ensure you're using the correct name, you can use the following PowerShell command:
+
+```powershell
+Get-StartApps | Where-Object {$_.Name -like '*YourAppName*'}
+```
+
+Replace `YourAppName` with a part of your application's name. Use the exact `Name` value returned by this command as the `appName` parameter when creating the notifier.
 
 ## API Reference
 
