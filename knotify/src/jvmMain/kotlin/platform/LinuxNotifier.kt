@@ -44,16 +44,16 @@ internal class LinuxNotifier(private val appName: String) : Notifier {
         try {
             val sendCmd = findCommand("sw-notify-send")
                 ?: findCommand("notify-send")
-                ?: throw Exception("Aucune commande notify-send trouvée")
+                ?: throw Exception("No notify-send command found")
             val process = ProcessBuilder(sendCmd, "-a", appName, title, message, "-i", iconPath).start()
             val exitCode = process.waitFor()
             if (exitCode == 0) {
                 return true
             } else {
-                throw Exception("notify-send s'est terminé avec le code $exitCode")
+                throw Exception("notify-send completed with code $exitCode")
             }
         } catch (e: Exception) {
-            errors.add("Erreur notify-send : ${e.message}")
+            errors.add("notify-send error: ${e.message}")
         }
 
         // Test with kdialog
@@ -64,13 +64,13 @@ internal class LinuxNotifier(private val appName: String) : Notifier {
             if (exitCode == 0) {
                 return true
             } else {
-                throw Exception("kdialog s'est terminé avec le code $exitCode")
+                throw Exception("kdialog exited with code $exitCode")
             }
         } catch (e: Exception) {
-            errors.add("Erreur kdialog : ${e.message}")
+            errors.add("kdialog error: ${e.message}")
         }
 
-        throw Exception("Échec de la notification : ${errors.joinToString("; ")}")
+        throw Exception("Notification failed: ${errors.joinToString("; ")}")
     }
 
     private fun pathAbs(name: String): String {
