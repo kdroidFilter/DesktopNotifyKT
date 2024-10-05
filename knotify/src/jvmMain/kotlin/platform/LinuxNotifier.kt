@@ -1,10 +1,6 @@
 package platform
 
 import Notifier
-import org.freedesktop.dbus.connections.impl.DBusConnection
-import org.freedesktop.dbus.interfaces.DBusInterface
-import org.freedesktop.dbus.types.UInt32
-import org.freedesktop.dbus.types.Variant
 import java.io.File
 import java.nio.file.Paths
 
@@ -13,32 +9,6 @@ internal class LinuxNotifier(private val appName: String) : Notifier {
     override fun notify(title: String, message: String, appIcon: String?): Boolean {
         val iconPath = appIcon?.let { pathAbs(it) }
         val errors = mutableListOf<String>()
-
-        // Test with D-Bus
-        try {
-            val conn = DBusConnection.getConnection(DBusConnection.DBusBusType.SESSION)
-            val notifications = conn.getRemoteObject(
-                "org.freedesktop.Notifications",
-                "/org/freedesktop/Notifications",
-                Notifications::class.java
-            )
-
-            val appName = ""
-            val replacesId = UInt32(0)
-            val actions = emptyList<String>()
-            val hints = emptyMap<String, Variant<*>>()
-            val expireTimeout = -1
-
-            if (iconPath != null) {
-                notifications.Notify(appName, replacesId, iconPath, title, message, actions, hints, expireTimeout)
-            } else {
-                notifications.Notify(appName, replacesId, "", title, message, actions, hints, expireTimeout)
-            }
-            conn.disconnect()
-            return true
-        } catch (e: Exception) {
-            errors.add("Erreur D-Bus : ${e.message}")
-        }
 
         // Test with notify-send
         try {
@@ -92,17 +62,4 @@ internal class LinuxNotifier(private val appName: String) : Notifier {
         return null
     }
 
-    // Definition of the D-Bus interface
-    interface Notifications : DBusInterface {
-        fun Notify(
-            app_name: String,
-            replaces_id: UInt32,
-            app_icon: String,
-            summary: String,
-            body: String,
-            actions: List<String>,
-            hints: Map<String, Variant<*>>,
-            expire_timeout: Int
-        ): UInt32
-    }
 }

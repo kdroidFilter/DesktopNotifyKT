@@ -14,7 +14,6 @@ kotlin {
 
     sourceSets {
         jvmMain.dependencies {
-            implementation(libs.dbusJava)
             implementation(libs.slf4jApi)
             implementation(libs.logbackClassic)
 
