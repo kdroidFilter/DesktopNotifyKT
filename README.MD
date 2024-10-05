@@ -2,6 +2,8 @@
 
 KNotify is a Kotlin library for sending native notifications across different operating systems. It provides a simple, unified interface for sending notifications on Linux, Windows, and macOS.
 
+[![](https://jitpack.io/v/kdroidFilter/KNotify.svg)](https://jitpack.io/#kdroidFilter/KNotify)
+
 ## Features
 
 - Cross-platform support for Linux, Windows, and macOS
