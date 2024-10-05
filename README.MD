@@ -20,11 +20,11 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.kdroidFilter:knotify:Tag")
+    implementation("com.github.kdroidFilter:knotify:Version")
 }
 ```
 
-Replace `Tag` with the latest version of the library or a specific commit. You can find available versions on the JitPack page of the project.
+Replace `Version` with the latest version of the library or a specific commit. You can find available versions on the JitPack page of the project.
 
 ## Usage
 
