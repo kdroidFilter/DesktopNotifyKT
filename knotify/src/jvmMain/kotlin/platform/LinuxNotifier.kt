@@ -28,7 +28,7 @@ internal class LinuxNotifier(private val appName: String) : Notifier {
 
         // Test with kdialog
         try {
-            val sendCmd = findCommand("kdialog") ?: throw Exception("Aucune commande kdialog trouvée")
+            val sendCmd = findCommand("kdialog") ?: throw Exception("No kdialog command found")
             val process = ProcessBuilder(sendCmd, "--title", title, "--passivepopup", message, "10", "--icon", iconPath).start()
             val exitCode = process.waitFor()
             if (exitCode == 0) {
