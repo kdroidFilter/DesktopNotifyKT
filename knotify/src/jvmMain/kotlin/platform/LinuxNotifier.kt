@@ -1,12 +1,19 @@
 package platform
 
+import NotificationDuration
 import Notifier
 import java.io.File
 import java.nio.file.Paths
 
 internal class LinuxNotifier(private val appName: String) : Notifier {
 
-    override fun notify(title: String, message: String, appIcon: String?): Boolean {
+    override fun notify(
+        title: String,
+        message: String,
+        appIcon: String?,
+        duration: NotificationDuration,
+        onClick: () -> Unit
+    ): Boolean {
         val iconPath = appIcon?.let { pathAbs(it) }
         val errors = mutableListOf<String>()
 
@@ -60,6 +67,13 @@ internal class LinuxNotifier(private val appName: String) : Notifier {
             }
         }
         return null
+    }
+
+    private fun convertDuration(duration: NotificationDuration) : String {
+        return when (duration) {
+            NotificationDuration.SHORT -> 8000.toString()
+            NotificationDuration.LONG -> 25000.toString()
+        }
     }
 
 }
