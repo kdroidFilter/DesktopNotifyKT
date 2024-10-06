@@ -10,7 +10,7 @@ internal class MacNotifier(private val appName: String) : Notifier {
         message: String,
         appIcon: String?,
         duration: NotificationDuration,
-        onClick: () -> Unit
+      //  onClick: () -> Unit
     ): Boolean {
         val osaPath = findOsascriptPath() ?: return false
 

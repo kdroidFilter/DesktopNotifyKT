@@ -30,3 +30,4 @@ interface Notifier {
     ): Boolean
 
 }
+

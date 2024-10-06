@@ -12,7 +12,7 @@ internal class LinuxNotifier(private val appName: String) : Notifier {
         message: String,
         appIcon: String?,
         duration: NotificationDuration,
-        onClick: () -> Unit
+       // onClick: () -> Unit
     ): Boolean {
         val iconPath = appIcon?.let { pathAbs(it) }
         val errors = mutableListOf<String>()

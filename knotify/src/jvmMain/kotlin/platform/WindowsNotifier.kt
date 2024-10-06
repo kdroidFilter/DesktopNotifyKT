@@ -12,7 +12,7 @@ internal class WindowsNotifier(private val appName: String) : Notifier {
         message: String,
         appIcon: String?,
         duration: NotificationDuration,
-        onClick: () -> Unit
+       // onClick: () -> Unit
     ): Boolean {
         val script = """
             ${'$'}image = '$appIcon'
