@@ -22,7 +22,7 @@ internal class LinuxNotifier(private val appName: String) : Notifier {
             val sendCmd = findCommand("sw-notify-send")
                 ?: findCommand("notify-send")
                 ?: throw Exception("No notify-send command found")
-            val process = ProcessBuilder(sendCmd, "-a", appName, title, message, "-i", iconPath).start()
+            val process = ProcessBuilder(sendCmd, "-a", appName, "-t", getDuration(duration), title, message, "-i", iconPath).start()
             val exitCode = process.waitFor()
             if (exitCode == 0) {
                 return true
@@ -69,7 +69,7 @@ internal class LinuxNotifier(private val appName: String) : Notifier {
         return null
     }
 
-    private fun convertDuration(duration: NotificationDuration) : String {
+    private fun getDuration(duration: NotificationDuration) : String {
         return when (duration) {
             NotificationDuration.SHORT -> 8000.toString()
             NotificationDuration.LONG -> 25000.toString()
