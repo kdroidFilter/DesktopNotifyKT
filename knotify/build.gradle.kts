@@ -14,7 +14,7 @@ kotlin {
 
     sourceSets {
         jvmMain.dependencies {
-            implementation("io.github.kdroidfilter:kmplog:0.1.0")
+            implementation(libs.kmplog)
         }
         jvmTest.dependencies {
             implementation(kotlin("test"))
