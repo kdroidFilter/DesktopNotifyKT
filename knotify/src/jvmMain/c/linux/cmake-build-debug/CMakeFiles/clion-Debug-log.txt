@@ -1,0 +1,13 @@
+/home/elyahou/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/home/elyahou/.local/share/JetBrains/Toolbox/apps/clion/bin/ninja/linux/x64/ninja -G Ninja -S /home/elyahou/CLionProjects/notificationlinux -B /home/elyahou/CLionProjects/notificationlinux/cmake-build-debug
+-- The C compiler identification is GNU 14.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Found PkgConfig: /usr/bin/pkg-config (found version "1.8.1")
+-- Checking for module 'libnotify'
+--   Found libnotify, version 0.8.3
+-- Configuring done (0.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/elyahou/CLionProjects/notificationlinux/cmake-build-debug

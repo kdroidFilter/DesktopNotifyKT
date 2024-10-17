@@ -2,6 +2,8 @@ package platform
 
 import NotificationDuration
 import Notifier
+import com.kdroid.kmplog.Log
+import com.kdroid.kmplog.d
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
@@ -87,7 +89,7 @@ internal class WindowsNotifier(private val appName: String) : Notifier {
         }
 
         // If the application was not found, use powershell id instead
-        println("Application $appName not found, use powershell id instead, please read https://github.com/kdroidFilter/KNotify?tab=readme-ov-file#important-note-for-windows-users")
+        Log.d("Windows Notifier","Application $appName not found, use powershell id instead, please read https://github.com/kdroidFilter/KNotify?tab=readme-ov-file#important-note-for-windows-users")
         return "{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\\WindowsPowerShell\\v1.0\\powershell.exe"
     }
 

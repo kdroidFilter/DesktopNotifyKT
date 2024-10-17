@@ -15,6 +15,10 @@ kotlin {
     sourceSets {
         jvmMain.dependencies {
             implementation(libs.kmplog)
+            implementation("net.java.dev.jna:jna:5.15.0")
+            implementation("net.java.dev.jna:jna-platform:5.15.0")
+
+
         }
         jvmTest.dependencies {
             implementation(kotlin("test"))

@@ -77,3 +77,4 @@ internal class LinuxNotifier(private val appName: String) : Notifier {
     }
 
 }
+

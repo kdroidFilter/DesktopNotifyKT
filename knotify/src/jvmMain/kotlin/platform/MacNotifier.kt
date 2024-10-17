@@ -34,7 +34,7 @@ internal class MacNotifier(private val appName: String) : Notifier {
         return try {
             val process = ProcessBuilder("which", "osascript").start()
             val result = process.inputStream.bufferedReader().readText().trim()
-            if (result.isNotEmpty()) result else null
+            result.ifEmpty { null }
         } catch (e: IOException) {
             e.printStackTrace()
             null
