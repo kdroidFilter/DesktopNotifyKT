@@ -1,4 +1,4 @@
-package platform
+package com.kdroid.composenotification.platform
 
 import NotificationDuration
 import Notifier

@@ -1,4 +1,4 @@
-package platform
+package com.kdroid.composenotification.platform
 
 import com.sun.jna.Callback
 import com.sun.jna.Library

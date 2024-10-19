@@ -1,6 +1,6 @@
-import platform.LinuxNotifier
-import platform.MacNotifier
-import platform.WindowsNotifier
+import com.kdroid.composenotification.platform.LinuxNotifier
+import com.kdroid.composenotification.platform.MacNotifier
+import com.kdroid.composenotification.platform.WindowsNotifier
 import utils.OsUtils
 
 /**
