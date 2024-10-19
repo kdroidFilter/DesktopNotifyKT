@@ -1,8 +1,10 @@
-package com.kdroid.composenotification.models
+package com.kdroid.composenotification.builder
 
 import com.kdroid.composenotification.NotificationProvider
+import com.kdroid.composenotification.models.ButtonModel
+import com.kdroid.composenotification.models.DismissalReason
 import com.kdroid.composenotification.platform.linux.LinuxNotificationProvider
-import com.kdroid.composenotification.platform.windows.service.WindowsNotificationProvider
+import com.kdroid.composenotification.platform.windows.provider.WindowsNotificationProvider
 import com.kdroid.composenotification.utils.OsUtils
 
 // Notification.kt
@@ -33,7 +35,7 @@ class NotificationBuilder(
     internal var onDismissed: ((DismissalReason) -> Unit)? = null
     internal var onFailed: (() -> Unit)? = null
 
-    fun button(label: String, onClick: () -> Unit) {
+    fun Button(label: String, onClick: () -> Unit) {
         buttons.add(ButtonModel(label, onClick))
     }
 
@@ -58,12 +60,4 @@ class NotificationBuilder(
 
         notificationProvider.sendNotification(this)
     }
-}
-
-// DismissalReason.kt
-enum class DismissalReason {
-    UserCanceled,
-    ApplicationHidden,
-    TimedOut,
-    Unknown
 }

@@ -1,5 +1,5 @@
 // WindowsNotificationProvider.kt
-package com.kdroid.composenotification.platform.windows.service
+package com.kdroid.composenotification.platform.windows.provider
 
 import ToastActivatedActionCallback
 import ToastActivatedCallback
@@ -7,7 +7,7 @@ import ToastDismissedCallback
 import ToastFailedCallback
 import com.kdroid.composenotification.NotificationProvider
 import com.kdroid.composenotification.models.DismissalReason
-import com.kdroid.composenotification.models.NotificationBuilder
+import com.kdroid.composenotification.builder.NotificationBuilder
 import com.kdroid.composenotification.platform.windows.constants.*
 import com.kdroid.composenotification.platform.windows.nativeintegration.ExtendedUser32
 import com.kdroid.composenotification.platform.windows.nativeintegration.WinToastLibC

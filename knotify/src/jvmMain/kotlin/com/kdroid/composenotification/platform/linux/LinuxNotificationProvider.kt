@@ -2,12 +2,12 @@
 package com.kdroid.composenotification.platform.linux
 
 import com.kdroid.composenotification.NotificationProvider
-import com.kdroid.composenotification.models.NotificationBuilder
+import com.kdroid.composenotification.builder.NotificationBuilder
 import com.sun.jna.Pointer
 
 class LinuxNotificationProvider : NotificationProvider {
     override fun sendNotification(builder: NotificationBuilder) {
-        val lib = NotificationLibrary.INSTANCE
+        val lib = LinuxNotificationLibrary.INSTANCE
 
         val iconPath = builder.appIconPath ?: ""
         val notification = lib.create_notification(builder.title, builder.message, iconPath)

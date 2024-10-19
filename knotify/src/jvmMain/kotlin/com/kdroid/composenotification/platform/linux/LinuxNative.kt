@@ -6,9 +6,9 @@ import com.sun.jna.Native
 import com.sun.jna.Pointer
 
 // Définir une interface pour ta bibliothèque
-interface NotificationLibrary : Library {
+interface LinuxNotificationLibrary : Library {
     companion object {
-        val INSTANCE: NotificationLibrary = Native.load("notification", NotificationLibrary::class.java)
+        val INSTANCE: LinuxNotificationLibrary = Native.load("notification", LinuxNotificationLibrary::class.java)
     }
 
     fun create_notification(summary: String, body: String, icon_path: String): Pointer?
@@ -36,7 +36,7 @@ fun interface NotifyActionCallback : Callback {
 
 fun main() {
     // Charger la bibliothèque
-    val lib = NotificationLibrary.INSTANCE
+    val lib = LinuxNotificationLibrary.INSTANCE
 
     // Créer une notification avec une icône initiale
     val iconPath = "/home/elyahou/Images/images.png"
