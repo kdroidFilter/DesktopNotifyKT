@@ -7,13 +7,14 @@ import com.kdroid.composenotification.models.Notification
 fun main() {
     val iconPath = "C:\\Users\\Elyahou Gambache\\IdeaProjects\\KNotify\\knotify\\src\\jvmTest\\resources\\icon.ico"
 
-    Notification {
-        appName = "My Custom App"
-        appIconPath = iconPath // Set to null or empty string if no custom icon
-
-        title = "Hello World!"
-        message = "This is a test notification with custom app name and icon."
+    Notification(
+        appName = "My Custom App",
+        appIconPath = iconPath,
+        title = "Hello World!",
+        message = "This is a test notification with custom app name and icon.",
         largeImagePath = "C:\\Users\\Elyahou Gambache\\IdeaProjects\\KNotify\\knotify\\src\\jvmTest\\resources\\icon.png" // Set to null if no image
+    ) {
+
 
         button("Button 1") {
             // Callback for Button 1

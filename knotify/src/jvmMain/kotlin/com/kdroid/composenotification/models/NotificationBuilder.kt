@@ -6,28 +6,35 @@ import com.kdroid.composenotification.platform.windows.service.WindowsNotificati
 import com.kdroid.composenotification.utils.OsUtils
 
 // Notification.kt
-fun Notification(builderAction: NotificationBuilder.() -> Unit) {
-    val builder = NotificationBuilder()
+fun Notification(
+    appName: String = "NotificationExample",
+    appIconPath: String? = null,
+    title: String = "",
+    message: String = "",
+    largeImagePath: String? = null,
+    builderAction: NotificationBuilder.() -> Unit
+) {
+    val builder = NotificationBuilder(appName, appIconPath, title, message, largeImagePath)
     builder.builderAction()
     builder.send()
 }
 
-
 // NotificationBuilder.kt
-class NotificationBuilder {
-    var appName: String = "NotificationExample"
-    var appIconPath: String? = null
-    var title: String = ""
-    var message: String = ""
-    var largeImagePath: String? = null
-    internal val buttons = mutableListOf<Button>()
+class NotificationBuilder(
+    var appName: String,
+    var appIconPath: String?,
+    var title: String = "",
+    var message: String = "",
+    var largeImagePath: String?
+) {
+    internal val buttons = mutableListOf<ButtonModel>()
 
     internal var onActivated: (() -> Unit)? = null
     internal var onDismissed: ((DismissalReason) -> Unit)? = null
     internal var onFailed: (() -> Unit)? = null
 
     fun button(label: String, onClick: () -> Unit) {
-        buttons.add(Button(label, onClick))
+        buttons.add(ButtonModel(label, onClick))
     }
 
     fun onActivated(callback: () -> Unit) {
@@ -60,4 +67,3 @@ enum class DismissalReason {
     TimedOut,
     Unknown
 }
-
