@@ -17,7 +17,7 @@ class LinuxNotificationProvider : NotificationProvider {
             return
         }
 
-        builder.imagePath?.let {
+        builder.largeImagePath?.let {
             val pixbufPointer = lib.load_pixbuf_from_file(it)
             if (pixbufPointer != Pointer.NULL) {
                 lib.set_image_from_pixbuf(notification, pixbufPointer)

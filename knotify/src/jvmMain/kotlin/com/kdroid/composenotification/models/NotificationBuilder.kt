@@ -19,7 +19,7 @@ class NotificationBuilder {
     var appIconPath: String? = null
     var title: String = ""
     var message: String = ""
-    var imagePath: String? = null
+    var largeImagePath: String? = null
     internal val buttons = mutableListOf<Button>()
 
     internal var onActivated: (() -> Unit)? = null

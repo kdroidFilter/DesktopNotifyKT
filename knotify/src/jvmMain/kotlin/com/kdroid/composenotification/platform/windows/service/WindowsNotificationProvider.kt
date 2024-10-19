@@ -9,14 +9,23 @@ import com.kdroid.composenotification.NotificationProvider
 import com.kdroid.composenotification.models.DismissalReason
 import com.kdroid.composenotification.models.NotificationBuilder
 import com.kdroid.composenotification.platform.windows.constants.*
+import com.kdroid.composenotification.platform.windows.nativeintegration.ExtendedUser32
 import com.kdroid.composenotification.platform.windows.nativeintegration.WinToastLibC
 import com.kdroid.composenotification.platform.windows.utils.registerBasicAUMID
 import com.kdroid.kmplog.Log
 import com.kdroid.kmplog.e
+import com.kdroid.kmplog.w
+import com.sun.jna.Memory
+import com.sun.jna.Native
 import com.sun.jna.Pointer
 import com.sun.jna.WString
 import com.sun.jna.platform.win32.COM.COMUtils
+import com.sun.jna.platform.win32.Kernel32
 import com.sun.jna.platform.win32.Ole32
+import com.sun.jna.platform.win32.WinBase
+import com.sun.jna.platform.win32.WinBase.WAIT_OBJECT_0
+import com.sun.jna.platform.win32.WinError.WAIT_TIMEOUT
+import com.sun.jna.platform.win32.WinUser
 import com.sun.jna.ptr.IntByReference
 import java.io.File
 
@@ -67,7 +76,7 @@ class WindowsNotificationProvider : NotificationProvider {
                     return
                 }
 
-                val templateType = if (builder.imagePath != null && File(builder.imagePath!!).exists()) {
+                val templateType = if (builder.largeImagePath != null && File(builder.largeImagePath!!).exists()) {
                     WTLC_TemplateType_Constants.ImageAndText02
                 } else {
                     WTLC_TemplateType_Constants.Text02
@@ -90,8 +99,8 @@ class WindowsNotificationProvider : NotificationProvider {
                         WTLC_TextField_Constants.SecondLine
                     )
 
-                    if (builder.imagePath != null && File(builder.imagePath!!).exists()) {
-                        wtlc.WTLC_Template_setImagePath(template, WString(builder.imagePath))
+                    if (builder.largeImagePath != null && File(builder.largeImagePath!!).exists()) {
+                        wtlc.WTLC_Template_setImagePath(template, WString(builder.largeImagePath))
                     }
 
                     for (button in builder.buttons) {
@@ -101,51 +110,154 @@ class WindowsNotificationProvider : NotificationProvider {
                     wtlc.WTLC_Template_setAudioOption(template, WTLC_AudioOption_Constants.Default)
                     wtlc.WTLC_Template_setExpiration(template, 30000) // 30 seconds
 
-                    // Handle callbacks
-                    val activatedCallback = object : ToastActivatedCallback {
-                        override fun invoke(userData: Pointer?) {
-                            builder.onActivated?.invoke()
-                        }
+                    // Create event handle
+                    val hEvent = Kernel32.INSTANCE.CreateEvent(null, true, false, null)
+                    if (hEvent == WinBase.INVALID_HANDLE_VALUE) {
+                        Log.e("Notification", "Failed to create event!")
+                        return
                     }
 
-                    val activatedActionCallback = object : ToastActivatedActionCallback {
-                        override fun invoke(userData: Pointer?, actionIndex: Int) {
-                            builder.buttons.getOrNull(actionIndex)?.onClick?.invoke()
-                        }
-                    }
-
-                    val dismissedCallback = object : ToastDismissedCallback {
-                        override fun invoke(userData: Pointer?, state: Int) {
-                            val dismissalReason = when (state) {
-                                WTLC_DismissalReason_Constants.UserCanceled -> DismissalReason.UserCanceled
-                                WTLC_DismissalReason_Constants.ApplicationHidden -> DismissalReason.ApplicationHidden
-                                WTLC_DismissalReason_Constants.TimedOut -> DismissalReason.TimedOut
-                                else -> DismissalReason.Unknown
+                    try {
+                        val activatedCallback = object : ToastActivatedCallback {
+                            override fun invoke(userData: Pointer?) {
+                                try {
+                                    if (hEvent != WinBase.INVALID_HANDLE_VALUE) {
+                                        builder.onActivated?.invoke()
+                                        Kernel32.INSTANCE.SetEvent(hEvent)
+                                    } else {
+                                        Log.e("Notification", "Invalid hEvent during toast activation.")
+                                    }
+                                } catch (e: Exception) {
+                                    Log.e("Notification", "Error during toast activation: ${e.message}")
+                                }
                             }
-                            builder.onDismissed?.invoke(dismissalReason)
                         }
-                    }
 
-                    val failedCallback = object : ToastFailedCallback {
-                        override fun invoke(userData: Pointer?) {
-                            builder.onFailed?.invoke()
+                        val activatedActionCallback = object : ToastActivatedActionCallback {
+                            override fun invoke(userData: Pointer?, actionIndex: Int) {
+                                try {
+                                    if (hEvent != WinBase.INVALID_HANDLE_VALUE) {
+                                        builder.buttons.getOrNull(actionIndex)?.onClick?.invoke()
+                                        Kernel32.INSTANCE.SetEvent(hEvent)
+                                    } else {
+                                        Log.e("Notification", "Invalid hEvent during toast action activation.")
+                                    }
+                                } catch (e: Exception) {
+                                    Log.e("Notification", "Error during toast action activation: ${e.message}")
+                                }
+                            }
                         }
-                    }
 
-                    val showResult = wtlc.WTLC_showToast(
-                        instance,
-                        template,
-                        null,
-                        activatedCallback,
-                        activatedActionCallback,
-                        dismissedCallback,
-                        failedCallback,
-                        errorRef
-                    )
+                        val dismissedCallback = object : ToastDismissedCallback {
+                            override fun invoke(userData: Pointer?, state: Int) {
+                                try {
+                                    if (hEvent != WinBase.INVALID_HANDLE_VALUE) {
+                                        val dismissalReason = when (state) {
+                                            WTLC_DismissalReason_Constants.UserCanceled -> DismissalReason.UserCanceled
+                                            WTLC_DismissalReason_Constants.ApplicationHidden -> DismissalReason.ApplicationHidden
+                                            WTLC_DismissalReason_Constants.TimedOut -> DismissalReason.TimedOut
+                                            else -> DismissalReason.Unknown
+                                        }
+                                        builder.onDismissed?.invoke(dismissalReason)
+                                        Kernel32.INSTANCE.SetEvent(hEvent)
+                                    } else {
+                                        Log.e("Notification", "Invalid hEvent during toast dismissal.")
+                                    }
+                                } catch (e: Exception) {
+                                    Log.e("Notification", "Error during toast dismissal: ${e.message}")
+                                }
+                            }
+                        }
 
-                    if (showResult < 0) {
-                        val errorMsg = wtlc.WTLC_strerror(errorRef.value).toString()
-                        Log.e("Notification", "Error showing toast: $errorMsg")
+                        val failedCallback = object : ToastFailedCallback {
+                            override fun invoke(userData: Pointer?) {
+                                try {
+                                    if (hEvent != WinBase.INVALID_HANDLE_VALUE) {
+                                        builder.onFailed?.invoke()
+                                        Kernel32.INSTANCE.SetEvent(hEvent)
+                                    } else {
+                                        Log.e("Notification", "Invalid hEvent during toast failure.")
+                                    }
+                                } catch (e: Exception) {
+                                    Log.e("Notification", "Error during toast failure: ${e.message}")
+                                }
+                            }
+                        }
+
+                        val showResult = wtlc.WTLC_showToast(
+                            instance,
+                            template,
+                            null,
+                            activatedCallback,
+                            activatedActionCallback,
+                            dismissedCallback,
+                            failedCallback,
+                            errorRef
+                        )
+
+                        if (showResult < 0) {
+                            val errorMsg = wtlc.WTLC_strerror(errorRef.value).toString()
+                            Log.e("Notification", "Error showing toast: $errorMsg")
+                        } else {
+                            // Implement message loop to wait for callbacks
+                            val startTime = Kernel32.INSTANCE.GetTickCount()
+                            val timeout = 31000L // 31 seconds
+                            var done = false
+
+                            val user32 = ExtendedUser32.INSTANCE
+                            val msg = WinUser.MSG()
+                            val nCount = 1
+                            val handleArray = Memory(Native.POINTER_SIZE.toLong() * nCount)
+                            handleArray.setPointer(0, hEvent.pointer)
+
+                            while (!done) {
+                                val elapsedTime = Kernel32.INSTANCE.GetTickCount() - startTime
+                                if (elapsedTime >= timeout) {
+                                    Log.w("Notification", "Timeout. Exiting...")
+                                    break
+                                }
+                                val waitTime = timeout - elapsedTime
+
+                                val waitResult = user32.MsgWaitForMultipleObjects(
+                                    nCount,
+                                    handleArray,
+                                    false,
+                                    waitTime.toInt(),
+                                    QS_ALLEVENTS or QS_ALLINPUT
+                                )
+
+                                when (waitResult) {
+                                    WAIT_OBJECT_0 -> {
+                                        // Event signaled
+                                        done = true
+                                    }
+
+                                    WAIT_OBJECT_0 + 1 -> {
+                                        // Messages in queue
+                                        while (user32.PeekMessage(msg, null, 0, 0, PM_REMOVE)) {
+                                            user32.TranslateMessage(msg)
+                                            user32.DispatchMessage(msg)
+                                        }
+                                    }
+
+                                    WAIT_TIMEOUT -> {
+                                        Log.w("Notification", "Wait timeout. Exiting...")
+                                        done = true
+                                    }
+
+                                    else -> {
+                                        // Error occurred
+                                        Log.e(
+                                            "Notification",
+                                            "Wait failed with error ${Kernel32.INSTANCE.GetLastError()}. Exiting..."
+                                        )
+                                        done = true
+                                    }
+                                }
+                            }
+                        }
+                    } finally {
+                        Kernel32.INSTANCE.CloseHandle(hEvent)
                     }
                 } finally {
                     wtlc.WTLC_Template_Destroy(template)
@@ -157,5 +269,4 @@ class WindowsNotificationProvider : NotificationProvider {
             Ole32.INSTANCE.CoUninitialize()
         }
     }
-
 }

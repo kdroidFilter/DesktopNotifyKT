@@ -75,7 +75,7 @@ fun WindowsNotification(builderAction: NotificationBuilder.() -> Unit) {
                 return
             }
 
-            val templateType = if (builder.imagePath != null && File(builder.imagePath!!).exists()) {
+            val templateType = if (builder.largeImagePath != null && File(builder.largeImagePath!!).exists()) {
                 WTLC_TemplateType_Constants.ImageAndText02
             } else {
                 WTLC_TemplateType_Constants.Text02
@@ -98,8 +98,8 @@ fun WindowsNotification(builderAction: NotificationBuilder.() -> Unit) {
                     WTLC_TextField_Constants.SecondLine
                 )
 
-                if (builder.imagePath != null && File(builder.imagePath!!).exists()) {
-                    wtlc.WTLC_Template_setImagePath(template, WString(builder.imagePath))
+                if (builder.largeImagePath != null && File(builder.largeImagePath!!).exists()) {
+                    wtlc.WTLC_Template_setImagePath(template, WString(builder.largeImagePath))
                 }
 
                 for (button in builder.buttons) {
