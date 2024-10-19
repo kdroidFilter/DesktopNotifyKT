@@ -21,7 +21,6 @@ fun Notification(
     builder.send()
 }
 
-// NotificationBuilder.kt
 class NotificationBuilder(
     var appName: String,
     var appIconPath: String?,
