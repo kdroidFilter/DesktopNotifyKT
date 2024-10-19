@@ -19,7 +19,11 @@ void add_button_to_notification(Notification *notification, const char *button_i
 // Envoie la notification
 int send_notification(Notification *notification);
 
+void set_image_from_pixbuf(Notification *notification, GdkPixbuf *pixbuf);
+
 // Nettoyage des ressources
 void cleanup_notification();
+
+
 
 #endif // NOTIFICATION_LIBRARY_H

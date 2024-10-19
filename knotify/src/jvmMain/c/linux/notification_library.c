@@ -72,6 +72,21 @@ void run_main_loop() {
     g_main_loop_run(loop);
 }
 
+void set_image_from_pixbuf(Notification *notification, GdkPixbuf *pixbuf) {
+    if (notification != NULL && pixbuf != NULL) {
+        notify_notification_set_image_from_pixbuf(notification, pixbuf);
+    }
+}
+
+GdkPixbuf *load_pixbuf_from_file(const char *image_path) {
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(image_path, NULL);
+    if (pixbuf == NULL) {
+        fprintf(stderr, "Failed to load image: %s\n", image_path);
+    }
+    return pixbuf;
+}
+
+
 /* Compilation en bibliothèque partagée (libnotification.so) */
 // Pour compiler cette bibliothèque en un fichier .so (bibliothèque partagée), vous pouvez utiliser la commande suivante :
 // gcc -shared -o libnotification.so -fPIC notification_library.c $(pkg-config --cflags --libs libnotify glib-2.0 gdk-pixbuf-2.0)
