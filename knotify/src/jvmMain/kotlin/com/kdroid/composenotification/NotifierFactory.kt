@@ -1,7 +1,9 @@
+package com.kdroid.composenotification
+
 import com.kdroid.composenotification.platform.LinuxNotifier
 import com.kdroid.composenotification.platform.MacNotifier
 import com.kdroid.composenotification.platform.WindowsNotifier
-import utils.OsUtils
+import com.kdroid.composenotification.utils.OsUtils
 
 /**
  * Factory object for creating platform-specific notifiers.

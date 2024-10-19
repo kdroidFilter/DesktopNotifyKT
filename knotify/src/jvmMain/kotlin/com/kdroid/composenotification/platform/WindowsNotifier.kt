@@ -1,7 +1,7 @@
 package com.kdroid.composenotification.platform
 
-import NotificationDuration
-import Notifier
+import com.kdroid.composenotification.NotificationDuration
+import com.kdroid.composenotification.Notifier
 import com.kdroid.kmplog.Log
 import com.kdroid.kmplog.d
 import java.io.BufferedReader

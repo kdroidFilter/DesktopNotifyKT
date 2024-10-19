@@ -1,3 +1,5 @@
+package com.kdroid.composenotification
+
 /**
  * Enum class representing notification duration options.
  */

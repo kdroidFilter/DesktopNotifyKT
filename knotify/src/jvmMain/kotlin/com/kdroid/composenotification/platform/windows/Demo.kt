@@ -2,6 +2,7 @@ package com.kdroid.composenotification.platform.windows
 
 import com.kdroid.composenotification.platform.windows.constants.WTLC_DismissalReason_Constants
 import com.kdroid.composenotification.platform.windows.models.sendNotification
+import com.kdroid.kmplog.*
 
 fun main() {
     sendNotification {
@@ -14,28 +15,28 @@ fun main() {
 
         button("Button 1") {
             // Callback for Button 1
-            println("Button 1 clicked.")
+            Log.d("Notification", "Button 1 clicked.")
         }
         button("Button 2") {
             // Callback for Button 2
-            println("Button 2 clicked.")
+            Log.d("Notification", "Button 2 clicked.")
         }
 
         onActivated {
-            println("Notification activated.")
+            Log.i("Notification", "Notification activated.")
         }
 
         onDismissed { reason ->
             when (reason) {
-                WTLC_DismissalReason_Constants.UserCanceled -> println("User dismissed the notification.")
-                WTLC_DismissalReason_Constants.ApplicationHidden -> println("Notification hidden by application.")
-                WTLC_DismissalReason_Constants.TimedOut -> println("Notification timed out.")
-                else -> println("Notification dismissed for unknown reason.")
+                WTLC_DismissalReason_Constants.UserCanceled -> Log.w("Notification", "User dismissed the notification.")
+                WTLC_DismissalReason_Constants.ApplicationHidden -> Log.w("Notification", "Notification hidden by application.")
+                WTLC_DismissalReason_Constants.TimedOut -> Log.w("Notification", "Notification timed out.")
+                else -> Log.w("Notification", "Notification dismissed for unknown reason.")
             }
         }
 
         onFailed {
-            println("Notification failed to display.")
+            Log.e("Notification", "Notification failed to display.")
         }
     }
 }

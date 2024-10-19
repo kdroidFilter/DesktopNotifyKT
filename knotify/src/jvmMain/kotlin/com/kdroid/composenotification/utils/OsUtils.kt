@@ -1,4 +1,4 @@
-package utils
+package com.kdroid.composenotification.utils
 
 internal object OsUtils {
     fun getOsName(): String {

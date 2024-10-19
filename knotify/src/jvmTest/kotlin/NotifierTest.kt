@@ -1,3 +1,4 @@
+import com.kdroid.composenotification.NotifierFactory
 import io.mockk.every
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
@@ -7,7 +8,7 @@ import org.junit.jupiter.api.Test
 import com.kdroid.composenotification.platform.LinuxNotifier
 import com.kdroid.composenotification.platform.MacNotifier
 import com.kdroid.composenotification.platform.WindowsNotifier
-import utils.OsUtils
+import com.kdroid.composenotification.utils.OsUtils
 import kotlin.test.assertTrue
 import kotlin.test.assertFailsWith
 

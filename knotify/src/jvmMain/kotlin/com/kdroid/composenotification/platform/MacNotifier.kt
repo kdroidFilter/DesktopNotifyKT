@@ -1,7 +1,7 @@
 package com.kdroid.composenotification.platform
 
-import NotificationDuration
-import Notifier
+import com.kdroid.composenotification.NotificationDuration
+import com.kdroid.composenotification.Notifier
 import java.io.IOException
 
 internal class MacNotifier(private val appName: String) : Notifier {

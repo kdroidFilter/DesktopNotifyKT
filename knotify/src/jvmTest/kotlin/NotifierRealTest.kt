@@ -1,5 +1,6 @@
+import com.kdroid.composenotification.NotifierFactory
 import org.junit.jupiter.api.Test
-import utils.OsUtils
+import com.kdroid.composenotification.utils.OsUtils
 import kotlin.test.assertTrue
 
 class NotifierRealTest {

@@ -8,6 +8,9 @@ import com.kdroid.composenotification.platform.windows.constants.*
 import com.kdroid.composenotification.platform.windows.nativeintegration.ExtendedUser32
 import com.kdroid.composenotification.platform.windows.nativeintegration.WinToastLibC
 import com.kdroid.composenotification.platform.windows.utils.registerBasicAUMID
+import com.kdroid.kmplog.Log
+import com.kdroid.kmplog.e
+import com.kdroid.kmplog.w
 import com.sun.jna.Memory
 import com.sun.jna.Native
 import com.sun.jna.Pointer
@@ -56,7 +59,7 @@ fun sendNotification(builderAction: NotificationBuilder.() -> Unit) {
     // Initialize COM library
     val hr = Ole32.INSTANCE.CoInitializeEx(Pointer.NULL, Ole32.COINIT_APARTMENTTHREADED)
     if (COMUtils.FAILED(hr)) {
-        println("Failed to initialize COM library!")
+        Log.e("Notification", "Failed to initialize COM library!")
         return
     }
 
@@ -64,13 +67,13 @@ fun sendNotification(builderAction: NotificationBuilder.() -> Unit) {
         val wtlc = WinToastLibC.INSTANCE
 
         if (!wtlc.WTLC_isCompatible()) {
-            println("Your system is not compatible!")
+            Log.e("Notification", "Your system is not compatible!")
             return
         }
 
         val instance = wtlc.WTLC_Instance_Create()
         if (instance == null) {
-            println("Failed to create WinToast instance!")
+            Log.e("Notification", "Failed to create WinToast instance!")
             return
         }
 
@@ -96,7 +99,7 @@ fun sendNotification(builderAction: NotificationBuilder.() -> Unit) {
             val errorRef = IntByReference(0)
             if (!wtlc.WTLC_initialize(instance, errorRef)) {
                 val errorMsg = wtlc.WTLC_strerror(errorRef.value).toString()
-                println("Initialization error: $errorMsg")
+                Log.e("Notification", "Initialization error: $errorMsg")
                 return
             }
 
@@ -107,7 +110,7 @@ fun sendNotification(builderAction: NotificationBuilder.() -> Unit) {
             }
             val template = wtlc.WTLC_Template_Create(templateType)
             if (template == null) {
-                println("Failed to create template!")
+                Log.e("Notification", "Failed to create template!")
                 return
             }
 
@@ -137,7 +140,7 @@ fun sendNotification(builderAction: NotificationBuilder.() -> Unit) {
                 // Create event handle
                 val hEvent = Kernel32.INSTANCE.CreateEvent(null, true, false, null)
                 if (hEvent == WinBase.INVALID_HANDLE_VALUE) {
-                    println("Failed to create event!")
+                    Log.e("Notification", "Failed to create event!")
                     return
                 }
 
@@ -149,10 +152,10 @@ fun sendNotification(builderAction: NotificationBuilder.() -> Unit) {
                                     builder.onActivated?.invoke()
                                     Kernel32.INSTANCE.SetEvent(hEvent)
                                 } else {
-                                    println("Invalid hEvent during toast activation.")
+                                    Log.e("Notification", "Invalid hEvent during toast activation.")
                                 }
                             } catch (e: Exception) {
-                                println("Error during toast activation: ${e.message}")
+                                Log.e("Notification", "Error during toast activation: ${e.message}")
                             }
                         }
                     }
@@ -164,10 +167,10 @@ fun sendNotification(builderAction: NotificationBuilder.() -> Unit) {
                                     builder.buttons.getOrNull(actionIndex)?.onClick?.invoke()
                                     Kernel32.INSTANCE.SetEvent(hEvent)
                                 } else {
-                                    println("Invalid hEvent during toast action activation.")
+                                    Log.e("Notification", "Invalid hEvent during toast action activation.")
                                 }
                             } catch (e: Exception) {
-                                println("Error during toast action activation: ${e.message}")
+                                Log.e("Notification", "Error during toast action activation: ${e.message}")
                             }
                         }
                     }
@@ -179,10 +182,10 @@ fun sendNotification(builderAction: NotificationBuilder.() -> Unit) {
                                     builder.onDismissed?.invoke(state)
                                     Kernel32.INSTANCE.SetEvent(hEvent)
                                 } else {
-                                    println("Invalid hEvent during toast dismissal.")
+                                    Log.e("Notification", "Invalid hEvent during toast dismissal.")
                                 }
                             } catch (e: Exception) {
-                                println("Error during toast dismissal: ${e.message}")
+                                Log.e("Notification", "Error during toast dismissal: ${e.message}")
                             }
                         }
                     }
@@ -194,10 +197,10 @@ fun sendNotification(builderAction: NotificationBuilder.() -> Unit) {
                                     builder.onFailed?.invoke()
                                     Kernel32.INSTANCE.SetEvent(hEvent)
                                 } else {
-                                    println("Invalid hEvent during toast failure.")
+                                    Log.e("Notification", "Invalid hEvent during toast failure.")
                                 }
                             } catch (e: Exception) {
-                                println("Error during toast failure: ${e.message}")
+                                Log.e("Notification", "Error during toast failure: ${e.message}")
                             }
                         }
                     }
@@ -215,7 +218,7 @@ fun sendNotification(builderAction: NotificationBuilder.() -> Unit) {
 
                     if (showResult < 0) {
                         val errorMsg = wtlc.WTLC_strerror(errorRef.value).toString()
-                        println("Error showing toast: $errorMsg")
+                        Log.e("Notification", "Error showing toast: $errorMsg")
                     } else {
                         // Implement message loop to wait for callbacks
                         val startTime = Kernel32.INSTANCE.GetTickCount()
@@ -231,7 +234,7 @@ fun sendNotification(builderAction: NotificationBuilder.() -> Unit) {
                         while (!done) {
                             val elapsedTime = Kernel32.INSTANCE.GetTickCount() - startTime
                             if (elapsedTime >= timeout) {
-                                println("Timeout. Exiting...")
+                                Log.w("Notification", "Timeout. Exiting...")
                                 break
                             }
                             val waitTime = timeout - elapsedTime
@@ -257,12 +260,12 @@ fun sendNotification(builderAction: NotificationBuilder.() -> Unit) {
                                     }
                                 }
                                 WAIT_TIMEOUT -> {
-                                    println("Wait timeout. Exiting...")
+                                    Log.w("Notification", "Wait timeout. Exiting...")
                                     done = true
                                 }
                                 else -> {
                                     // Error occurred
-                                    println("Wait failed with error ${Kernel32.INSTANCE.GetLastError()}. Exiting...")
+                                    Log.e("Notification", "Wait failed with error ${Kernel32.INSTANCE.GetLastError()}. Exiting...")
                                     done = true
                                 }
                             }
