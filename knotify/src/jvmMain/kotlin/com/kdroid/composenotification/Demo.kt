@@ -7,8 +7,8 @@ import javax.swing.JButton
 import javax.swing.JFrame
 import javax.swing.JPanel
 
-private const val ICON_PATH = "C:\\Users\\Elyahou Gambache\\IdeaProjects\\KNotify\\knotify\\src\\jvmTest\\resources\\icon.ico"
-private const val LARGE_IMAGE_PATH = "C:\\Users\\Elyahou Gambache\\IdeaProjects\\KNotify\\knotify\\src\\jvmTest\\resources\\icon.png"
+private const val ICON_PATH = "src/jvmTest/resources/icon.ico"
+private const val LARGE_IMAGE_PATH = "src/jvmTest/resources/icon.png"
 private const val TAG = "ComposeNotification"
 
 fun main() {
