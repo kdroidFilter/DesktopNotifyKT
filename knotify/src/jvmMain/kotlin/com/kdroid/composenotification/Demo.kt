@@ -2,69 +2,68 @@ package com.kdroid.composenotification
 
 import com.kdroid.composenotification.builder.Notification
 import com.kdroid.composenotification.models.DismissalReason
+import com.kdroid.kmplog.*
 import javax.swing.JButton
 import javax.swing.JFrame
 import javax.swing.JPanel
 
-// Main.kt
+private const val ICON_PATH = "C:\\Users\\Elyahou Gambache\\IdeaProjects\\KNotify\\knotify\\src\\jvmTest\\resources\\icon.ico"
+private const val LARGE_IMAGE_PATH = "C:\\Users\\Elyahou Gambache\\IdeaProjects\\KNotify\\knotify\\src\\jvmTest\\resources\\icon.png"
+private const val TAG = "ComposeNotification"
+
 fun main() {
     createSwingApp()
 }
 
 fun createSwingApp() {
-    // Créer une nouvelle fenêtre
-    val frame = JFrame("Démo Swing Kotlin")
-    frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-    frame.setSize(400, 300)
+    Log.d(TAG, "Creating Swing application...")
+    val frame = JFrame("Démo Swing Kotlin").apply {
+        defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+        setSize(400, 300)
+        contentPane = JPanel().apply {
+            add(createSendNotificationButton())
+        }
+        isVisible = true
+    }
+}
 
-    // Créer un panel pour ajouter des composants
-    val panel = JPanel()
+private fun createSendNotificationButton(): JButton {
+    val sendNotificationButton = JButton("Cliquez-moi!")
+    sendNotificationButton.addActionListener {
+        Log.i(TAG, "Send notification button clicked.")
+        createNotification()
+    }
+    return sendNotificationButton
+}
 
-    // Créer un bouton
-    val button = JButton("Cliquez-moi!")
-
-    // Ajouter une action au bouton
-    button.addActionListener {
-        val iconPath = "C:\\Users\\Elyahou Gambache\\IdeaProjects\\KNotify\\knotify\\src\\jvmTest\\resources\\icon.ico"
-
-        Notification(
-            appName = "My Custom App",
-            appIconPath = iconPath,
-            title = "Hello World!",
-            message = "This is a test notification with custom app name and icon.",
-            largeImagePath = "C:\\Users\\Elyahou Gambache\\IdeaProjects\\KNotify\\knotify\\src\\jvmTest\\resources\\icon.png" // Set to null if no image
-        ) {
-            Button("Button 1") {
-                // Callback for Button 1
-                println("Button 1 clicked.")
-            }
-            Button("Button 2") {
-                // Callback for Button 2
-                println("Button 2 clicked.")
-            }
-            onActivated {
-                println("Notification activated.")
-            }
-            onDismissed { reason ->
-                when (reason) {
-                    DismissalReason.UserCanceled -> println("User dismissed the notification.")
-                    DismissalReason.ApplicationHidden -> println("Notification hidden by application.")
-                    DismissalReason.TimedOut -> println("Notification timed out.")
-                    else -> println("Notification dismissed for unknown reason.")
-                }
-            }
-            onFailed {
-                println("Notification failed to display.")
+private fun createNotification() {
+    Log.d(TAG, "Creating notification...")
+    Notification(
+        appName = "My Custom App",
+        appIconPath = ICON_PATH,
+        title = "Hello World!",
+        message = "This is a test notification with custom app name and icon.",
+        largeImagePath = LARGE_IMAGE_PATH
+    ) {
+        Button("Button 1") {
+            Log.d(TAG, "Button 1 clicked.")
+        }
+        Button("Button 2") {
+            Log.d(TAG, "Button 2 clicked.")
+        }
+        onActivated {
+            Log.i(TAG, "Notification activated.")
+        }
+        onDismissed { reason ->
+            when (reason) {
+                DismissalReason.UserCanceled -> Log.w(TAG, "User dismissed the notification.")
+                DismissalReason.ApplicationHidden -> Log.w(TAG, "Notification hidden by application.")
+                DismissalReason.TimedOut -> Log.w(TAG, "Notification timed out.")
+                else -> Log.w(TAG, "Notification dismissed for unknown reason. : $reason")
             }
         }
+        onFailed {
+            Log.e(TAG, "Notification failed to display.")
+        }
     }
-
-    // Ajouter le bouton au panel
-    panel.add(button)
-
-    // Ajouter le panel à la fenêtre
-    frame.contentPane = panel
-
-    // Rendre la fenêtre visible
-    frame.isVisible = true
 }
