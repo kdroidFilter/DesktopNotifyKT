@@ -62,7 +62,7 @@ private fun getAbsolutePath(relativePath: String): String? {
     }
 }
 
-private fun getAbsolutePathOrDefault(relativePath: String, defaultPath: String): String {
+fun getAbsolutePathOrDefault(relativePath: String, defaultPath: String): String {
     return getAbsolutePath(relativePath) ?: run {
         Log.w(TAG, "Using default resource for: $relativePath")
         getAbsolutePath(defaultPath) ?: ""

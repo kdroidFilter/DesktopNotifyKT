@@ -10,8 +10,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.kdroid.composenotification.builder.Notification
+import com.kdroid.composenotification.getAbsolutePathOrDefault
 import com.kdroid.kmplog.Log
 import com.kdroid.kmplog.d
+import com.kdroid.kmplog.w
+import java.io.File
 
 fun main() = application {
     Window(onCloseRequest = ::exitApplication, title = "Application Compose Desktop à Deux Écrans") {
@@ -34,6 +37,23 @@ fun App() {
     }
 }
 
+private const val RESOURCE_DIR = "src/jvmTest/resources/"
+private const val DEFAULT_APP_ICON = "default_icon.ico"
+private const val DEFAULT_LARGE_IMAGE = "default_icon.png"
+private const val TAG = "ComposeNotification"
+val appIconPath = getAbsolutePathOrDefault("icon.ico",DEFAULT_APP_ICON)
+val largeImagePath = getAbsolutePathOrDefault("icon.png", DEFAULT_LARGE_IMAGE)
+
+private fun getAbsolutePath(relativePath: String): String? {
+    val file = File(RESOURCE_DIR, relativePath)
+    return if (file.exists()) {
+        file.absolutePath
+    } else {
+        Log.w(TAG, "Resource not found: ${file.path}.")
+        null
+    }
+}
+
 @Composable
 fun ScreenOne(onNavigate: () -> Unit) {
     Column {
@@ -45,6 +65,8 @@ fun ScreenOne(onNavigate: () -> Unit) {
             Notification(
                 appName = "NotificationExample",
                 title = "Notification depuis écran 1",
+                appIconPath = appIconPath,
+                largeImagePath = largeImagePath,
                 message = "Ceci est un test de notification depuis l'écran 1"
             ) {
                 Button("Bouton Notification 1") {
@@ -79,8 +101,11 @@ fun ScreenTwo(onNavigate: () -> Unit) {
         Button(onClick = {
             Notification(
                 appName = "NotificationExample",
+                appIconPath = appIconPath,
+                largeImagePath = largeImagePath,
                 title = "Notification depuis écran 2",
                 message = "Ceci est un test de notification depuis l'écran 2"
+
             ) {
                 Button("Bouton Notification 1") {
                     Log.d("NotificationLog", "Button 1 depuis Ecran 2")

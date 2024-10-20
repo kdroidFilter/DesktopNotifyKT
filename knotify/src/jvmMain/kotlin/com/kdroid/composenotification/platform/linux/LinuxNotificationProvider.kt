@@ -2,6 +2,7 @@ package com.kdroid.composenotification.platform.linux
 
 import com.kdroid.composenotification.NotificationProvider
 import com.kdroid.composenotification.builder.NotificationBuilder
+import com.kdroid.kmplog.*
 import com.sun.jna.Pointer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +21,7 @@ class LinuxNotificationProvider : NotificationProvider {
                 val iconPath = builder.appIconPath ?: ""
                 val notification = lib.create_notification(builder.title, builder.message, iconPath)
                 if (notification == null) {
-                    println("Failed to create notification.")
+                    Log.e("LinuxNotificationProvider", "Failed to create notification.")
                     builder.onFailed?.invoke()
                     return@launch
                 }
@@ -30,7 +31,7 @@ class LinuxNotificationProvider : NotificationProvider {
                     if (pixbufPointer != Pointer.NULL) {
                         lib.set_image_from_pixbuf(notification, pixbufPointer)
                     } else {
-                        println("Unable to load image: $it")
+                        Log.w("LinuxNotificationProvider", "Unable to load image: $it")
                     }
                 }
 
@@ -45,10 +46,10 @@ class LinuxNotificationProvider : NotificationProvider {
 
                 val result = lib.send_notification(notification)
                 if (result == 0) {
-                    println("Notification sent successfully.")
+                    Log.i("LinuxNotificationProvider", "Notification sent successfully.")
                     builder.onActivated?.invoke()
                 } else {
-                    println("Failed to send notification.")
+                    Log.e("LinuxNotificationProvider", "Failed to send notification.")
                     builder.onFailed?.invoke()
                 }
 
@@ -60,7 +61,7 @@ class LinuxNotificationProvider : NotificationProvider {
 
     private fun startMainLoop() {
         if (!isMainLoopRunning) {
-            println("Starting main loop...")
+            Log.d("LinuxNotificationProvider", "Starting main loop...")
             isMainLoopRunning = true
             lib.run_main_loop()
         }
@@ -68,7 +69,7 @@ class LinuxNotificationProvider : NotificationProvider {
 
     private fun stopMainLoop() {
         if (isMainLoopRunning) {
-            println("Stopping main loop...")
+            Log.d("LinuxNotificationProvider", "Stopping main loop...")
             lib.quit_main_loop()
             isMainLoopRunning = false
             coroutineScope?.cancel()

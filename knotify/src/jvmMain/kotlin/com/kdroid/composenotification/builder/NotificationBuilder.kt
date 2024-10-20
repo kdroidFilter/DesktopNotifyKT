@@ -1,7 +1,7 @@
 package com.kdroid.composenotification.builder
 
 import com.kdroid.composenotification.NotificationProvider
-import com.kdroid.composenotification.models.ButtonModel
+import com.kdroid.composenotification.models.Button
 import com.kdroid.composenotification.models.DismissalReason
 import com.kdroid.composenotification.platform.linux.LinuxNotificationProvider
 import com.kdroid.composenotification.platform.windows.provider.WindowsNotificationProvider
@@ -40,14 +40,14 @@ class NotificationBuilder(
     var message: String = "",
     var largeImagePath: String?
 ) {
-    internal val buttons = mutableListOf<ButtonModel>()
+    internal val buttons = mutableListOf<Button>()
 
     internal var onActivated: (() -> Unit)? = null
     internal var onDismissed: ((DismissalReason) -> Unit)? = null
     internal var onFailed: (() -> Unit)? = null
 
     fun Button(label: String, onClick: () -> Unit) {
-        buttons.add(ButtonModel(label, onClick))
+        buttons.add(com.kdroid.composenotification.models.Button(label, onClick))
     }
 
     fun onActivated(callback: () -> Unit) {
