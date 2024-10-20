@@ -2,10 +2,10 @@ package com.kdroid.composenotification.platform.windows.types
 
 import com.sun.jna.Pointer
 
-typealias WTLC_Instance = Pointer
-typealias WTLC_Template = Pointer
-typealias WTLC_Error = Int
-typealias WTLC_DismissalReason = Int
-typealias WTLC_TextField = Int
-typealias WTLC_TemplateType = Int
-typealias WTLC_AudioOption = Int
+internal typealias WTLC_Instance = Pointer
+internal typealias WTLC_Template = Pointer
+internal typealias WTLC_Error = Int
+internal typealias WTLC_DismissalReason = Int
+internal typealias WTLC_TextField = Int
+internal typealias WTLC_TemplateType = Int
+internal typealias WTLC_AudioOption = Int

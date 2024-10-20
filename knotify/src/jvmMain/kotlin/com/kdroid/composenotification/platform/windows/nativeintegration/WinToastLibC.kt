@@ -1,5 +1,9 @@
 package com.kdroid.composenotification.platform.windows.nativeintegration
 
+import ToastActivatedActionCallback
+import ToastActivatedCallback
+import ToastDismissedCallback
+import ToastFailedCallback
 import com.kdroid.composenotification.platform.windows.types.*
 import com.sun.jna.Library
 import com.sun.jna.Native
@@ -8,7 +12,7 @@ import com.sun.jna.WString
 import com.sun.jna.ptr.IntByReference
 import com.sun.jna.win32.W32APIOptions
 
-interface WinToastLibC : Library {
+internal interface WinToastLibC : Library {
     companion object {
         val INSTANCE: WinToastLibC = Native.load(
             "wintoastlibc",

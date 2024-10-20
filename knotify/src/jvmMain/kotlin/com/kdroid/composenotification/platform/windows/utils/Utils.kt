@@ -3,7 +3,7 @@ package com.kdroid.composenotification.platform.windows.utils
 import com.sun.jna.platform.win32.Advapi32Util
 import com.sun.jna.platform.win32.WinReg
 
-fun registerBasicAUMID(aumid: String, displayName: String, iconUri: String): Boolean {
+internal fun registerBasicAUMID(aumid: String, displayName: String, iconUri: String): Boolean {
     val rootKeyPath = "Software\\Classes\\AppUserModelId"
     val aumidKeyPath = "$rootKeyPath\\$aumid"
 

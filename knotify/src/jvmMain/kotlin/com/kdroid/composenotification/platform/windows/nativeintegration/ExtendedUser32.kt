@@ -5,7 +5,7 @@ import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.User32
 import com.sun.jna.win32.W32APIOptions
 
-interface ExtendedUser32 : User32 {
+internal interface ExtendedUser32 : User32 {
     companion object {
         val INSTANCE: ExtendedUser32 = Native.load(
             "user32",

@@ -32,7 +32,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 
-class WindowsNotificationProvider : NotificationProvider {
+/**
+ * Implementation of the NotificationProvider interface specific to Windows.
+ * This provider uses native Windows Toast notifications to display messages.
+ *
+ * Methods:
+ *
+ * - sendNotification(builder): Initializes the COM library and configures
+ *   the notification using the provided builder. It supports adding text,
+ *   images, and buttons to the notification. It also handles callback events
+ *   for activation, button clicks, dismissal, and failures.
+ */
+internal class WindowsNotificationProvider : NotificationProvider {
     override fun sendNotification(builder: NotificationBuilder) {
         CoroutineScope(Dispatchers.IO).launch {
             // Initialize the COM library
