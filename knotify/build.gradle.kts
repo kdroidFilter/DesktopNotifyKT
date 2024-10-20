@@ -2,12 +2,14 @@ import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
     alias(libs.plugins.multiplatform)
+    id("org.jetbrains.compose") version "1.7.0"
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
     id("com.vanniktech.maven.publish") version "0.29.0"
 }
 
 
 group = "com.kdroid.knotify"
-version = "0.1.2"
+version = "0.2.0"
 
 kotlin {
     jvm()
@@ -18,6 +20,7 @@ kotlin {
             implementation("net.java.dev.jna:jna:5.15.0")
             implementation("net.java.dev.jna:jna-platform:5.15.0")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+            implementation(compose.desktop.currentOs)
 
 
         }
