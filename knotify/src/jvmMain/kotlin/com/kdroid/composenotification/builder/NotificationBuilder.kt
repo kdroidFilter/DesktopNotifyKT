@@ -6,19 +6,19 @@ import com.kdroid.composenotification.models.DismissalReason
 import com.kdroid.composenotification.platform.linux.LinuxNotificationProvider
 import com.kdroid.composenotification.platform.windows.provider.WindowsNotificationProvider
 import com.kdroid.composenotification.utils.OsUtils
-import java.util.concurrent.CountDownLatch
 
 
 /**
- * Displays a system notification with optional configuration for application name,
- * icon, title, message, large image, and additional builder actions.
+ * Displays a notification with customizable settings. The notification can have an app name,
+ * icon, title, message, and a large image. Additionally, various actions can be added to the
+ * notification using a builder-style DSL.
  *
- * @param appName The name of the application sending the notification.
- * @param appIconPath Optional path to the application's icon.
- * @param title The title of the notification.
- * @param message The message content of the notification.
- * @param largeImagePath Optional path to a large image to be included in the notification.
- * @param builderAction Lambda with receiver to configure additional properties and actions on the notification.
+ * @param appName The name of the application displaying the notification. Defaults to "NotificationExample".
+ * @param appIconPath The file path to the application's icon. Can be null.
+ * @param title The title of the notification. Defaults to an empty string.
+ * @param message The message of the notification. Defaults to an empty string.
+ * @param largeImagePath The file path to a large image to be displayed within the notification. Can be null.
+ * @param builderAction A DSL block that customizes the notification options and actions.
  */
 fun Notification(
     appName: String = "NotificationExample",
@@ -31,9 +31,6 @@ fun Notification(
     val builder = NotificationBuilder(appName, appIconPath, title, message, largeImagePath)
     builder.builderAction()
     builder.send()
-
-    // Attendre que la notification soit traitée
-    builder.waitForCompletion()
 }
 
 class NotificationBuilder(
@@ -49,20 +46,6 @@ class NotificationBuilder(
     internal var onDismissed: ((DismissalReason) -> Unit)? = null
     internal var onFailed: (() -> Unit)? = null
 
-    /**
-     * A `CountDownLatch` used to synchronize the completion of a notification process.
-     * It ensures that the notification operation waits until the notification has been sent
-     * or an appropriate action is taken, which is particularly useful for handling asynchronous
-     * operations on different operating systems.
-     */
-    private val latch = CountDownLatch(1)
-
-    /**
-     * Adds a button to the notification.
-     *
-     * @param label The text label of the button to be displayed.
-     * @param onClick A callback function to be invoked when the button is clicked.
-     */
     fun Button(label: String, onClick: () -> Unit) {
         buttons.add(ButtonModel(label, onClick))
     }
@@ -86,20 +69,6 @@ class NotificationBuilder(
             else -> throw UnsupportedOperationException("Unsupported OS")
         }
 
-        // Passer le latch au fournisseur de notifications
-        if (notificationProvider is WindowsNotificationProvider) {
-            notificationProvider.setCompletionLatch(latch)
-        }
-
         notificationProvider.sendNotification(this)
-
-        // Pour les autres OS, vous pouvez décompter le latch immédiatement
-        if (notificationProvider !is WindowsNotificationProvider) {
-            latch.countDown()
-        }
-    }
-
-    fun waitForCompletion() {
-        latch.await()
     }
 }
