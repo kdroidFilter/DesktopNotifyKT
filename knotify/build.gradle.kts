@@ -1,10 +1,11 @@
 import com.vanniktech.maven.publish.SonatypeHost
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     alias(libs.plugins.multiplatform)
     id("org.jetbrains.compose") version "1.7.0"
     id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
-    id("com.vanniktech.maven.publish") version "0.29.0"
+    id("com.vanniktech.maven.publish") version "0.30.0"
 }
 
 
@@ -86,3 +87,14 @@ mavenPublishing {
 
 
 task("testClasses") {}
+
+compose.desktop {
+    application {
+        mainClass = "com.kdroid.composenotification.demo.ComposeAppKt"
+        nativeDistributions {
+            targetFormats(TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "knotify"
+            packageVersion = version.toString()
+        }
+    }
+}

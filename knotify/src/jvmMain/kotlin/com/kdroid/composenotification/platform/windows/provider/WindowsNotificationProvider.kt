@@ -167,11 +167,16 @@ internal class WindowsNotificationProvider : NotificationProvider {
 
     private suspend fun showToast(
         wtlc: WinToastLibC,
-        instance: Pointer,
-        template: Pointer,
+        instance: Pointer?,
+        template: Pointer?,
         builder: NotificationBuilder
     ) {
         withContext(Dispatchers.IO) {
+            if (instance == null || template == null) {
+                Log.e("Notification", "Instance ou template est null")
+                return@withContext
+            }
+
             val errorRef = IntByReference(0)
             val hEvent = Kernel32.INSTANCE.CreateEvent(null, true, false, null)
             if (hEvent == WinBase.INVALID_HANDLE_VALUE) {
@@ -180,7 +185,7 @@ internal class WindowsNotificationProvider : NotificationProvider {
             }
 
             try {
-                val callbacks = createCallbacks(wtlc, hEvent, builder)
+                val callbacks = createCallbacks(hEvent, builder)
 
                 val showResult = wtlc.WTLC_showToast(
                     instance,
@@ -194,17 +199,25 @@ internal class WindowsNotificationProvider : NotificationProvider {
                 )
 
                 if (showResult < 0) {
-                    val errorMsg = wtlc.WTLC_strerror(errorRef.value).toString()
+                    val errorMsg = wtlc.WTLC_strerror(errorRef.value)?.toString() ?: "Erreur inconnue"
                     Log.e("Notification", "Erreur lors de l'affichage du toast : $errorMsg")
                     return@withContext
                 }
 
+                // Lancer la boucle de message seulement si le toast a été affiché avec succès
                 runMessageLoop(hEvent)
+            } catch (e: Exception) {
+                Log.e("Notification", "Erreur inattendue : ${e.message}")
             } finally {
-                Kernel32.INSTANCE.CloseHandle(hEvent)
+                // Toujours fermer le handle de l'événement, même en cas d'erreur
+                if (!Kernel32.INSTANCE.CloseHandle(hEvent)) {
+                    Log.e("Notification", "Impossible de fermer le handle de l'événement !")
+                }
             }
         }
     }
+
+
 
     private suspend fun runMessageLoop(hEvent: WinNT.HANDLE) {
         withContext(Dispatchers.IO) {
@@ -261,7 +274,6 @@ internal class WindowsNotificationProvider : NotificationProvider {
     }
 
     private fun createCallbacks(
-        wtlc: WinToastLibC,
         hEvent: WinNT.HANDLE,
         builder: NotificationBuilder
     ): Callbacks {
