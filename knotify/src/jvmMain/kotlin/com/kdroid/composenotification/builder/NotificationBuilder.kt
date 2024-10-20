@@ -8,15 +8,17 @@ import com.kdroid.composenotification.platform.windows.provider.WindowsNotificat
 import com.kdroid.composenotification.utils.OsUtils
 import java.util.concurrent.CountDownLatch
 
+
 /**
- * Affiche une notification avec les paramètres spécifiés.
+ * Displays a system notification with optional configuration for application name,
+ * icon, title, message, large image, and additional builder actions.
  *
- * @param appName Le nom de l'application envoyant la notification. Par défaut "NotificationExample".
- * @param appIconPath Le chemin du fichier de l'icône de l'application. Peut être null si aucune icône n'est fournie.
- * @param title Le titre de la notification.
- * @param message Le corps du message de la notification.
- * @param largeImagePath Le chemin du fichier d'une grande image à afficher dans la notification. Peut être null si aucune image n'est fournie.
- * @param builderAction Une lambda avec récepteur pour configurer des propriétés supplémentaires de la notification, telles que les boutons et les callbacks.
+ * @param appName The name of the application sending the notification.
+ * @param appIconPath Optional path to the application's icon.
+ * @param title The title of the notification.
+ * @param message The message content of the notification.
+ * @param largeImagePath Optional path to a large image to be included in the notification.
+ * @param builderAction Lambda with receiver to configure additional properties and actions on the notification.
  */
 fun Notification(
     appName: String = "NotificationExample",
