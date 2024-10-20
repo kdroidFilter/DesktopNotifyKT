@@ -49,9 +49,20 @@ class NotificationBuilder(
     internal var onDismissed: ((DismissalReason) -> Unit)? = null
     internal var onFailed: (() -> Unit)? = null
 
-    // Latch pour synchroniser l'attente de la notification
+    /**
+     * A `CountDownLatch` used to synchronize the completion of a notification process.
+     * It ensures that the notification operation waits until the notification has been sent
+     * or an appropriate action is taken, which is particularly useful for handling asynchronous
+     * operations on different operating systems.
+     */
     private val latch = CountDownLatch(1)
 
+    /**
+     * Adds a button to the notification.
+     *
+     * @param label The text label of the button to be displayed.
+     * @param onClick A callback function to be invoked when the button is clicked.
+     */
     fun Button(label: String, onClick: () -> Unit) {
         buttons.add(ButtonModel(label, onClick))
     }
