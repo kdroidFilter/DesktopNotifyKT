@@ -6,16 +6,17 @@ import com.kdroid.composenotification.models.DismissalReason
 import com.kdroid.composenotification.platform.linux.LinuxNotificationProvider
 import com.kdroid.composenotification.platform.windows.provider.WindowsNotificationProvider
 import com.kdroid.composenotification.utils.OsUtils
+import java.util.concurrent.CountDownLatch
 
 /**
- * Displays a notification with the specified parameters.
+ * Affiche une notification avec les paramètres spécifiés.
  *
- * @param appName The name of the application sending the notification. Default is "NotificationExample".
- * @param appIconPath The file path to the application icon. Can be null if no icon is provided.
- * @param title The title of the notification.
- * @param message The message body of the notification.
- * @param largeImagePath The file path to a large image to be displayed in the notification. Can be null if no image is provided.
- * @param builderAction A lambda with receiver to configure additional notification properties, such as buttons and callbacks.
+ * @param appName Le nom de l'application envoyant la notification. Par défaut "NotificationExample".
+ * @param appIconPath Le chemin du fichier de l'icône de l'application. Peut être null si aucune icône n'est fournie.
+ * @param title Le titre de la notification.
+ * @param message Le corps du message de la notification.
+ * @param largeImagePath Le chemin du fichier d'une grande image à afficher dans la notification. Peut être null si aucune image n'est fournie.
+ * @param builderAction Une lambda avec récepteur pour configurer des propriétés supplémentaires de la notification, telles que les boutons et les callbacks.
  */
 fun Notification(
     appName: String = "NotificationExample",
@@ -23,11 +24,14 @@ fun Notification(
     title: String = "",
     message: String = "",
     largeImagePath: String? = null,
-    builderAction: NotificationBuilder.() -> Unit
+    builderAction: NotificationBuilder.() -> Unit = {}
 ) {
     val builder = NotificationBuilder(appName, appIconPath, title, message, largeImagePath)
     builder.builderAction()
     builder.send()
+
+    // Attendre que la notification soit traitée
+    builder.waitForCompletion()
 }
 
 class NotificationBuilder(
@@ -42,6 +46,9 @@ class NotificationBuilder(
     internal var onActivated: (() -> Unit)? = null
     internal var onDismissed: ((DismissalReason) -> Unit)? = null
     internal var onFailed: (() -> Unit)? = null
+
+    // Latch pour synchroniser l'attente de la notification
+    private val latch = CountDownLatch(1)
 
     fun Button(label: String, onClick: () -> Unit) {
         buttons.add(ButtonModel(label, onClick))
@@ -66,6 +73,20 @@ class NotificationBuilder(
             else -> throw UnsupportedOperationException("Unsupported OS")
         }
 
+        // Passer le latch au fournisseur de notifications
+        if (notificationProvider is WindowsNotificationProvider) {
+            notificationProvider.setCompletionLatch(latch)
+        }
+
         notificationProvider.sendNotification(this)
+
+        // Pour les autres OS, vous pouvez décompter le latch immédiatement
+        if (notificationProvider !is WindowsNotificationProvider) {
+            latch.countDown()
+        }
+    }
+
+    fun waitForCompletion() {
+        latch.await()
     }
 }

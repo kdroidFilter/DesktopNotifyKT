@@ -27,12 +27,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
+import java.util.concurrent.CountDownLatch
 
 /**
  * Implementation of the NotificationProvider interface specific to Windows.
  * This provider uses native Windows Toast notifications to display messages.
  */
 internal class WindowsNotificationProvider : NotificationProvider {
+    private var latch: CountDownLatch? = null
+
+    fun setCompletionLatch(latch: CountDownLatch) {
+        this.latch = latch
+    }
 
     override fun sendNotification(builder: NotificationBuilder) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -57,6 +63,7 @@ internal class WindowsNotificationProvider : NotificationProvider {
             } finally {
                 wtlc.WTLC_Instance_Destroy(instance)
                 Ole32.INSTANCE.CoUninitialize()
+                latch?.countDown()
             }
         }
     }
