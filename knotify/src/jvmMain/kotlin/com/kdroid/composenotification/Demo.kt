@@ -8,7 +8,6 @@ import javax.swing.JPanel
 
 // Main.kt
 fun main() {
-
     createSwingApp()
 }
 
