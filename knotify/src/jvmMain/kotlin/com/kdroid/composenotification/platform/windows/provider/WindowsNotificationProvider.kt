@@ -139,7 +139,7 @@ internal class WindowsNotificationProvider : NotificationProvider {
         wtlc: WinToastLibC,
         builder: NotificationBuilder
     ): Pointer? {
-        val templateType = if (builder.largeImagePath != null && File(builder.largeImagePath).exists()) {
+        val templateType = if (builder.largeImagePath != null && File(builder.largeImagePath.toString()).exists()) {
             WTLC_TemplateType_Constants.ImageAndText02
         } else {
             WTLC_TemplateType_Constants.Text02
