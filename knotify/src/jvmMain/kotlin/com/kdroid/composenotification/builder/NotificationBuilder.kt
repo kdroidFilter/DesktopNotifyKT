@@ -7,7 +7,16 @@ import com.kdroid.composenotification.platform.linux.LinuxNotificationProvider
 import com.kdroid.composenotification.platform.windows.provider.WindowsNotificationProvider
 import com.kdroid.composenotification.utils.OsUtils
 
-// Notification.kt
+/**
+ * Displays a notification with the specified parameters.
+ *
+ * @param appName The name of the application sending the notification. Default is "NotificationExample".
+ * @param appIconPath The file path to the application icon. Can be null if no icon is provided.
+ * @param title The title of the notification.
+ * @param message The message body of the notification.
+ * @param largeImagePath The file path to a large image to be displayed in the notification. Can be null if no image is provided.
+ * @param builderAction A lambda with receiver to configure additional notification properties, such as buttons and callbacks.
+ */
 fun Notification(
     appName: String = "NotificationExample",
     appIconPath: String? = null,
