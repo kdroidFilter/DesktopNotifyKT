@@ -21,6 +21,8 @@ int send_notification(Notification *notification);
 
 void set_image_from_pixbuf(Notification *notification, GdkPixbuf *pixbuf);
 
+void quit_main_loop();
+
 // Nettoyage des ressources
 void cleanup_notification();
 

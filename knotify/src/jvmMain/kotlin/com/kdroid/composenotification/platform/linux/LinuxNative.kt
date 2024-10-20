@@ -23,6 +23,7 @@ interface LinuxNotificationLibrary : Library {
 
     fun run_main_loop()
 
+    fun quit_main_loop()
     // Nouvelle fonction ajoutée pour charger un GdkPixbuf
     fun load_pixbuf_from_file(image_path: String): Pointer?
 }

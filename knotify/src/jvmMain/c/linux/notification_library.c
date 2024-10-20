@@ -4,9 +4,13 @@
 #include <stdlib.h>
 #include "notification_library.h"
 
+// Déclaration globale de la boucle principale
+static GMainLoop *main_loop = NULL;
+
 // Callback par défaut pour le clic sur un bouton
 void default_button_clicked_callback(NotifyNotification *notification, char *action, gpointer user_data) {
     g_print("Button clicked with action: %s\n", action);
+    quit_main_loop(); // Quitter la boucle lorsque le bouton est cliqué
 }
 
 // Création de la notification
@@ -68,16 +72,29 @@ void cleanup_notification() {
 
 // Fonction pour démarrer la boucle principale GLib
 void run_main_loop() {
-    GMainLoop *loop = g_main_loop_new(NULL, FALSE);
-    g_main_loop_run(loop);
+    if (main_loop == NULL) {
+        main_loop = g_main_loop_new(NULL, FALSE);
+    }
+    g_main_loop_run(main_loop);
 }
 
+// Fonction pour arrêter la boucle principale GLib
+void quit_main_loop() {
+    if (main_loop != NULL && g_main_loop_is_running(main_loop)) {
+        g_main_loop_quit(main_loop);
+        g_main_loop_unref(main_loop);
+        main_loop = NULL;
+    }
+}
+
+// Fonction pour définir une image sur une notification à partir d'un GdkPixbuf
 void set_image_from_pixbuf(Notification *notification, GdkPixbuf *pixbuf) {
     if (notification != NULL && pixbuf != NULL) {
         notify_notification_set_image_from_pixbuf(notification, pixbuf);
     }
 }
 
+// Fonction pour charger un GdkPixbuf à partir d'un fichier
 GdkPixbuf *load_pixbuf_from_file(const char *image_path) {
     GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(image_path, NULL);
     if (pixbuf == NULL) {
@@ -85,7 +102,6 @@ GdkPixbuf *load_pixbuf_from_file(const char *image_path) {
     }
     return pixbuf;
 }
-
 
 /* Compilation en bibliothèque partagée (libnotification.so) */
 // Pour compiler cette bibliothèque en un fichier .so (bibliothèque partagée), vous pouvez utiliser la commande suivante :
