@@ -1,4 +1,4 @@
-rootProject.name = "KNotify"
+rootProject.name = "Compose-Native-Notification"
 
 pluginManagement {
     repositories {
@@ -29,5 +29,6 @@ dependencyResolutionManagement {
     }
 }
 includeBuild("convention-plugins")
-include(":knotify")
+include(":shared")
+include(":demo")
 

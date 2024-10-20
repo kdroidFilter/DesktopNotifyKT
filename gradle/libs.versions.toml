@@ -1,20 +1,25 @@
 [versions]
-kotlin = "2.0.20"
-dbusJava = "3.3.2"
-slf4j = "1.7.32"
-logback = "1.2.11"
-junit = "5.7.0"
-mockk = "1.12.0"
-kmplog = "0.1.0"
 
+jna = "5.15.0"
+kotlin = "2.0.20"
+agp = "8.6.0-alpha07"
+kotlinx-coroutines = "1.9.0"
+kmplog = "0.1.0"
+compose-plugin = "1.7.0"
+vanniktech = "0.30.0"
 [libraries]
-dbusJava = { group = "com.github.hypfvieh", name = "dbus-java", version.ref = "dbusJava" }
-slf4jApi = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
-logbackClassic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
-junitApi = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit" }
-junitEngine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit" }
-mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+
+jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
+jna-platform = { module = "net.java.dev.jna:jna-platform", version.ref = "jna" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kmplog = {group = "io.github.kdroidfilter", name = "kmplog", version.ref = "kmplog"}
 
 [plugins]
+
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+vannitktech-maven-publish = {id = "com.vanniktech.maven.publish", version.ref = "vanniktech"}

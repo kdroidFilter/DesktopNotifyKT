@@ -1,3 +1,0 @@
-/home/elyahou/IdeaProjects/KNotify/knotify/src/jvmMain/c/linux/cmake-build-debug/CMakeFiles/NotificationExample.dir
-/home/elyahou/IdeaProjects/KNotify/knotify/src/jvmMain/c/linux/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/elyahou/IdeaProjects/KNotify/knotify/src/jvmMain/c/linux/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -61,7 +61,7 @@ publishing {
 
         // Provide artifacts information requited by Maven Central
         pom {
-            name.set("KNotify")
+            name.set("Compose Native Notification")
             description.set("Kotlin Multiplatform library")
             //url.set("") todo
 

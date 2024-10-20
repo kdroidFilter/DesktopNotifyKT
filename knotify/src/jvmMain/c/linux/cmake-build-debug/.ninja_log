@@ -1,6 +1,0 @@
-# ninja log v6
-2	69	1729260035101009057	CMakeFiles/NotificationExample.dir/main.c.o	d9b91552ebcf764d
-2	73	1729260035101009057	CMakeFiles/NotificationExample.dir/notification_library.c.o	16eb2cab03d8e06e
-73	94	1729260035172011001	NotificationExample	b745fbf67c2b726c
-0	73	1729367017385815857	CMakeFiles/NotificationExample.dir/notification_library.c.o	16eb2cab03d8e06e
-73	94	1729367017458816816	NotificationExample	b745fbf67c2b726c

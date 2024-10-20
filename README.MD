@@ -1,111 +1,48 @@
-# KNotify
+# Compose Native Notification
 
-KNotify is a Kotlin library for sending native notifications across different operating systems. It provides a simple, unified interface for sending notifications on Linux, Windows, and macOS.
+Kotlin Multiplatform Library
 
-[![](https://jitpack.io/v/kdroidFilter/KNotify.svg)](https://jitpack.io/#kdroidFilter/KNotify)
+### Publish to MavenCentral
 
-## Features
+1) Registering a Sonatype account as described here: 
+   https://dev.to/kotlin/how-to-build-and-publish-a-kotlin-multiplatform-library-going-public-4a8k
+2) Add developer id, name, email and the project url to
+   `/convention-plugins/src/main/kotlin/convention.publication.gradle.kts`
+3) Add the secrets to `local.properties`:
 
-- Cross-platform support for Linux, Windows, and macOS
-- Simple, unified API for sending notifications
-- Customizable notification title, message, and application icon
-- Automatic selection of the appropriate notifier based on the operating system
-- Application name customization for better identification
-
-## Installation
-
-To use KNotify in your project, add the JitPack repository and the dependency to your `build.gradle.kts` file:
-
-```kotlin
-repositories {
-    maven("https://jitpack.io")
-}
-
-dependencies {
-    implementation("com.github.kdroidFilter:knotify:Version")
-}
+```
+signing.keyId=...
+signing.password=...
+signing.secretKeyRingFile=...
+ossrhUsername=...
+ossrhPassword=...
 ```
 
-Replace `Version` with the latest version of the library or a specific commit. You can find available versions on the JitPack page of the project.
+4) Run `./gradlew :shared:publishAllPublicationsToSonatypeRepository`
 
-## Usage
+### Build platform artifacts
 
-Here's a simple example of how to use KNotify:
+#### Android aar
 
-```kotlin
-import com.kdroid.knotify.NotifierFactory
+- Run `./gradlew :shared:assembleRelease`
+- Output: `/shared/build/outputs/aar/shared-release.aar`
 
-fun main() {
-    val appName = "MyApp"
-    val notifier = NotifierFactory.getNotifier(appName)
+#### JVM jar
 
-    val title = "Hello from KNotify"
-    val message = "This is a test notification"
-    val appIcon = "/path/to/your/app/icon.png"
+- Run `./gradlew :shared:jvmJar`
+- Output: `/shared/build/libs/shared-jvm-1.0.jar`
 
-    val success = notifier.notify(title, message, appIcon)
+#### iOS Framework
 
-    if (success) {
-        println("Notification sent successfully")
-    } else {
-        println("Failed to send notification")
-    }
-}
-```
+- Run `./gradlew :shared:linkReleaseFrameworkIosArm64`
+- Output: `/shared/build/bin/iosArm64/releaseFramework/shared.framework`
 
-### Important Note for Windows Users
+#### JS file
 
-On Windows, the `appName` parameter must match the name of your application as it appears in the Start menu. To ensure you're using the correct name, you can use the following PowerShell command:
+- Run `./gradlew :shared:jsBrowserProductionWebpack`
+- Output: `/shared/build/dist/js/productionExecutable/shared.js`
 
-```powershell
-Get-StartApps | Where-Object {$_.Name -like '*YourAppName*'}
-```
+#### Wasm binary file
 
-Replace `YourAppName` with a part of your application's name. Use the exact `Name` value returned by this command as the `appName` parameter when creating the notifier.
-
-## API Reference
-
-### Notifier Interface
-
-```kotlin
-interface Notifier {
-    fun notify(title: String, message: String, appIcon: String?): Boolean
-}
-```
-
-- `title`: The title of the notification
-- `message`: The message content of the notification
-- `appIcon`: The path to the application icon to display with the notification (can be null)
-- Returns: `true` if the notification was successfully sent, `false` otherwise
-
-### NotifierFactory
-
-```kotlin
-object NotifierFactory {
-    fun getNotifier(appName: String): Notifier
-}
-```
-
-- `appName`: The name of the application sending the notification
-- Returns: A platform-specific implementation of the `Notifier` interface based on the current operating system
-
-## Platform Support
-
-- Linux: Uses `LinuxNotifier`
-- Windows: Uses `WindowsNotifier`
-- macOS: Uses `MacNotifier`
-
-Each platform-specific notifier is initialized with the provided `appName`.
-
-## Notes
-
-- The `appIcon` parameter is optional (can be null) and is not yet supported on macOS.
-- An `UnsupportedOperationException` is thrown if the current operating system is not supported.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
+- Run `./gradlew :shared:wasmJsBrowserDistribution`
+- Output: `/shared/build/dist/wasmJs/productionExecutable/shared-wasm-js.wasm`
