@@ -1,28 +1,18 @@
 package com.kdroid.composenotification.demo
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.application
 import com.kdroid.composenotification.builder.Notification
 import com.kdroid.kmplog.Log
 import com.kdroid.kmplog.d
 import com.kdroid.kmplog.w
 import java.io.File
 
-fun main() = application {
-    Window(onCloseRequest = ::exitApplication, title = "Application Compose Desktop à Deux Écrans") {
-        App()
-    }
-}
-
 @Composable
-@Preview
 fun App() {
     var currentScreen by remember { mutableStateOf(Screen.Screen1) }
     MaterialTheme {

@@ -8,6 +8,11 @@ kmplog = "0.1.0"
 compose-plugin = "1.7.0"
 vanniktech = "0.30.0"
 core = "1.13.1"
+android-compileSdk = "34"
+android-minSdk = "24"
+android-targetSdk = "34"
+activityKtx = "1.9.3"
+
 [libraries]
 
 jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
@@ -18,10 +23,14 @@ kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kmplog = {group = "io.github.kdroidfilter", name = "kmplog", version.ref = "kmplog"}
 core = { group = "androidx.core", name = "core", version.ref = "core" }
+activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityKtx" }
 
 [plugins]
 
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 vannitktech-maven-publish = {id = "com.vanniktech.maven.publish", version.ref = "vanniktech"}
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
