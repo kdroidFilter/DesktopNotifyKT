@@ -2,13 +2,20 @@ package com.kdroid.composenotification.builder
 
 import android.Manifest
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.kdroid.composenotification.NotificationActionReceiver
+import com.kdroid.composenotification.model.DismissalReason
+import com.kdroid.composenotification.model.Button
 
 actual fun getNotificationProvider(context: Any?): NotificationProvider = AndroidNotificationProvider(context = context as Context)
 
@@ -16,8 +23,90 @@ class AndroidNotificationProvider(private val context: Context) : NotificationPr
 
     private var permissionLauncher: ActivityResultLauncher<String>? = null
 
+    companion object {
+        private const val CHANNEL_ID = "default_channel_id"
+        private const val CHANNEL_NAME = "Default Channel"
+        private const val CHANNEL_DESCRIPTION = "A default channel for notifications"
+        private const val NOTIFICATION_ID = 1001
+    }
+
+    init {
+        createNotificationChannel()
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = android.app.NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance).apply {
+                description = CHANNEL_DESCRIPTION
+            }
+            val notificationManager: android.app.NotificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
     override fun sendNotification(builder: NotificationBuilder) {
-        TODO("Not yet implemented")
+        val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(getAppIcon(builder.appIconPath))
+            .setContentTitle(builder.title)
+            .setContentText(builder.message)
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        // Ajouter une grande image si disponible
+        builder.largeImagePath?.let { path ->
+            val bitmap = BitmapFactory.decodeFile(path)
+            if (bitmap != null) {
+                notificationBuilder.setStyle(
+                    NotificationCompat.BigPictureStyle()
+                        .bigPicture(bitmap)
+
+                )
+            }
+        }
+
+        // Ajouter les actions (boutons)
+        builder.buttons.forEachIndexed { index, button ->
+            val actionIntent = createActionIntent(button, builder, index)
+            val pendingIntent = PendingIntent.getBroadcast(
+                context,
+                index,
+                actionIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or getPendingIntentFlags()
+            )
+            notificationBuilder.addAction(0, button.label, pendingIntent)
+        }
+
+        val notificationManager = NotificationManagerCompat.from(context)
+        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
+    }
+
+    private fun getAppIcon(appIconPath: String?): Int {
+        return if (appIconPath != null) {
+            // Implémentez la logique pour charger une icône depuis un chemin spécifique
+            // Ici, nous retournons une icône par défaut pour simplifier
+            android.R.drawable.ic_dialog_info
+        } else {
+            // Icône par défaut de l'application
+            context.applicationInfo.icon
+        }
+    }
+
+    private fun createActionIntent(button: Button, builder: NotificationBuilder, requestCode: Int): Intent {
+        val intent = Intent(context, NotificationActionReceiver::class.java).apply {
+            action = "com.kdroid.composenotification.ACTION_BUTTON_CLICK"
+            putExtra("button_label", button.label)
+        }
+        return intent
+    }
+
+    private fun getPendingIntentFlags(): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PendingIntent.FLAG_IMMUTABLE
+        } else {
+            0
+        }
     }
 
     override fun hasPermission(): Boolean {
@@ -55,7 +144,6 @@ class AndroidNotificationProvider(private val context: Context) : NotificationPr
                 if (notificationManager.areNotificationsEnabled()) {
                     onGranted()
                 } else {
-
                     onDenied()
                 }
             }

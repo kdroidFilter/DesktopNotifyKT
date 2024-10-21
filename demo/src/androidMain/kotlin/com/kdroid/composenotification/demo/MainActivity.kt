@@ -3,9 +3,13 @@ package com.kdroid.composenotification.demo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.kdroid.composenotification.builder.AndroidNotificationProvider
+import com.kdroid.composenotification.builder.NotificationHelper
 import com.kdroid.kmplog.Log
 import com.kdroid.kmplog.d
 
@@ -25,7 +29,7 @@ class MainActivity : ComponentActivity() {
                 "Permission denied")
         })
         setContent {
-            App()
+            NotificationButton()
         }
     }
 }
@@ -34,4 +38,16 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppAndroidPreview() {
     App()
+}
+
+@Composable
+fun NotificationButton() {
+    val context = LocalContext.current
+    val notificationHelper = NotificationHelper(context)
+
+    Button(onClick = {
+        notificationHelper.sendNotification()
+    }) {
+        Text(text = "Envoyer la notification")
+    }
 }
