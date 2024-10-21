@@ -21,7 +21,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.desktop.currentOs)
             implementation(libs.kmplog)
-            implementation(project(":shared"))
+            implementation(project(":composenotification"))
         }
     }
 }

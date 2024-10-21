@@ -29,6 +29,6 @@ dependencyResolutionManagement {
     }
 }
 includeBuild("convention-plugins")
-include(":shared")
+include(":composenotification")
 include(":demo")
 

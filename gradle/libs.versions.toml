@@ -7,6 +7,7 @@ kotlinx-coroutines = "1.9.0"
 kmplog = "0.1.0"
 compose-plugin = "1.7.0"
 vanniktech = "0.30.0"
+core = "1.13.1"
 [libraries]
 
 jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
@@ -16,6 +17,7 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kmplog = {group = "io.github.kdroidfilter", name = "kmplog", version.ref = "kmplog"}
+core = { group = "androidx.core", name = "core", version.ref = "core" }
 
 [plugins]
 
