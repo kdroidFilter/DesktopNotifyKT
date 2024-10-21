@@ -1,11 +1,6 @@
 package com.kdroid.composenotification
 
-/**
- * Enum class representing notification duration options.
- */
-enum class NotificationDuration {
-    SHORT, LONG
-}
+import com.kdroid.composenotification.enums.NotificationDuration
 
 /**
  * Interface for sending native notifications.

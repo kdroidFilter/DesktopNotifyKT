@@ -12,3 +12,4 @@ actual fun getNotificationProvider(): NotificationProvider {
         else -> throw UnsupportedOperationException("Unsupported OS")
     }
 }
+

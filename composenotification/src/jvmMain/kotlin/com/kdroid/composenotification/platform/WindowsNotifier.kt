@@ -1,6 +1,6 @@
 package com.kdroid.composenotification.platform
 
-import com.kdroid.composenotification.NotificationDuration
+import com.kdroid.composenotification.enums.NotificationDuration
 import com.kdroid.composenotification.Notifier
 import com.kdroid.kmplog.Log
 import com.kdroid.kmplog.d
