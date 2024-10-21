@@ -52,10 +52,10 @@ class AndroidNotificationProvider(private val context: Context) : NotificationPr
             } else {
                 // Pour les versions inférieures à Android 13, vérifier si les notifications sont activées
                 val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && notificationManager.areNotificationsEnabled()) {
+                if (notificationManager.areNotificationsEnabled()) {
                     onGranted()
                 } else {
-                    // Affichez un message demandant à l'utilisateur de vérifier ses paramètres
+
                     onDenied()
                 }
             }
