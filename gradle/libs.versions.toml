@@ -1,8 +1,8 @@
 [versions]
 
 jna = "5.15.0"
-kotlin = "2.0.20"
-agp = "8.6.0-alpha07"
+kotlin = "2.0.21"
+agp = "8.2.2"
 kotlinx-coroutines = "1.9.0"
 kmplog = "0.1.0"
 compose-plugin = "1.7.0"
@@ -12,6 +12,7 @@ android-compileSdk = "34"
 android-minSdk = "24"
 android-targetSdk = "34"
 activityKtx = "1.9.3"
+appcompat = "1.7.0"
 
 [libraries]
 
@@ -25,6 +26,7 @@ kmplog = {group = "io.github.kdroidfilter", name = "kmplog", version.ref = "kmpl
 core = { group = "androidx.core", name = "core", version.ref = "core" }
 activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityKtx" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 
 [plugins]
 

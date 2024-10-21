@@ -47,6 +47,7 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.core)
+            implementation(libs.androidx.appcompat)
             implementation(libs.kotlinx.coroutines.android)
         }
 
@@ -67,10 +68,11 @@ kotlin {
 
 android {
     namespace = "com.kdroid.composenotification"
-    compileSdk = 35
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = 21
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
     }
 }
 
@@ -121,3 +123,6 @@ mavenPublishing {
 
 
 task("testClasses") {}
+dependencies {
+
+}

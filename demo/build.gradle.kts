@@ -11,13 +11,13 @@ plugins {
 }
 
 val appVersion = "1.0.0"
-val appPackageName = "com.kdroid.jeweldemo"
+val appPackageName = "com.kdroid.composenotification.demo"
 
 group = appPackageName
 version = appVersion
 
 android {
-    namespace = "com.kdroid.jeweldemo"
+    namespace = "com.kdroid.composenotification.demo"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -25,7 +25,7 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "com.kdroid.jeweldemo"
+        applicationId = "com.kdroid.composenotification.demo"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -81,10 +81,14 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.activity.ktx)
+            implementation(libs.androidx.appcompat)
             implementation(libs.androidx.activity.compose)
         }
 
     }
+}
+dependencies {
+
 }
 
 
@@ -94,7 +98,7 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.composenotification.sample"
+            packageName = "com.kdroid.composenotification.sample"
             packageVersion = "0.2.0"
         }
     }

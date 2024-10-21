@@ -1,0 +1,11 @@
+<!-- compose-notification/src/main/AndroidManifest.xml -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.kdroid.composenotification.library">
+
+    <!-- Déclaration de la permission pour envoyer des notifications (Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+    <!-- Déclarations supplémentaires si nécessaire -->
+    <!-- Par exemple, des services, des récepteurs, etc. -->
+
+</manifest>
