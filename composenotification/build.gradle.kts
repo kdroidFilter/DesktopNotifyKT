@@ -47,7 +47,6 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.core)
-            implementation(libs.androidx.appcompat)
             implementation(libs.kotlinx.coroutines.android)
         }
 
