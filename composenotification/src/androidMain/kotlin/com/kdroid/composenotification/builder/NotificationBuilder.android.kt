@@ -3,8 +3,8 @@ package com.kdroid.composenotification.builder
 import android.content.Context
 import androidx.core.app.NotificationManagerCompat
 
-actual fun getNotificationProvider(context: Any?): NotificationProvider {
-    val androidContext = NotificationInitializer.context
+actual fun getNotificationProvider(): NotificationProvider {
+    val androidContext = NotificationInitializer.appContext
     return AndroidNotificationProvider(androidContext as Context)
 }
 

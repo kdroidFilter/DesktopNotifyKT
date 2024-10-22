@@ -59,15 +59,15 @@ class NotificationBuilder(
     }
 }
 
-expect fun getNotificationProvider(context: Any? = null): NotificationProvider
+expect fun getNotificationProvider(): NotificationProvider
 
 /**
  * Checks if the application has permission to display notifications.
  *
  * @return True if the application has notification permission, false otherwise.
  */
-fun hasNotificationPermission(context: Any? = null): Boolean {
-    val notificationProvider = getNotificationProvider(context)
+fun hasNotificationPermission(): Boolean {
+    val notificationProvider = getNotificationProvider()
     return notificationProvider.hasPermission()
 }
 
@@ -77,7 +77,7 @@ fun hasNotificationPermission(context: Any? = null): Boolean {
  * @param onGranted A callback that is invoked if the permission is granted.
  * @param onDenied A callback that is invoked if the permission is denied.
  */
-fun requestNotificationPermission(context: Any? = null, onGranted: () -> Unit, onDenied: () -> Unit) {
-    val notificationProvider = getNotificationProvider(context)
+fun requestNotificationPermission(onGranted: () -> Unit, onDenied: () -> Unit) {
+    val notificationProvider = getNotificationProvider()
     notificationProvider.requestPermission(onGranted, onDenied)
 }

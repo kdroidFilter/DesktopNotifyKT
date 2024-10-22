@@ -5,7 +5,7 @@ import com.kdroid.composenotification.platform.windows.provider.WindowsNotificat
 import com.kdroid.composenotification.utils.OsUtils
 
 // jvmMain/src/jvmMain/kotlin/JvmNotificationProvider.kt
-actual fun getNotificationProvider(context: Any?): NotificationProvider {
+actual fun getNotificationProvider(): NotificationProvider {
     return when {
         OsUtils.isLinux() -> LinuxNotificationProvider()
         OsUtils.isWindows() -> WindowsNotificationProvider()

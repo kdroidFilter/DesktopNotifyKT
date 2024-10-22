@@ -13,14 +13,14 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        NotificationInitializer.configureChannel(
-            AndroidChannelConfig(
-                "Notification Example 1",
+        NotificationInitializer.initialize(
+            context = this,
+            channelConfig = AndroidChannelConfig(
+                channelId = "Notification Example 1",
                 channelName = "Notification Example 1",
                 channelDescription = "Notification Example 1"
             )
         )
-        NotificationInitializer.context = this
       setContent() {
           App()
       }

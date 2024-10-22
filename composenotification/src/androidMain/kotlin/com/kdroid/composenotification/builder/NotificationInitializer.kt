@@ -1,6 +1,7 @@
 package com.kdroid.composenotification.builder
 
 import android.app.NotificationManager
+import android.content.Context
 
 
 data class AndroidChannelConfig(
@@ -12,11 +13,18 @@ data class AndroidChannelConfig(
 )
 
 object NotificationInitializer {
-    var context: Any? = null
-    private var channelConfig: AndroidChannelConfig = AndroidChannelConfig()
-    fun configureChannel(config: AndroidChannelConfig) {
-        channelConfig = config
+    var appContext: Context? = null
+    private var channelConfiguration: AndroidChannelConfig = AndroidChannelConfig()
+
+    fun initialize(context: Context, channelConfig: AndroidChannelConfig) {
+        appContext = context.applicationContext
+        channelConfiguration = channelConfig
     }
 
-    fun getChannelConfig(): AndroidChannelConfig = channelConfig
+
+    fun getChannelConfig(): AndroidChannelConfig = channelConfiguration
+
+    fun getNotificationManager(): NotificationManager? {
+        return appContext?.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+    }
 }
