@@ -3,6 +3,7 @@ package com.kdroid.composenotification.platform.linux
 import com.kdroid.composenotification.builder.NotificationBuilder
 import com.kdroid.composenotification.builder.NotificationInitializer
 import com.kdroid.composenotification.builder.NotificationProvider
+import com.kdroid.composenotification.model.DismissalReason
 import com.kdroid.kmplog.*
 import com.sun.jna.Pointer
 import kotlinx.coroutines.CoroutineScope
@@ -41,6 +42,14 @@ class LinuxNotificationProvider : NotificationProvider {
                             it()
                         }
                     }, Pointer.NULL)
+                }
+
+
+                builder.onDismissed?.let {
+                    val closedCallback = NotifyClosedCallback { notification, userData ->
+                        it(DismissalReason.UserCanceled)
+                    }
+                    lib.set_notification_closed_callback(notification, closedCallback , Pointer.NULL)
                 }
 
                 val largeImagePath = builder.largeImagePath as String?

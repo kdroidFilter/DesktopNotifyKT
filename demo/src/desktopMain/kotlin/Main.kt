@@ -6,7 +6,7 @@ import com.kdroid.composenotification.builder.AppConfig
 import com.kdroid.composenotification.builder.NotificationInitializer
 
 fun main() = application{
-    Window(onCloseRequest = ::exitApplication) {
+    Window(onCloseRequest = ::exitApplication, title = "Compose Native Notification Demo") {
         NotificationInitializer.configure(
             AppConfig(
                 appName = "Notification Example 1",

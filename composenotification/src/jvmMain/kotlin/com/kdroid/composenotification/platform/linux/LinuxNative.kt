@@ -3,6 +3,9 @@ package com.kdroid.composenotification.platform.linux
 import com.sun.jna.Library
 import com.sun.jna.Native
 import com.sun.jna.Pointer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 // Définir une interface pour ta bibliothèque
 interface LinuxNotificationLibrary : Library {
@@ -18,6 +21,8 @@ interface LinuxNotificationLibrary : Library {
 
     fun set_image_from_pixbuf(notification: Pointer?, pixbuf: Pointer?)
 
+    fun set_notification_closed_callback(notification: Pointer?, callback: NotifyClosedCallback, user_data: Pointer?)
+
     fun cleanup_notification()
 
     fun run_main_loop()
@@ -29,7 +34,7 @@ interface LinuxNotificationLibrary : Library {
 
 
 //Sample use
-internal fun sendTestNotification() {
+ fun sendTestNotification() {
     val lib = LinuxNotificationLibrary.INSTANCE
 
     // Créer une notification simple
@@ -37,7 +42,7 @@ internal fun sendTestNotification() {
         "TestApp", // Nom de l'application
         "Titre de la notification", // Titre
         "Ceci est le corps de la notification", // Corps de la notification
-        "" // Chemin de l'icône (laisser vide si aucune icône n'est utilisée)
+        "/home/elyahou/Images/images.png" // Chemin de l'icône (laisser vide si aucune icône n'est utilisée)
     )
 
     // Vérifier si la notification a été créée avec succès
@@ -59,3 +64,9 @@ internal fun sendTestNotification() {
     lib.run_main_loop()
 }
 
+fun main(){
+    CoroutineScope(Dispatchers.Main).launch {
+        sendTestNotification()
+    }
+
+}

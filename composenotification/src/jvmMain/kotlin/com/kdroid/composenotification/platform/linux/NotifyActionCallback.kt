@@ -8,3 +8,8 @@ import com.sun.jna.Pointer
 fun interface NotifyActionCallback : Callback {
     fun invoke(notification: Pointer?, action: String?, user_data: Pointer?)
 }
+
+
+fun interface NotifyClosedCallback : Callback {
+    fun invoke(notification: Pointer?, user_data: Pointer?)
+}
