@@ -8,6 +8,11 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.kdroid.composenotification.model.Button
+import com.kdroid.composenotification.model.DismissalReason
+import com.kdroid.kmplog.Log
+import com.kdroid.kmplog.d
+import com.kdroid.kmplog.e
 
 class NotificationHelper(private val context: Context) {
 
@@ -28,33 +33,44 @@ class NotificationHelper(private val context: Context) {
         }
     }
 
-    fun sendNotification() {
-        // Intent pour le bouton 1
-        val button1Intent = Intent(context, NotificationReceiver::class.java).apply {
-            action = "ACTION_BUTTON_1"
-        }
-        val button1PendingIntent: PendingIntent =
-            PendingIntent.getBroadcast(context, 0, button1Intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-
-        // Intent pour le bouton 2
-        val button2Intent = Intent(context, NotificationReceiver::class.java).apply {
-            action = "ACTION_BUTTON_2"
-        }
-        val button2PendingIntent: PendingIntent =
-            PendingIntent.getBroadcast(context, 1, button2Intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-
-        // Construire la notification
+    fun sendNotification(
+        title: String,
+        message: String,
+        largeImagePath: Any?,
+        buttons: List<Button>,
+        onActivated: (() -> Unit)?,
+        onDismissed: ((DismissalReason) -> Unit)?,
+        onFailed: (() -> Unit)?
+    ) {
         val builder = NotificationCompat.Builder(context, config.channelId)
-            .setSmallIcon(android.R.drawable.sym_def_app_icon)
-            .setContentTitle("Notification Exemple")
-            .setContentText("Ceci est une notification avec des boutons.")
+            .setSmallIcon(config.smallIcon)
+            .setContentTitle(title)
+            .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .addAction(0, "Bouton 1", button1PendingIntent)
-            .addAction(0, "Bouton 2", button2PendingIntent)
 
+        buttons.forEachIndexed { index, button ->
+            val intent = Intent(context, NotificationReceiver::class.java).apply {
+                action = NotificationReceiver.ACTION_BUTTON_CLICKED
+                putExtra(NotificationReceiver.EXTRA_BUTTON_ID, index)
+            }
+            val pendingIntent = PendingIntent.getBroadcast(
+                context, index, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+            builder.addAction(0, button.label, pendingIntent)
+            NotificationActionStore.addAction(index, button.onClick)
+        }
 
         with(NotificationManagerCompat.from(context)) {
-            notify(1, builder.build())
+            try {
+                notify(1, builder.build())
+                onActivated?.invoke()
+            } catch (e: Exception) {
+                onFailed?.invoke()
+            }
         }
     }
+
+
+
 }
