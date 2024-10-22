@@ -21,11 +21,26 @@ class LinuxNotificationProvider : NotificationProvider {
         coroutineScope = CoroutineScope(Dispatchers.IO).also { scope ->
             scope.launch {
                 val appIconPath = appConfig.appIconPath
-                val notification = lib.create_notification(builder.title, builder.message, appIconPath ?: "")
+                Log.d("sendNotification", appConfig.appName)
+                val notification = lib.create_notification(
+                    app_name = appConfig.appName,
+                    summary = builder.title,
+                    body = builder.message,
+                    icon_path = appIconPath ?: ""
+                )
+
                 if (notification == null) {
                     Log.e("LinuxNotificationProvider", "Failed to create notification.")
                     builder.onFailed?.invoke()
                     return@launch
+                }
+
+                builder.onActivated?.let {
+                    lib.add_button_to_notification(notification, "default", "Open", { _, action, _ ->
+                        action.let {
+                            it()
+                        }
+                    }, Pointer.NULL)
                 }
 
                 val largeImagePath = builder.largeImagePath as String?
@@ -67,6 +82,7 @@ class LinuxNotificationProvider : NotificationProvider {
     }
 
     override fun requestPermission(onGranted: () -> Unit, onDenied: () -> Unit) {
+
     }
 
     private fun startMainLoop() {

@@ -10,7 +10,7 @@ fun main() = application{
         NotificationInitializer.configure(
             AppConfig(
                 appName = "Notification Example 1",
-                appIconPath = "icon.png"
+                appIconPath = ""
             )
         )
         App()
