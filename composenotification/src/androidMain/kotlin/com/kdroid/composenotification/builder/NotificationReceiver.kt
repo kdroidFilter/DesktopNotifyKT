@@ -4,10 +4,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.core.app.NotificationManagerCompat
 import com.kdroid.kmplog.Log
 import com.kdroid.kmplog.d
-import com.kdroid.composenotification.builder.NotificationReceiver.Companion.ACTION_BUTTON_CLICKED
-import com.kdroid.composenotification.model.Button
 
 class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -18,6 +17,10 @@ class NotificationReceiver : BroadcastReceiver() {
             ACTION_BUTTON_CLICKED -> {
                 val buttonAction = NotificationActionStore.getAction(buttonId)
                 buttonAction?.invoke() ?: Log.d("NotificationReceiver", "No action found for button with ID: $buttonId")
+
+                // Annuler la notification après le clic sur le bouton
+                val notificationId = 1 // Utilisez l'ID de la notification que vous avez utilisé dans `NotificationHelper`
+                NotificationManagerCompat.from(context).cancel(notificationId)
             }
             else -> {
                 Toast.makeText(context, "Action inconnue", Toast.LENGTH_SHORT).show()

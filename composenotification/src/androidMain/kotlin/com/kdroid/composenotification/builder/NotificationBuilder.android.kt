@@ -10,7 +10,7 @@ actual fun getNotificationProvider(context: Any?): NotificationProvider {
 
 class AndroidNotificationProvider(private val context: Context) : NotificationProvider {
 
-    private val helper = NotificationHelper(context)
+    private val helper = NotificationManager(context)
 
     override fun sendNotification(builder: NotificationBuilder) {
         // Utilise le NotificationBuilder pour configurer le titre, le message, les actions, etc.
@@ -32,8 +32,6 @@ class AndroidNotificationProvider(private val context: Context) : NotificationPr
     }
 
     override fun requestPermission(onGranted: () -> Unit, onDenied: () -> Unit) {
-        // Sur Android, il n'y a pas de demande de permission explicite pour les notifications,
-        // mais tu peux diriger l'utilisateur vers les paramètres de l'application.
         if (hasPermission()) {
             onGranted()
         } else {

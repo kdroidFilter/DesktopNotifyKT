@@ -10,11 +10,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.kdroid.composenotification.model.Button
 import com.kdroid.composenotification.model.DismissalReason
-import com.kdroid.kmplog.Log
-import com.kdroid.kmplog.d
-import com.kdroid.kmplog.e
 
-class NotificationHelper(private val context: Context) {
+class NotificationManager(private val context: Context) {
 
     private val config = NotificationInitializer.getChannelConfig()
 
@@ -70,7 +67,4 @@ class NotificationHelper(private val context: Context) {
             }
         }
     }
-
-
-
 }
