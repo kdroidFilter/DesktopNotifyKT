@@ -19,6 +19,12 @@ void add_button_to_notification(Notification *notification, const char *button_i
 // Envoie la notification
 int send_notification(Notification *notification);
 
+// Ajoute un callback pour le clic sur la notification
+void set_notification_clicked_callback(Notification *notification, NotifyActionCallback callback, gpointer user_data);
+
+// Ajoute un callback pour la fermeture de la notification
+void set_notification_closed_callback(Notification *notification, void (*callback)(NotifyNotification *notification, gpointer user_data), gpointer user_data);
+
 void set_image_from_pixbuf(Notification *notification, GdkPixbuf *pixbuf);
 
 void quit_main_loop();

@@ -94,6 +94,21 @@ void set_image_from_pixbuf(Notification *notification, GdkPixbuf *pixbuf) {
     }
 }
 
+// Définir un callback pour le clic sur la notification
+void set_notification_clicked_callback(Notification *notification, NotifyActionCallback callback, gpointer user_data) {
+    if (notification != NULL) {
+        g_signal_connect(notification, "action-invoked", G_CALLBACK(callback), user_data);
+    }
+}
+
+// Définir un callback pour la fermeture de la notification
+void set_notification_closed_callback(Notification *notification, void (*callback)(NotifyNotification *notification, gpointer user_data), gpointer user_data) {
+    if (notification != NULL) {
+        g_signal_connect(notification, "closed", G_CALLBACK(callback), user_data);
+    }
+}
+
+
 // Fonction pour charger un GdkPixbuf à partir d'un fichier
 GdkPixbuf *load_pixbuf_from_file(const char *image_path) {
     GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(image_path, NULL);
