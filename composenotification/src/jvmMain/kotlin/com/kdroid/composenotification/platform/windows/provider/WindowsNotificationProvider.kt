@@ -156,7 +156,8 @@ internal class WindowsNotificationProvider : NotificationProvider {
                 wtlc.WTLC_Template_setTextField(template, WString(builder.title), WTLC_TextField_Constants.FirstLine)
                 wtlc.WTLC_Template_setTextField(template, WString(builder.message), WTLC_TextField_Constants.SecondLine)
 
-                builder.largeImagePath?.takeIf { File(it).exists() }?.let {
+                val largeImagePath = builder.largeImagePath as String?
+                largeImagePath?.takeIf { File(it).exists() }?.let {
                     wtlc.WTLC_Template_setImagePath(template, WString(it))
                 }
 

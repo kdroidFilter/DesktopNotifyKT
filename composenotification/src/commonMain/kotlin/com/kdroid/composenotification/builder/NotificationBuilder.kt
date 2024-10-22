@@ -18,7 +18,7 @@ import com.kdroid.composenotification.model.DismissalReason
 fun Notification(
     title: String = "",
     message: String = "",
-    largeImagePath: String? = null,
+    largeImagePath: Any? = null,
     builderAction: NotificationBuilder.() -> Unit = {}
 ) {
     val builder = NotificationBuilder(title, message, largeImagePath)
@@ -29,7 +29,7 @@ fun Notification(
 class NotificationBuilder(
     var title: String = "",
     var message: String = "",
-    var largeImagePath: String?
+    var largeImagePath: Any?
 ) {
     internal val buttons = mutableListOf<Button>()
 
