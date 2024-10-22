@@ -55,9 +55,7 @@ fun ScreenOne(onNavigate: () -> Unit) {
         }
         Button(onClick = {
             Notification(
-                appName = "NotificationExample",
                 title = "Notification depuis écran 1",
-                appIconPath = appIconPath,
                 largeImagePath = largeImagePath,
                 message = "Ceci est un test de notification depuis l'écran 1"
             ) {
@@ -92,8 +90,6 @@ fun ScreenTwo(onNavigate: () -> Unit) {
         }
         Button(onClick = {
             Notification(
-                appName = "NotificationExample",
-                appIconPath = appIconPath,
                 largeImagePath = largeImagePath,
                 title = "Notification depuis écran 2",
                 message = "Ceci est un test de notification depuis l'écran 2"

@@ -16,21 +16,17 @@ import com.kdroid.composenotification.model.DismissalReason
  * @param builderAction A DSL block that customizes the notification options and actions.
  */
 fun Notification(
-    appName: String = "NotificationExample",
-    appIconPath: String? = null,
     title: String = "",
     message: String = "",
     largeImagePath: String? = null,
     builderAction: NotificationBuilder.() -> Unit = {}
 ) {
-    val builder = NotificationBuilder(appName, appIconPath, title, message, largeImagePath)
+    val builder = NotificationBuilder(title, message, largeImagePath)
     builder.builderAction()
     builder.send()
 }
 
 class NotificationBuilder(
-    var appName: String,
-    var appIconPath: String?,
     var title: String = "",
     var message: String = "",
     var largeImagePath: String?

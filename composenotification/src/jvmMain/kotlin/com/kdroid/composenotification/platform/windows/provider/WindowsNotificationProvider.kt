@@ -5,6 +5,7 @@ import ToastActivatedCallback
 import ToastDismissedCallback
 import ToastFailedCallback
 import com.kdroid.composenotification.builder.NotificationBuilder
+import com.kdroid.composenotification.builder.NotificationInitializer
 import com.kdroid.composenotification.builder.NotificationProvider
 import com.kdroid.composenotification.model.DismissalReason
 import com.kdroid.composenotification.platform.windows.constants.*
@@ -34,6 +35,9 @@ import java.io.File
  * Ce fournisseur utilise les notifications Toast natives de Windows pour afficher des messages.
  */
 internal class WindowsNotificationProvider : NotificationProvider {
+
+    private val appConfig = NotificationInitializer.getAppConfig()
+
     override fun sendNotification(builder: NotificationBuilder) {
         CoroutineScope(Dispatchers.IO).launch {
             if (!initializeCOM()) return@launch
@@ -107,14 +111,14 @@ internal class WindowsNotificationProvider : NotificationProvider {
         builder: NotificationBuilder
     ): Boolean {
         return withContext(Dispatchers.IO) {
-            wtlc.WTLC_setAppName(instance, WString(builder.appName))
+            wtlc.WTLC_setAppName(instance, WString(appConfig.appName))
 
-            val aumid = "${builder.appName.replace(" ", "")}Toast"
-            val registeredAUMID = if (registerBasicAUMID(aumid, builder.appName, builder.appIconPath ?: "")) {
+            val aumid = "${appConfig.appName.replace(" ", "")}Toast"
+            val registeredAUMID = if (registerBasicAUMID(aumid, appConfig.appName, appConfig.appIconPath ?: "")) {
                 aumid
             } else {
                 Log.w("Notification", "Échec de l'enregistrement de l'AUMID. Utilisation du nom de l'application comme AUMID.")
-                builder.appName
+                appConfig.appName
             }
 
             wtlc.WTLC_setAppUserModelId(instance, WString(registeredAUMID))

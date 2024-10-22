@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        NotificationInitializer.configure(
+        NotificationInitializer.configureChannel(
             AndroidChannelConfig(
                 "Notification Example 1",
                 channelName = "Notification Example 1",

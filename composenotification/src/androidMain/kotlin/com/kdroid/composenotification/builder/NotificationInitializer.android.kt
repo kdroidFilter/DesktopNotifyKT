@@ -11,7 +11,7 @@ data class AndroidChannelConfig(
 
 object NotificationInitializer {
     private var channelConfig: AndroidChannelConfig = AndroidChannelConfig()
-    fun configure(config: AndroidChannelConfig) {
+    fun configureChannel(config: AndroidChannelConfig) {
         channelConfig = config
     }
 

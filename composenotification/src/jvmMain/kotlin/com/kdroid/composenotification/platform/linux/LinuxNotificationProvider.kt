@@ -1,6 +1,7 @@
 package com.kdroid.composenotification.platform.linux
 
 import com.kdroid.composenotification.builder.NotificationBuilder
+import com.kdroid.composenotification.builder.NotificationInitializer
 import com.kdroid.composenotification.builder.NotificationProvider
 import com.kdroid.kmplog.*
 import com.sun.jna.Pointer
@@ -14,12 +15,13 @@ class LinuxNotificationProvider : NotificationProvider {
     private val lib = LinuxNotificationLibrary.INSTANCE
     private var isMainLoopRunning = false
     private var coroutineScope: CoroutineScope? = null
+    private val appConfig = NotificationInitializer.getAppConfig()
 
     override fun sendNotification(builder: NotificationBuilder) {
         coroutineScope = CoroutineScope(Dispatchers.IO).also { scope ->
             scope.launch {
-                val iconPath = builder.appIconPath ?: ""
-                val notification = lib.create_notification(builder.title, builder.message, iconPath)
+                val appIconPath = appConfig.appIconPath
+                val notification = lib.create_notification(builder.title, builder.message, appIconPath ?: "")
                 if (notification == null) {
                     Log.e("LinuxNotificationProvider", "Failed to create notification.")
                     builder.onFailed?.invoke()
