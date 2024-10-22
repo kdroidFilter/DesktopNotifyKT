@@ -11,7 +11,7 @@ group = "com.kdroid.composenotification"
 version = "0.2.0"
 
 kotlin {
-    jvmToolchain(11)
+    jvmToolchain(17)
     androidTarget {
         publishLibraryVariants("release")
     }
