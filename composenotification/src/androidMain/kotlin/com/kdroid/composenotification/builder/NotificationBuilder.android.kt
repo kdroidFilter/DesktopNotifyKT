@@ -14,19 +14,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.kdroid.composenotification.NotificationActionReceiver
-import com.kdroid.composenotification.model.DismissalReason
 import com.kdroid.composenotification.model.Button
 
-actual fun getNotificationProvider(context: Any?): NotificationProvider = AndroidNotificationProvider(context = context as Context)
+actual fun getNotificationProvider(context: Any?): NotificationProvider =
+    AndroidNotificationProvider(context = context as Context)
 
 class AndroidNotificationProvider(private val context: Context) : NotificationProvider {
 
     private var permissionLauncher: ActivityResultLauncher<String>? = null
+    private val config = NotificationInitializer.getChannelConfig()
 
     companion object {
-        private const val CHANNEL_ID = "default_channel_id"
-        private const val CHANNEL_NAME = "Default Channel"
-        private const val CHANNEL_DESCRIPTION = "A default channel for notifications"
         private const val NOTIFICATION_ID = 1001
     }
 
@@ -35,19 +33,20 @@ class AndroidNotificationProvider(private val context: Context) : NotificationPr
     }
 
     private fun createNotificationChannel() {
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = android.app.NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance).apply {
-                description = CHANNEL_DESCRIPTION
+            val importance = config.channelImportance
+            val channel = android.app.NotificationChannel(config.channelId, config.channelName, importance).apply {
+                description = config.channelDescription
             }
-            val notificationManager: android.app.NotificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+            val notificationManager: NotificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
 
     override fun sendNotification(builder: NotificationBuilder) {
-        val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
+        val notificationBuilder = NotificationCompat.Builder(context, config.channelId)
             .setSmallIcon(getAppIcon(builder.appIconPath))
             .setContentTitle(builder.title)
             .setContentText(builder.message)
@@ -124,13 +123,14 @@ class AndroidNotificationProvider(private val context: Context) : NotificationPr
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 // Initialiser le launcher une seule fois
                 if (permissionLauncher == null) {
-                    permissionLauncher = context.registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-                        if (isGranted) {
-                            onGranted()
-                        } else {
-                            onDenied()
+                    permissionLauncher =
+                        context.registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                            if (isGranted) {
+                                onGranted()
+                            } else {
+                                onDenied()
+                            }
                         }
-                    }
                 }
 
                 if (context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {

@@ -8,8 +8,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import com.kdroid.composenotification.builder.AndroidChannelConfig
 import com.kdroid.composenotification.builder.AndroidNotificationProvider
 import com.kdroid.composenotification.builder.NotificationHelper
+import com.kdroid.composenotification.builder.NotificationInitializer
 import com.kdroid.kmplog.Log
 import com.kdroid.kmplog.d
 
@@ -18,6 +20,13 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        NotificationInitializer.configure(
+            AndroidChannelConfig(
+                "Notification Example 1",
+                channelName = "Notification Example 1",
+                channelDescription = "Notification Example 1"
+            )
+        )
         val notificationProvider = AndroidNotificationProvider(this)
         if (!notificationProvider.hasPermission()) notificationProvider.requestPermission({
             Log.d(

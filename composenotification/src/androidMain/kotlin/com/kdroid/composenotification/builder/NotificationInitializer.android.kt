@@ -1,12 +1,19 @@
 package com.kdroid.composenotification.builder
 
-import android.content.Context
+import android.app.NotificationManager
 
-actual class NotificationInitializer(private val context: Context) {
+data class AndroidChannelConfig(
+    val channelId: String = "default",
+    val channelName: String = "Default",
+    val channelDescription: String = "Default channel",
+    val channelImportance: Int = NotificationManager.IMPORTANCE_DEFAULT
+)
 
-    actual fun initialize() {
-        // Utiliser le contexte Android pour initialiser des services spécifiques
-        // comme les notifications
-        println("Initialisation des notifications sous Android avec le contexte.")
+object NotificationInitializer {
+    private var channelConfig: AndroidChannelConfig = AndroidChannelConfig()
+    fun configure(config: AndroidChannelConfig) {
+        channelConfig = config
     }
+
+    fun getChannelConfig(): AndroidChannelConfig = channelConfig
 }
