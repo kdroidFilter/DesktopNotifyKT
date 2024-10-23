@@ -6,21 +6,22 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.kdroid.composenotification.builder.AndroidChannelConfig
-import com.kdroid.composenotification.builder.NotificationInitializer
+import com.kdroid.composenotification.builder.NotificationInitializer.notificationInitializer
 
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        NotificationInitializer.initialize(
-            context = this,
+
+        notificationInitializer(
             channelConfig = AndroidChannelConfig(
                 channelId = "Notification Example 1",
                 channelName = "Notification Example 1",
                 channelDescription = "Notification Example 1"
             )
         )
+
       setContent() {
           App()
       }
