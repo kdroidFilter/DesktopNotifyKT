@@ -16,9 +16,9 @@ object NotificationInitializer {
     var appContext: Context? = null
     private var channelConfiguration: AndroidChannelConfig = AndroidChannelConfig()
 
-    fun Context.notificationInitializer(channelConfig: AndroidChannelConfig) {
+    fun Context.notificationInitializer(defaultChannelConfig: AndroidChannelConfig) {
         appContext = this.applicationContext
-        channelConfiguration = channelConfig
+        channelConfiguration = defaultChannelConfig
     }
 
     fun getChannelConfig(): AndroidChannelConfig = channelConfiguration

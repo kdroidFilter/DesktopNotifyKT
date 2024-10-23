@@ -15,16 +15,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         notificationInitializer(
-            channelConfig = AndroidChannelConfig(
+            defaultChannelConfig = AndroidChannelConfig(
                 channelId = "Notification Example 1",
                 channelName = "Notification Example 1",
-                channelDescription = "Notification Example 1"
+                channelDescription = "Notification Example 1",
             )
         )
 
-      setContent() {
-          App()
-      }
+        setContent() {
+            App()
+        }
     }
 }
 
