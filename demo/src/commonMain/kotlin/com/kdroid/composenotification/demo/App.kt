@@ -82,7 +82,10 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
                 Notification(
                     title = "Notification from Screen 1",
                     largeImagePath = largeImagePath,
-                    message = "This is a test notification from Screen 1"
+                    message = "This is a test notification from Screen 1",
+                    onActivated = {    Log.d("NotificationLog", "Notification 1 activated") },
+                    onDismissed = { reason -> Log.d("NotificationLog", "Notification 1 dismissed: $reason")},
+                    onFailed = {Log.d("NotificationLog", "Notification 1 failed")}
                 ) {
                     Button("Show Message from Button 1") {
                         Log.d("NotificationLog", "Button 1 from Screen 1 clicked")
@@ -91,15 +94,6 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
                     Button("Hide Message from Button 2") {
                         Log.d("NotificationLog", "Button 2 from Screen 1 clicked")
                         onShowMessage(null)
-                    }
-                    onActivated {
-                        Log.d("NotificationLog", "Notification activated")
-                    }
-                    onDismissed { reason ->
-                        Log.d("NotificationLog", "Notification dismissed: $reason")
-                    }
-                    onFailed {
-                        Log.d("NotificationLog", "Notification failed")
                     }
                 }
             },
@@ -144,7 +138,10 @@ fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
                 Notification(
                     largeImagePath = largeImagePath,
                     title = "Notification from Screen 2",
-                    message = "This is a test notification from Screen 2"
+                    message = "This is a test notification from Screen 2",
+                    onActivated = {    Log.d("NotificationLog", "Notification activated") },
+                    onDismissed = { reason -> Log.d("NotificationLog", "Notification dismissed: $reason")},
+                    onFailed = {Log.d("NotificationLog", "Notification failed")}
                 ) {
                     Button("Show Message from Button 1") {
                         Log.d("NotificationLog", "Button 1 from Screen 2 clicked")
@@ -153,15 +150,6 @@ fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
                     Button("Hide Message from Button 2") {
                         Log.d("NotificationLog", "Button 2 from Screen 2 clicked")
                         onShowMessage(null)
-                    }
-                    onActivated {
-                        Log.d("NotificationLog", "Notification activated")
-                    }
-                    onDismissed { reason ->
-                        Log.d("NotificationLog", "Notification dismissed: $reason")
-                    }
-                    onFailed {
-                        Log.d("NotificationLog", "Notification failed")
                     }
                 }
             },

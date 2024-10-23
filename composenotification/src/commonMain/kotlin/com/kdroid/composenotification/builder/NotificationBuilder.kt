@@ -19,9 +19,12 @@ fun Notification(
     title: String = "",
     message: String = "",
     largeImagePath: Any? = null,
+    onActivated: (() -> Unit)? = null,
+    onDismissed: ((DismissalReason) -> Unit)? = null,
+    onFailed: (() -> Unit)? = null,
     builderAction: NotificationBuilder.() -> Unit = {}
 ) {
-    val builder = NotificationBuilder(title, message, largeImagePath)
+    val builder = NotificationBuilder(title, message, largeImagePath, onActivated, onDismissed, onFailed)
     builder.builderAction()
     builder.send()
 }
@@ -29,29 +32,19 @@ fun Notification(
 class NotificationBuilder(
     var title: String = "",
     var message: String = "",
-    var largeImagePath: Any?
+    var largeImagePath: Any?,
+    var onActivated: (() -> Unit)? = null,
+    var onDismissed: ((DismissalReason) -> Unit)? = null,
+    var onFailed: (() -> Unit)? = null,
 ) {
     internal val buttons = mutableListOf<Button>()
 
-    internal var onActivated: (() -> Unit)? = null
-    internal var onDismissed: ((DismissalReason) -> Unit)? = null
-    internal var onFailed: (() -> Unit)? = null
 
     fun Button(label: String, onClick: () -> Unit) {
         buttons.add(com.kdroid.composenotification.model.Button(label, onClick))
     }
 
-    fun onActivated(callback: () -> Unit) {
-        this.onActivated = callback
-    }
 
-    fun onDismissed(callback: (DismissalReason) -> Unit) {
-        this.onDismissed = callback
-    }
-
-    fun onFailed(callback: () -> Unit) {
-        this.onFailed = callback
-    }
 
     fun send() {
         val notificationProvider = getNotificationProvider()
