@@ -21,7 +21,7 @@ class LinuxNotificationProvider : NotificationProvider {
     override fun sendNotification(builder: NotificationBuilder) {
         coroutineScope = CoroutineScope(Dispatchers.IO).also { scope ->
             scope.launch {
-                val appIconPath = appConfig.appIconPath
+                val appIconPath = appConfig.iconIcoPath
                 Log.d("sendNotification", appConfig.appName)
                 val notification = lib.create_notification(
                     app_name = appConfig.appName,

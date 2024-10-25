@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.sp
 import com.kdroid.composenotification.builder.Notification
 import com.kdroid.kmplog.Log
 import com.kdroid.kmplog.d
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 
 @Composable
@@ -40,16 +39,6 @@ fun App() {
     }
 }
 
-fun convertJarPathToAbsolutePath(jarPath: String): String {
-    // Supprimer la partie 'jar:file:' et extraire le chemin avant '!'
-    val path = jarPath.removePrefix("jar:file:").substringBefore("!")
-    // Décoder les caractères encodés (%20 devient espace, etc.)
-    val decodedPath = path.replace("%20", " ")
-    return decodedPath
-}
-
-
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessage: (String?) -> Unit) {
     Column(
