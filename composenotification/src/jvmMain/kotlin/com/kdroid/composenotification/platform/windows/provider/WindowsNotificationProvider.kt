@@ -30,9 +30,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
+
 /**
- * Fournisseur de notifications spécifique à Windows.
- * Ce fournisseur utilise les notifications Toast natives de Windows pour afficher des messages.
+ * WindowsNotificationProvider is a concrete implementation of the NotificationProvider interface
+ * used for displaying notifications on Windows operating systems.
+ *
+ * This class utilizes the WinToast library to display notifications and implements various methods
+ * necessary to initialize and display these notifications.
  */
 internal class WindowsNotificationProvider : NotificationProvider {
 
@@ -49,7 +53,7 @@ internal class WindowsNotificationProvider : NotificationProvider {
             val instance = createWinToastInstance(wtlc) ?: return@launch
 
             try {
-                if (!configureWinToastInstance(wtlc, instance, builder)) return@launch
+                if (!configureWinToastInstance(wtlc, instance)) return@launch
 
                 val template = createNotificationTemplate(wtlc, builder) ?: return@launch
 
@@ -104,8 +108,7 @@ internal class WindowsNotificationProvider : NotificationProvider {
 
     private suspend fun configureWinToastInstance(
         wtlc: WinToastLibC,
-        instance: Pointer,
-        builder: NotificationBuilder
+        instance: Pointer
     ): Boolean {
         return withContext(Dispatchers.IO) {
             wtlc.WTLC_setAppName(instance, WString(appConfig.appName))
@@ -114,7 +117,7 @@ internal class WindowsNotificationProvider : NotificationProvider {
             val registeredAUMID = if (registerBasicAUMID(aumid, appConfig.appName, appConfig.appIconPath ?: "")) {
                 aumid
             } else {
-                Log.w("Notification", "Échec de l'enregistrement de l'AUMID. Utilisation du nom de l'application comme AUMID.")
+                Log.w("Notification", "Failed to register the AUMID. Using the application name as AUMID.")
                 appConfig.appName
             }
 
@@ -124,7 +127,7 @@ internal class WindowsNotificationProvider : NotificationProvider {
             val errorRef = IntByReference(0)
             if (!wtlc.WTLC_initialize(instance, errorRef)) {
                 val errorMsg = wtlc.WTLC_strerror(errorRef.value).toString()
-                Log.e("Notification", "Erreur d'initialisation : $errorMsg")
+                Log.e("Notification", "Initialization error: $errorMsg")
                 false
             } else {
                 true
@@ -145,7 +148,7 @@ internal class WindowsNotificationProvider : NotificationProvider {
 
             val template = wtlc.WTLC_Template_Create(templateType)
             if (template == null) {
-                Log.e("Notification", "Échec de la création du modèle de notification !")
+                Log.e("Notification", "Failed to create the notification template!")
                 return@withContext null
             }
 
@@ -167,7 +170,7 @@ internal class WindowsNotificationProvider : NotificationProvider {
 
                 template
             } catch (e: Exception) {
-                Log.e("Notification", "Erreur lors de la configuration du modèle : ${e.message}")
+                Log.e("Notification", "Error configuring the template: ${e.message}")
                 wtlc.WTLC_Template_Destroy(template)
                 null
             }
@@ -182,14 +185,14 @@ internal class WindowsNotificationProvider : NotificationProvider {
     ) {
         withContext(Dispatchers.IO) {
             if (instance == null || template == null) {
-                Log.e("Notification", "Instance ou template est null")
+                Log.e("Notification", "Instance or template is null")
                 return@withContext
             }
 
             val errorRef = IntByReference(0)
             val hEvent = Kernel32.INSTANCE.CreateEvent(null, true, false, null)
             if (hEvent == WinBase.INVALID_HANDLE_VALUE) {
-                Log.e("Notification", "Échec de la création de l'événement !")
+                Log.e("Notification", "Event creation failed!")
                 return@withContext
             }
 
@@ -208,19 +211,19 @@ internal class WindowsNotificationProvider : NotificationProvider {
                 )
 
                 if (showResult < 0) {
-                    val errorMsg = wtlc.WTLC_strerror(errorRef.value)?.toString() ?: "Erreur inconnue"
-                    Log.e("Notification", "Erreur lors de l'affichage du toast : $errorMsg")
+                    val errorMsg = wtlc.WTLC_strerror(errorRef.value).toString()
+                    Log.e("Notification", "Error displaying the toast: $errorMsg")
                     return@withContext
                 }
 
-                // Lancer la boucle de message seulement si le toast a été affiché avec succès
+                // Start the message loop only if the toast was displayed successfully
                 runMessageLoop(hEvent)
             } catch (e: Exception) {
-                Log.e("Notification", "Erreur inattendue : ${e.message}")
+                Log.e("Notification", "Unexpected error: ${e.message}")
             } finally {
-                // Toujours fermer le handle de l'événement, même en cas d'erreur
+                // Always close the event handle, even in case of error
                 if (!Kernel32.INSTANCE.CloseHandle(hEvent)) {
-                    Log.e("Notification", "Impossible de fermer le handle de l'événement !")
+                    Log.e("Notification", "Unable to close the event handle!")
                 }
             }
         }
@@ -242,7 +245,7 @@ internal class WindowsNotificationProvider : NotificationProvider {
             while (!isDone) {
                 val elapsedTime = Kernel32.INSTANCE.GetTickCount() - startTime
                 if (elapsedTime >= timeout) {
-                    Log.w("Notification", "Délai dépassé. Sortie de la boucle de messages.")
+                    Log.w("Notification", "Timeout. Exiting the message loop.")
                     break
                 }
 
@@ -261,20 +264,20 @@ internal class WindowsNotificationProvider : NotificationProvider {
                         isDone = true
                     }
                     WAIT_OBJECT_0 + 1 -> {
-                        // Messages dans la file d'attente
+                        // Messages in the queue
                         while (user32.PeekMessage(msg, null, 0, 0, PM_REMOVE)) {
                             user32.TranslateMessage(msg)
                             user32.DispatchMessage(msg)
                         }
                     }
                     WAIT_TIMEOUT -> {
-                        Log.w("Notification", "Délai d'attente dépassé. Sortie de la boucle de messages.")
+                        Log.w("Notification", "Timeout exceeded. Exiting the message loop.")
                         isDone = true
                     }
                     else -> {
                         // Erreur survenue
                         val error = Kernel32.INSTANCE.GetLastError()
-                        Log.e("Notification", "Échec de l'attente avec l'erreur $error. Sortie de la boucle de messages.")
+                        Log.e("Notification", "Failed to wait with error $error. Exiting the message loop.")
                         isDone = true
                     }
                 }
