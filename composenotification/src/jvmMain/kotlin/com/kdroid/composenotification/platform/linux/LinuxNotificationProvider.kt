@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 class LinuxNotificationProvider : NotificationProvider {
 
-    private val lib = LinuxNotificationLibrary.INSTANCE
+    private val lib = LinuxNativeNotificationIntegration.INSTANCE
     private var isMainLoopRunning = false
     private var coroutineScope: CoroutineScope? = null
     private val appConfig = NotificationInitializer.getAppConfig()
