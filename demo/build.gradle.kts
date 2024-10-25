@@ -1,6 +1,8 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
     alias(libs.plugins.multiplatform)
@@ -58,6 +60,24 @@ kotlin {
     jvm("desktop")
     jvmToolchain(17)
 
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        moduleName = "composeApp"
+        browser {
+            val projectDirPath = project.projectDir.path
+            commonWebpackConfig {
+                outputFileName = "composeApp.js"
+                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+                    static = (static ?: mutableListOf()).apply {
+                        // Serve sources to debug inside browser
+                        add(projectDirPath)
+                    }
+                }
+            }
+        }
+        binaries.executable()
+    }
+
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
@@ -66,28 +86,37 @@ kotlin {
     }
 
     sourceSets {
-        val desktopMain by getting
-        val androidMain by getting
-
-        commonMain.dependencies {
-            // Compose
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.desktop.currentOs)
-            implementation(libs.kmplog)
-            implementation(project(":composenotification"))
+        val commonMain by getting {
+            dependencies {
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.ui)
+                implementation(libs.kmplog)
+                implementation(project(":composenotification"))
+            }
         }
-        androidMain.dependencies {
-            implementation(libs.activity.ktx)
-            implementation(libs.androidx.appcompat)
-            implementation(libs.androidx.activity.compose)
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
+            }
         }
-
+        val androidMain by getting {
+            dependencies {
+                implementation(libs.activity.ktx)
+                implementation(libs.androidx.appcompat)
+                implementation(libs.androidx.activity.compose)
+            }
+        }
+        val wasmJsMain by getting {
+            dependencies {
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.ui)
+            }
+        }
     }
-}
-dependencies {
 
 }
 

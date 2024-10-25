@@ -14,8 +14,6 @@ import androidx.compose.ui.unit.sp
 import com.kdroid.composenotification.builder.Notification
 import com.kdroid.kmplog.Log
 import com.kdroid.kmplog.d
-import com.kdroid.kmplog.w
-import java.io.File
 
 @Composable
 fun App() {
@@ -40,19 +38,7 @@ fun App() {
     }
 }
 
-private const val RESOURCE_DIR = "src/jvmTest/resources/"
-private const val TAG = "ComposeNotification"
-val largeImagePath = getAbsolutePath("icon.png")
 
-private fun getAbsolutePath(relativePath: String): String? {
-    val file = File(RESOURCE_DIR, relativePath)
-    return if (file.exists()) {
-        file.absolutePath
-    } else {
-        Log.w(TAG, "Resource not found: ${file.path}.")
-        null
-    }
-}
 
 @Composable
 fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessage: (String?) -> Unit) {
@@ -81,7 +67,7 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
             onClick = {
                 Notification(
                     title = "Notification from Screen 1",
-                    largeImagePath = largeImagePath,
+                    largeImagePath = "",
                     message = "This is a test notification from Screen 1",
                     onActivated = { Log.d("NotificationLog", "Notification 1 activated") },
                     onDismissed = { reason -> Log.d("NotificationLog", "Notification 1 dismissed: $reason")},
@@ -136,7 +122,7 @@ fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
         Button(
             onClick = {
                 Notification(
-                    largeImagePath = largeImagePath,
+                    largeImagePath = "",
                     title = "Notification from Screen 2",
                     message = "This is a test notification from Screen 2",
                     onActivated = {    Log.d("NotificationLog", "Notification activated") },
