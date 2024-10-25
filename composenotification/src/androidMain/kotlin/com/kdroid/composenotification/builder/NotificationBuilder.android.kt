@@ -1,5 +1,6 @@
 package com.kdroid.composenotification.builder
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.core.app.NotificationManagerCompat
 
@@ -10,11 +11,11 @@ actual fun getNotificationProvider(): NotificationProvider {
 
 class AndroidNotificationProvider(private val context: Context) : NotificationProvider {
 
-    private val helper = NotificationManager(context)
+    private val manager = NotificationManager(context)
 
     override fun sendNotification(builder: NotificationBuilder) {
         // Utilise le NotificationBuilder pour configurer le titre, le message, les actions, etc.
-        helper.sendNotification(
+        manager.sendNotification(
             title = builder.title,
             message = builder.message,
             largeImagePath = builder.largeImagePath,
@@ -25,17 +26,11 @@ class AndroidNotificationProvider(private val context: Context) : NotificationPr
         )
     }
 
+    @SuppressLint("ServiceCast")
     override fun hasPermission(): Boolean {
         // Vérification des permissions de notification sur Android
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManagerCompat
         return manager.areNotificationsEnabled()
     }
 
-    override fun requestPermission(onGranted: () -> Unit, onDenied: () -> Unit) {
-        if (hasPermission()) {
-            onGranted()
-        } else {
-            onDenied()
-        }
-    }
 }

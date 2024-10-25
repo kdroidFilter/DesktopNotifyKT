@@ -21,5 +21,11 @@ interface NotificationProvider {
      * @param onGranted A callback that is invoked if the permission is granted.
      * @param onDenied A callback that is invoked if the permission is denied.
      */
-    fun requestPermission(onGranted: () -> Unit, onDenied: () -> Unit)
+    fun requestPermission(onGranted: () -> Unit, onDenied: () -> Unit) {
+        if (hasPermission()) {
+            onGranted()
+        } else {
+            onDenied()
+        }
+    }
 }

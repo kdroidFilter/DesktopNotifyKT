@@ -69,9 +69,6 @@ internal class WindowsNotificationProvider : NotificationProvider {
       return true
     }
 
-    override fun requestPermission(onGranted: () -> Unit, onDenied: () -> Unit) {
-    }
-
     private suspend fun initializeCOM(): Boolean {
         return withContext(Dispatchers.IO) {
             val hr = Ole32.INSTANCE.CoInitializeEx(Pointer.NULL, Ole32.COINIT_APARTMENTTHREADED)

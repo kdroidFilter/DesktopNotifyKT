@@ -90,10 +90,6 @@ class LinuxNotificationProvider : NotificationProvider {
         return true
     }
 
-    override fun requestPermission(onGranted: () -> Unit, onDenied: () -> Unit) {
-
-    }
-
     private fun startMainLoop() {
         if (!isMainLoopRunning) {
             Log.d("LinuxNotificationProvider", "Starting main loop...")

@@ -42,18 +42,9 @@ class JsNotificationProvider : NotificationProvider {
     }
 
     override fun hasPermission(): Boolean {
-        return Notification.permission == NotificationPermission.GRANTED
+        return permission == NotificationPermission.GRANTED
     }
 
-    override fun requestPermission(onGranted: () -> Unit, onDenied: () -> Unit) {
-        Notification.requestPermission().then { permission ->
-            if (permission == NotificationPermission.GRANTED) {
-                onGranted()
-            } else {
-                onDenied()
-            }
-        }
-    }
 }
 
 
