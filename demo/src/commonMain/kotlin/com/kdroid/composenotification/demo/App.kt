@@ -83,7 +83,7 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
                     title = "Notification from Screen 1",
                     largeImagePath = largeImagePath,
                     message = "This is a test notification from Screen 1",
-                    onActivated = {    Log.d("NotificationLog", "Notification 1 activated") },
+                    onActivated = { Log.d("NotificationLog", "Notification 1 activated") },
                     onDismissed = { reason -> Log.d("NotificationLog", "Notification 1 dismissed: $reason")},
                     onFailed = {Log.d("NotificationLog", "Notification 1 failed")}
                 ) {

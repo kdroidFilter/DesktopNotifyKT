@@ -22,4 +22,6 @@ internal interface ExtendedUser32 : User32 {
         dwMilliseconds: Int,
         dwWakeMask: Int
     ): Int
+
+
 }
