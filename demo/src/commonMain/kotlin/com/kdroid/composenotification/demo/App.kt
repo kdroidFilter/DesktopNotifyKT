@@ -98,6 +98,7 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessage: (String?) -> Unit) {
     Column(
@@ -124,7 +125,7 @@ fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
         Button(
             onClick = {
                 Notification(
-                    largeImagePath = "",
+                    largeImagePath = Res.getUri("drawable/compose.png"),
                     title = "Notification from Screen 2",
                     message = "This is a test notification from Screen 2",
                     onActivated = {    Log.d("NotificationLog", "Notification activated") },
