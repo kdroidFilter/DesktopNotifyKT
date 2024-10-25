@@ -3,6 +3,17 @@ package com.kdroid.composenotification.builder
 import com.kdroid.composenotification.model.Button
 import com.kdroid.composenotification.model.DismissalReason
 
+
+/**
+ * Marks the notifications API as experimental and subject to change in future releases.
+ *
+ */
+@RequiresOptIn(
+    level = RequiresOptIn.Level.WARNING,
+    message = "This notifications API is experimental and may change in the future."
+)
+annotation class ExperimentalNotificationsApi
+
 /**
  * Displays a notification with customizable settings. The notification can have an app name,
  * icon, title, message, and a large image. Additionally, various actions can be added to the
@@ -15,6 +26,7 @@ import com.kdroid.composenotification.model.DismissalReason
  * @param largeImagePath The file path to a large image to be displayed within the notification. Can be null.
  * @param builderAction A DSL block that customizes the notification options and actions.
  */
+@ExperimentalNotificationsApi
 fun Notification(
     title: String = "",
     message: String = "",

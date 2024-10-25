@@ -133,6 +133,7 @@ compose.desktop {
             packageVersion = "0.2.0"
             description = "Compose Native Notification Sample"
             copyright = "© 2024 KdroidFilter. All rights reserved."
+            appResourcesRootDir.set(project.layout.projectDirectory.dir("resources"))
         }
     }
 }
