@@ -12,6 +12,7 @@ import com.kdroid.composenotification.platform.windows.constants.*
 import com.kdroid.composenotification.platform.windows.nativeintegration.ExtendedUser32
 import com.kdroid.composenotification.platform.windows.nativeintegration.WinToastLibC
 import com.kdroid.composenotification.platform.windows.utils.registerBasicAUMID
+import com.kdroid.composenotification.utils.extractToTempIfDifferent
 import com.kdroid.kmplog.Log
 import com.kdroid.kmplog.e
 import com.kdroid.kmplog.w
@@ -157,9 +158,10 @@ internal class WindowsNotificationProvider : NotificationProvider {
                 wtlc.WTLC_Template_setTextField(template, WString(builder.message), WTLC_TextField_Constants.SecondLine)
 
                 val largeImagePath = builder.largeImagePath as String?
-                largeImagePath?.takeIf { File(it).exists() }?.let {
-                    wtlc.WTLC_Template_setImagePath(template, WString(it))
-                }
+                val absoluteLargeImagePath = (largeImagePath?.let { extractToTempIfDifferent(it) }?.absolutePath)
+
+                wtlc.WTLC_Template_setImagePath(template, WString(absoluteLargeImagePath))
+
 
                 builder.buttons.forEach { button ->
                     wtlc.WTLC_Template_addAction(template, WString(button.label))

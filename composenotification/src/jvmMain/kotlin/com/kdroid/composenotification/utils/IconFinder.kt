@@ -14,9 +14,12 @@ fun extractToTempIfDifferent(jarPath: String): File? {
     // Analyse le chemin pour obtenir le chemin du fichier et le chemin de l'entrée
     val correctedJarFilePath = URLDecoder.decode(jarPath.substringAfter("jar:file:").substringBefore("!"), Charsets.UTF_8.name())
 
+    // Encode les caractères spéciaux pour qu'ils soient compatibles avec URI
+    val encodedJarFilePath = correctedJarFilePath.replace(" ", "%20")
+
     // Conversion du chemin en format File via URI
     val jarFile = try {
-        File(URI(correctedJarFilePath))
+        File(URI(encodedJarFilePath))
     } catch (e: IllegalArgumentException) {
         File(correctedJarFilePath.removePrefix("file:"))
     }
@@ -30,6 +33,7 @@ fun extractToTempIfDifferent(jarPath: String): File? {
 
     // Journalisation pour vérifier les chemins
     println("Corrected jarFilePath: $correctedJarFilePath")
+    println("Encoded jarFilePath: $encodedJarFilePath")
     println("Entry path: $entryPath")
 
     // Si le fichier n'est pas un JAR, traiter différemment
