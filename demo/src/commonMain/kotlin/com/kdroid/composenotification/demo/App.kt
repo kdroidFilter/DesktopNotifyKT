@@ -12,8 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kdroid.composenotification.builder.Notification
+import com.kdroid.composenotification.demo.demo.generated.resources.Res
 import com.kdroid.kmplog.Log
 import com.kdroid.kmplog.d
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 
 @Composable
@@ -39,6 +41,7 @@ fun App() {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessage: (String?) -> Unit) {
     Column(
@@ -66,7 +69,7 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
             onClick = {
                 Notification(
                     title = "Notification from Screen 1",
-                    largeImagePath = ("compose.png"),
+                    largeImagePath = Res.getUri("drawable/kdroid.png"),
                     message = "This is a test notification from Screen 1",
                     onActivated = { Log.d("NotificationLog", "Notification 1 activated") },
                     onDismissed = { reason -> Log.d("NotificationLog", "Notification 1 dismissed: $reason")},

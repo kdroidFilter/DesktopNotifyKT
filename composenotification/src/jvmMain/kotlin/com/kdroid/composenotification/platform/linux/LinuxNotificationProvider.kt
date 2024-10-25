@@ -4,6 +4,7 @@ import com.kdroid.composenotification.builder.NotificationBuilder
 import com.kdroid.composenotification.builder.NotificationInitializer
 import com.kdroid.composenotification.builder.NotificationProvider
 import com.kdroid.composenotification.model.DismissalReason
+import com.kdroid.composenotification.utils.extractToTempIfDifferent
 import com.kdroid.kmplog.*
 import com.sun.jna.Pointer
 import kotlinx.coroutines.CoroutineScope
@@ -21,7 +22,7 @@ class LinuxNotificationProvider : NotificationProvider {
     override fun sendNotification(builder: NotificationBuilder) {
         coroutineScope = CoroutineScope(Dispatchers.IO).also { scope ->
             scope.launch {
-                val appIconPath = appConfig.iconIcoPath
+                val appIconPath = appConfig.iconPngPath
                 Log.d("sendNotification", appConfig.appName)
                 val notification = lib.create_notification(
                     app_name = appConfig.appName,
@@ -53,8 +54,8 @@ class LinuxNotificationProvider : NotificationProvider {
                 }
 
                 val largeImagePath = builder.largeImagePath as String?
-                val image = ClassLoader.getSystemResource(largeImagePath).path
-                image?.let {
+                val largeImageAbsolutePath = largeImagePath?.let { extractToTempIfDifferent(it) }?.absolutePath
+                largeImageAbsolutePath?.let {
                     val pixbufPointer = lib.load_pixbuf_from_file(it)
                     if (pixbufPointer != Pointer.NULL) {
                         lib.set_image_from_pixbuf(notification, pixbufPointer)

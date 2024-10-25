@@ -11,6 +11,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 fun main() = application {
     Window(onCloseRequest = ::exitApplication, title = "Compose Native Notification Demo") {
         NotificationInitializer.configure(
+
             AppConfig(
                 appName = "My awesome app",
                 iconIcoPath = Res.getUri("drawable/icon.ico"),
