@@ -1,5 +1,7 @@
 package com.kdroid.composenotification.platform.windows.utils
 
+import com.kdroid.kmplog.Log
+import com.kdroid.kmplog.e
 import com.sun.jna.platform.win32.Advapi32Util
 import com.sun.jna.platform.win32.WinReg
 
@@ -20,7 +22,7 @@ internal fun registerBasicAUMID(aumid: String, displayName: String, iconUri: Str
         }
         return true
     } catch (e: Exception) {
-        println("Exception in registerBasicAUMID: ${e.message}")
+        Log.e("registerBasicAUMID","Exception : ${e.message}")
         return false
     }
 }
