@@ -12,6 +12,7 @@ internal interface ExtendedUser32 : User32 {
             ExtendedUser32::class.java,
             W32APIOptions.DEFAULT_OPTIONS // Use default options
         )
+         
     }
 
     // Definition of MsgWaitForMultipleObjects

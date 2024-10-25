@@ -94,6 +94,8 @@ kotlin {
                 implementation(compose.ui)
                 implementation(libs.kmplog)
                 implementation(project(":composenotification"))
+                implementation(compose.components.resources)
+
             }
         }
         val desktopMain by getting {
