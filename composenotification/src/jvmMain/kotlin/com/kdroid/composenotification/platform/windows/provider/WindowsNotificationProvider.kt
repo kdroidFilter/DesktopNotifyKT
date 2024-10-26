@@ -75,7 +75,7 @@ internal class WindowsNotificationProvider : NotificationProvider {
     }
 
     override fun hasPermission(): Boolean {
-      return true
+        return true
     }
 
     private suspend fun initializeCOM(): Boolean {
@@ -161,10 +161,12 @@ internal class WindowsNotificationProvider : NotificationProvider {
                 wtlc.WTLC_Template_setTextField(template, WString(builder.title), WTLC_TextField_Constants.FirstLine)
                 wtlc.WTLC_Template_setTextField(template, WString(builder.message), WTLC_TextField_Constants.SecondLine)
 
-                val largeImagePath = builder.largeImagePath as String?
+                val largeImagePath = builder.largeImagePath
                 val absoluteLargeImagePath = (largeImagePath?.let { extractToTempIfDifferent(it) }?.absolutePath)
 
-                wtlc.WTLC_Template_setImagePath(template, WString(absoluteLargeImagePath))
+                largeImagePath?.let {
+                    wtlc.WTLC_Template_setImagePath(template, WString(absoluteLargeImagePath))
+                }
 
 
                 builder.buttons.forEach { button ->
@@ -236,7 +238,6 @@ internal class WindowsNotificationProvider : NotificationProvider {
     }
 
 
-
     private suspend fun runMessageLoop(hEvent: WinNT.HANDLE) {
         withContext(Dispatchers.IO) {
             val user32 = ExtendedUser32.INSTANCE
@@ -269,6 +270,7 @@ internal class WindowsNotificationProvider : NotificationProvider {
                         // Événement signalé
                         isDone = true
                     }
+
                     WAIT_OBJECT_0 + 1 -> {
                         // Messages in the queue
                         while (user32.PeekMessage(msg, null, 0, 0, PM_REMOVE)) {
@@ -276,10 +278,12 @@ internal class WindowsNotificationProvider : NotificationProvider {
                             user32.DispatchMessage(msg)
                         }
                     }
+
                     WAIT_TIMEOUT -> {
                         Log.w("Notification", "Timeout exceeded. Exiting the message loop.")
                         isDone = true
                     }
+
                     else -> {
                         // Erreur survenue
                         val error = Kernel32.INSTANCE.GetLastError()
