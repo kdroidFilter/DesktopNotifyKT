@@ -24,6 +24,8 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @Composable
 fun App() {
+    Log.setDevelopmentMode(true)
+
     val notificationProvider = getNotificationProvider()
 
     val hasPermission by notificationProvider.hasPermissionState

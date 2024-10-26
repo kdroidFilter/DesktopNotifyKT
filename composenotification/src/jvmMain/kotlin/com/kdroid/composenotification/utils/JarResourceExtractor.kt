@@ -1,5 +1,7 @@
 package com.kdroid.composenotification.utils
 
+import com.kdroid.kmplog.Log
+import com.kdroid.kmplog.d
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
@@ -10,66 +12,68 @@ import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
 import java.util.jar.JarFile
 
+
 fun extractToTempIfDifferent(jarPath: String): File? {
-    // Analyse le chemin pour obtenir le chemin du fichier et le chemin de l'entrée
+    // Analyze the path to get the file path and the entry path
     val correctedJarFilePath = URLDecoder.decode(jarPath.substringAfter("jar:file:").substringBefore("!"), Charsets.UTF_8.name())
 
-    // Encode les caractères spéciaux pour qu'ils soient compatibles avec URI
+    // Encode special characters to be URI compatible
     val encodedJarFilePath = correctedJarFilePath.replace(" ", "%20")
 
-    // Conversion du chemin en format File via URI
+    // Convert the path to File via URI
     val jarFile = try {
         File(URI(encodedJarFilePath))
     } catch (e: IllegalArgumentException) {
         File(correctedJarFilePath.removePrefix("file:"))
     }
 
-    // Vérification de l'existence du fichier
+    // Check if the file exists
     if (!jarFile.exists()) {
-        throw FileNotFoundException("Le fichier n'existe pas : $correctedJarFilePath")
+        throw FileNotFoundException("File does not exist: $correctedJarFilePath")
     }
 
     val entryPath = jarPath.substringAfter("!").trimStart('/')
 
-    // Journalisation pour vérifier les chemins
-    println("Corrected jarFilePath: $correctedJarFilePath")
-    println("Encoded jarFilePath: $encodedJarFilePath")
-    println("Entry path: $entryPath")
+    // Logging to verify paths
+        Log.d("extractToTempIfDifferent", "Corrected jarFilePath: $correctedJarFilePath")
+        Log.d("extractToTempIfDifferent", "Encoded jarFilePath: $encodedJarFilePath")
+        Log.d("extractToTempIfDifferent", "Entry path: $entryPath")
 
-    // Si le fichier n'est pas un JAR, traiter différemment
+
+    // If the file is not a JAR, handle it differently
     if (!correctedJarFilePath.endsWith(".jar")) {
-        println("Le fichier n'est pas un JAR. Copie directe.")
+            Log.d("extractToTempIfDifferent", "The file is not a JAR. Direct copy.")
         val tempFile = createTempFile("extracted_", ".tmp", File(System.getProperty("java.io.tmpdir"))).apply {
             deleteOnExit()
         }
 
-        // Copie le fichier directement si ce n'est pas un JAR
+        // Copy the file directly if it is not a JAR
         Files.copy(jarFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
         return tempFile
     }
 
-    // Ouvre le JAR à partir du chemin absolu
+    // Open the JAR from the absolute path
     JarFile(jarFile).use { jar ->
         val entry = jar.getJarEntry(entryPath) ?: return null
 
-        // Crée un fichier temporaire pour stocker la ressource extraite
+        // Create a temporary file to store the extracted resource
         val tempFile = createTempFile("extracted_", ".tmp", File(System.getProperty("java.io.tmpdir"))).apply {
             deleteOnExit()
         }
 
-        // Vérifie si le fichier temporaire existe déjà et compare le hash
+        // Check if the temporary file already exists and compare the hash
         if (tempFile.exists()) {
             val tempFileHash = tempFile.sha256()
             jar.getInputStream(entry).use { input ->
                 val jarEntryHash = input.sha256()
-                // Si le hash est identique, pas besoin de le copier à nouveau
+                // If the hash is identical, no need to copy again
                 if (tempFileHash == jarEntryHash) {
                     return tempFile
                 }
             }
         }
 
-        // Copie le contenu de l'entrée JAR dans le fichier temporaire
+        // Copy the content of the JAR entry to the temporary file
         jar.getInputStream(entry).use { input ->
             Files.copy(input, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
         }
@@ -79,10 +83,10 @@ fun extractToTempIfDifferent(jarPath: String): File? {
 }
 
 
-// Extension pour calculer le SHA-256 d'un fichier
+// Extension to calculate SHA-256 of a file
 fun File.sha256(): String = inputStream().use { it.sha256() }
 
-// Extension pour calculer le SHA-256 d'un InputStream
+// Extension to calculate SHA-256 of an InputStream
 fun InputStream.sha256(): String {
     val digest = MessageDigest.getInstance("SHA-256")
     val buffer = ByteArray(1024)
