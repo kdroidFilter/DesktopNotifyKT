@@ -134,10 +134,12 @@ internal class NotificationManager(private val context: Context) {
      */
     private fun showNotification(builder: NotificationCompat.Builder, onFailed: (() -> Unit)?) {
         with(NotificationManagerCompat.from(context)) {
-            try {
-                notify(1, builder.build())
-            } catch (e: Exception) {
-                onFailed?.invoke()
+            if (areNotificationsEnabled()) {
+                try {
+                    notify(1, builder.build())
+                } catch (e: SecurityException) {
+                    onFailed?.invoke()
+                }
             }
         }
     }

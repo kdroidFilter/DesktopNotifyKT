@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.android.library)
     alias(libs.plugins.vannitktech.maven.publish)
-    id("convention.publication")
 }
 
 group = "com.kdroid.composenotification"
@@ -82,7 +81,7 @@ android {
 mavenPublishing {
     coordinates(
         groupId = "io.github.kdroidfilter",
-        artifactId = "compose-notification",
+        artifactId = "composenotification",
         version = version.toString()
     )
 
@@ -91,7 +90,7 @@ mavenPublishing {
         name.set("Compose Native Notification")
         description.set("Compose Native Notification is a Kotlin library for sending native notifications across different operating systems. It provides a simple, unified interface for sending notifications on Linux, Windows, and macOS.")
         inceptionYear.set("2024")
-        url.set("https://github.com/kdroidFilter/KNotify")
+        url.set("https://github.com/kdroidFilter/ComposeNativeNotification")
 
         licenses {
             license {
@@ -111,7 +110,7 @@ mavenPublishing {
 
         // Specify SCM information
         scm {
-            url.set("https://github.com/kdroidFilter/KNotify")
+            url.set("https://github.com/kdroidFilter/ComposeNativeNotification")
         }
     }
 
@@ -125,6 +124,4 @@ mavenPublishing {
 
 
 task("testClasses") {}
-dependencies {
 
-}

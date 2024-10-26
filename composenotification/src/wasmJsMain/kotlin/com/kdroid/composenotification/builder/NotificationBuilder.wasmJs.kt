@@ -1,5 +1,6 @@
 package com.kdroid.composenotification.builder
 
+import androidx.compose.runtime.State
 import org.w3c.notifications.GRANTED
 import org.w3c.notifications.Notification
 import org.w3c.notifications.NotificationPermission
@@ -8,6 +9,9 @@ import org.w3c.notifications.NotificationPermission
 actual fun getNotificationProvider(): NotificationProvider = WasmJsNotificationProvider()
 
 class WasmJsNotificationProvider : NotificationProvider {
+    override val hasPermissionState: State<Boolean>
+        get() = TODO("Not yet implemented")
+
     override fun sendNotification(builder: NotificationBuilder) {
        TODO()
     }
