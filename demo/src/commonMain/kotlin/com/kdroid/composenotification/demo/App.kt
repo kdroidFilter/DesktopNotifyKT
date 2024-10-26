@@ -11,9 +11,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kdroid.composenotification.builder.Notification
+import com.kdroid.composenotification.builder.getNotificationProvider
 import com.kdroid.composenotification.demo.demo.generated.resources.Res
 import com.kdroid.kmplog.Log
 import com.kdroid.kmplog.d
@@ -22,26 +24,61 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @Composable
 fun App() {
+    val notificationProvider = getNotificationProvider()
+
+    val hasPermission by notificationProvider.hasPermissionState
     var currentScreen by remember { mutableStateOf(Screen.Screen1) }
     var notificationMessage by remember { mutableStateOf<String?>(null) }
+    var permissionDenied by remember { mutableStateOf(false) }
 
     MaterialTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            when (currentScreen) {
-                Screen.Screen1 -> ScreenOne(
-                    onNavigate = { currentScreen = Screen.Screen2 },
-                    notificationMessage = notificationMessage,
-                    onShowMessage = { message -> notificationMessage = message }
-                )
-                Screen.Screen2 -> ScreenTwo(
-                    onNavigate = { currentScreen = Screen.Screen1 },
-                    notificationMessage = notificationMessage,
-                    onShowMessage = { message -> notificationMessage = message }
-                )
+            if (hasPermission) {
+                when (currentScreen) {
+                    Screen.Screen1 -> ScreenOne(
+                        onNavigate = { currentScreen = Screen.Screen2 },
+                        notificationMessage = notificationMessage,
+                        onShowMessage = { message -> notificationMessage = message }
+                    )
+
+                    Screen.Screen2 -> ScreenTwo(
+                        onNavigate = { currentScreen = Screen.Screen1 },
+                        notificationMessage = notificationMessage,
+                        onShowMessage = { message -> notificationMessage = message }
+                    )
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if (permissionDenied) {
+                        Text("Permission denied. Please enable notifications in settings.", color = Color.Red)
+                    }
+                    Button(
+                        onClick = {
+                            notificationProvider.requestPermission(
+                                onGranted = {
+                                    notificationProvider.updatePermissionState(true)
+                                },
+                                onDenied = {
+                                    notificationProvider.updatePermissionState(false)
+                                    permissionDenied = true
+                                }
+                            )
+                        }
+                    ) {
+                        Text("Grant permission to show notifications")
+                    }
+                }
             }
         }
     }
 }
+
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable

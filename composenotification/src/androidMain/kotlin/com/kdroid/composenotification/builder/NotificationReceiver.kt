@@ -22,6 +22,13 @@ class NotificationReceiver : BroadcastReceiver() {
                 val notificationId = 1 // Utilisez l'ID de la notification que vous avez utilisé dans `NotificationHelper`
                 NotificationManagerCompat.from(context).cancel(notificationId)
             }
+            ACTION_NOTIFICATION_CLICKED -> {
+                NotificationActionStore.onNotificationActivated?.invoke()
+
+                // Annuler la notification après le clic sur le bouton
+                val notificationId = 1 // Utilisez l'ID de la notification que vous avez utilisé dans `NotificationHelper`
+                NotificationManagerCompat.from(context).cancel(notificationId)
+            }
             else -> {
                 Toast.makeText(context, "Action inconnue", Toast.LENGTH_SHORT).show()
             }
@@ -30,11 +37,15 @@ class NotificationReceiver : BroadcastReceiver() {
 
     companion object {
         const val ACTION_BUTTON_CLICKED = "com.kdroid.ACTION_BUTTON_CLICKED"
+        const val ACTION_NOTIFICATION_CLICKED = "com.kdroid.ACTION_NOTIFICATION_CLICKED"
         const val EXTRA_BUTTON_ID = "extra_button_id"
     }
 }
 
+
 object NotificationActionStore {
+    var onNotificationActivated: (() -> Unit)? = null
+
     private val actionMap = mutableMapOf<Int, () -> Unit>()
 
     fun addAction(buttonId: Int, action: () -> Unit) {

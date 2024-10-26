@@ -1,7 +1,9 @@
 package com.kdroid.composenotification.builder
 
+import android.app.Activity
 import android.app.NotificationManager
 import android.content.Context
+import java.lang.ref.WeakReference
 
 
 data class AndroidChannelConfig(
@@ -13,11 +15,13 @@ data class AndroidChannelConfig(
 )
 
 object NotificationInitializer {
+    var activityReference: WeakReference<Activity>? = null
     var appContext: Context? = null
     private var channelConfiguration: AndroidChannelConfig = AndroidChannelConfig()
 
     fun Context.notificationInitializer(defaultChannelConfig: AndroidChannelConfig) {
         appContext = this.applicationContext
+        activityReference = WeakReference(this as Activity)
         channelConfiguration = defaultChannelConfig
     }
 

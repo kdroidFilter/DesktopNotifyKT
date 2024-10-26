@@ -39,6 +39,8 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.kmplog)
+            implementation(libs.runtime)
+
         }
 
         commonTest.dependencies {
@@ -47,8 +49,8 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.core)
-            implementation(libs.androidx.appcompat)
             implementation(libs.kotlinx.coroutines.android)
+            implementation(libs.androidx.lifecycle.process)
         }
 
         jvmMain.dependencies {

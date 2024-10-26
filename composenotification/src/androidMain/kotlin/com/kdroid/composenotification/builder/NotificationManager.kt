@@ -49,6 +49,19 @@ class NotificationManager(private val context: Context) {
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
+        // Stocker la fonction onActivated
+        NotificationActionStore.onNotificationActivated = onActivated
+
+        // Ajouter un PendingIntent pour le clic de la notification
+        val clickIntent = Intent(context, NotificationReceiver::class.java).apply {
+            action = NotificationReceiver.ACTION_NOTIFICATION_CLICKED
+        }
+        val clickPendingIntent = PendingIntent.getBroadcast(
+            context, 0, clickIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        builder.setContentIntent(clickPendingIntent)
+
         largeImagePath?.let {
             val cleanedPath = it.replace("file:///android_asset/", "")
             try {
@@ -80,11 +93,11 @@ class NotificationManager(private val context: Context) {
         with(NotificationManagerCompat.from(context)) {
             try {
                 notify(1, builder.build())
-                onActivated?.invoke()
             } catch (e: Exception) {
                 onFailed?.invoke()
             }
         }
     }
+
 
 }

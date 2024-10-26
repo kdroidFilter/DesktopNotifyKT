@@ -6,6 +6,7 @@ agp = "8.2.2"
 kotlinx-coroutines = "1.9.0"
 kmplog = "0.1.0"
 compose-plugin = "1.7.0"
+runtime = "1.7.0"
 vanniktech = "0.30.0"
 core = "1.13.1"
 android-compileSdk = "34"
@@ -13,6 +14,9 @@ android-minSdk = "24"
 android-targetSdk = "34"
 activityKtx = "1.9.3"
 appcompat = "1.7.0"
+runtimeAndroid = "1.7.4"
+lifecycleProcess = "2.8.6"
+runtimeDesktop = "1.7.0"
 
 [libraries]
 
@@ -27,6 +31,10 @@ core = { group = "androidx.core", name = "core", version.ref = "core" }
 activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityKtx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-runtime-android = { group = "androidx.compose.runtime", name = "runtime-android", version.ref = "runtimeAndroid" }
+androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleProcess" }
+androidx-runtime-desktop = { group = "androidx.compose.runtime", name = "runtime-desktop", version.ref = "runtimeDesktop" }
+runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "runtime" }
 
 [plugins]
 

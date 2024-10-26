@@ -1,5 +1,7 @@
 package com.kdroid.composenotification.platform.linux
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import com.kdroid.composenotification.builder.NotificationBuilder
 import com.kdroid.composenotification.builder.NotificationInitializer
 import com.kdroid.composenotification.builder.NotificationProvider
@@ -13,6 +15,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 class LinuxNotificationProvider : NotificationProvider {
+    private val _hasPermissionState = mutableStateOf(hasPermission())
+    override val hasPermissionState: State<Boolean> get() = _hasPermissionState
 
     private val lib = LinuxNativeNotificationIntegration.INSTANCE
     private var isMainLoopRunning = false
