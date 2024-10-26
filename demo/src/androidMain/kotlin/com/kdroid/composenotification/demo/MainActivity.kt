@@ -1,5 +1,6 @@
 package com.kdroid.composenotification.demo
 
+import android.app.NotificationManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,6 +19,8 @@ class MainActivity : ComponentActivity() {
                 channelId = "Notification Example 1",
                 channelName = "Notification Example 1",
                 channelDescription = "Notification Example 1",
+                channelImportance = NotificationManager.IMPORTANCE_DEFAULT,
+                smallIcon = android.R.drawable.ic_notification_overlay
             )
         )
 

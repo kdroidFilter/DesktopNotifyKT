@@ -14,7 +14,7 @@ import com.kdroid.composenotification.model.Button
 import com.kdroid.composenotification.model.DismissalReason
 import java.io.IOException
 
-class NotificationManager(private val context: Context) {
+internal class NotificationManager(private val context: Context) {
 
     private val config = NotificationInitializer.getChannelConfig()
 
