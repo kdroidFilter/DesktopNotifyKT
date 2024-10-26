@@ -30,7 +30,7 @@ annotation class ExperimentalNotificationsApi
 fun Notification(
     title: String = "",
     message: String = "",
-    largeImagePath: Any? = null,
+    largeImagePath: String? = null,
     onActivated: (() -> Unit)? = null,
     onDismissed: ((DismissalReason) -> Unit)? = null,
     onFailed: (() -> Unit)? = null,
@@ -44,7 +44,7 @@ fun Notification(
 class NotificationBuilder(
     var title: String = "",
     var message: String = "",
-    var largeImagePath: Any?,
+    var largeImagePath: String?,
     var onActivated: (() -> Unit)? = null,
     var onDismissed: ((DismissalReason) -> Unit)? = null,
     var onFailed: (() -> Unit)? = null,

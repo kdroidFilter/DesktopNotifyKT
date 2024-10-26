@@ -5,11 +5,14 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
+import android.graphics.drawable.Icon
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.kdroid.composenotification.model.Button
 import com.kdroid.composenotification.model.DismissalReason
+import java.io.IOException
 
 class NotificationManager(private val context: Context) {
 
@@ -30,10 +33,11 @@ class NotificationManager(private val context: Context) {
         }
     }
 
+
     fun sendNotification(
         title: String,
         message: String,
-        largeImagePath: Any?,
+        largeImagePath: String?,
         buttons: List<Button>,
         onActivated: (() -> Unit)?,
         onDismissed: ((DismissalReason) -> Unit)?,
@@ -44,6 +48,21 @@ class NotificationManager(private val context: Context) {
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        largeImagePath?.let {
+            val cleanedPath = it.replace("file:///android_asset/", "")
+            try {
+                val inputStream = context.assets.open(cleanedPath)
+                val bitmap = BitmapFactory.decodeStream(inputStream)
+
+                builder.setStyle(
+                    NotificationCompat.BigPictureStyle()
+                        .bigLargeIcon(Icon.createWithBitmap(bitmap))
+                )
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
 
         buttons.forEachIndexed { index, button ->
             val intent = Intent(context, NotificationReceiver::class.java).apply {
@@ -67,4 +86,5 @@ class NotificationManager(private val context: Context) {
             }
         }
     }
+
 }

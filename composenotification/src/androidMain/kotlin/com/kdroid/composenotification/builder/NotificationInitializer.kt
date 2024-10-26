@@ -23,7 +23,4 @@ object NotificationInitializer {
 
     fun getChannelConfig(): AndroidChannelConfig = channelConfiguration
 
-    fun getNotificationManager(): NotificationManager? {
-        return appContext?.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-    }
 }

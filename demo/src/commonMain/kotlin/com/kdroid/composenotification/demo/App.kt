@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package com.kdroid.composenotification.demo
 
 import androidx.compose.foundation.layout.*
@@ -98,7 +100,6 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessage: (String?) -> Unit) {
     Column(
@@ -122,6 +123,8 @@ fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
             Text("Go back to Screen 1")
         }
         Spacer(modifier = Modifier.height(16.dp))
+
+
         Button(
             onClick = {
                 Notification(
