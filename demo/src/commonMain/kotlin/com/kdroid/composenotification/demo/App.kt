@@ -108,8 +108,8 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
             onClick = {
                 Notification(
                     title = "Notification from Screen 1",
-                    largeImagePath = Res.getUri("drawable/kdroid.png"),
                     message = "This is a test notification from Screen 1",
+                    largeImage = Res.getUri("drawable/kdroid.png"),
                     onActivated = { Log.d("NotificationLog", "Notification 1 activated") },
                     onDismissed = { reason -> Log.d("NotificationLog", "Notification 1 dismissed: $reason")},
                     onFailed = {Log.d("NotificationLog", "Notification 1 failed")}
@@ -165,7 +165,7 @@ fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
         Button(
             onClick = {
                 Notification(
-                    largeImagePath = Res.getUri("drawable/compose.png"),
+                    largeImage = Res.getUri("drawable/compose.png"),
                     title = "Notification from Screen 2",
                     message = "This is a test notification from Screen 2",
                     onActivated = {    Log.d("NotificationLog", "Notification activated") },

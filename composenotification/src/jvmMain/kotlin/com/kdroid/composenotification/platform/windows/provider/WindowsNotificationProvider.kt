@@ -119,7 +119,7 @@ internal class WindowsNotificationProvider : NotificationProvider {
             wtlc.WTLC_setAppName(instance, WString(appConfig.appName))
 
             val aumid = "${appConfig.appName.replace(" ", "")}Toast"
-            val registeredAUMID = if (registerBasicAUMID(aumid, appConfig.appName, appConfig.iconIcoPath ?: "")) {
+            val registeredAUMID = if (registerBasicAUMID(aumid, appConfig.appName, appConfig.smallIcon ?: "")) {
                 aumid
             } else {
                 Log.w("Notification", "Failed to register the AUMID. Using the application name as AUMID.")

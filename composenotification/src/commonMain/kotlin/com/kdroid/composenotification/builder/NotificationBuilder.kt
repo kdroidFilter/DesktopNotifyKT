@@ -23,20 +23,20 @@ annotation class ExperimentalNotificationsApi
  * @param appIconPath The file path to the application's icon. Can be null.
  * @param title The title of the notification. Defaults to an empty string.
  * @param message The message of the notification. Defaults to an empty string.
- * @param largeImagePath The file path to a large image to be displayed within the notification. Can be null.
+ * @param largeImage The file path to a large image to be displayed within the notification. Can be null.
  * @param builderAction A DSL block that customizes the notification options and actions.
  */
 @ExperimentalNotificationsApi
 fun Notification(
     title: String = "",
     message: String = "",
-    largeImagePath: String? = null,
+    largeImage: String? = null,
     onActivated: (() -> Unit)? = null,
     onDismissed: ((DismissalReason) -> Unit)? = null,
     onFailed: (() -> Unit)? = null,
     builderAction: NotificationBuilder.() -> Unit = {}
 ) {
-    val builder = NotificationBuilder(title, message, largeImagePath, onActivated, onDismissed, onFailed)
+    val builder = NotificationBuilder(title, message, largeImage, onActivated, onDismissed, onFailed)
     builder.builderAction()
     builder.send()
 }
