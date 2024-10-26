@@ -1,4 +1,4 @@
-rootProject.name = "Compose-Native-Notification"
+rootProject.name = "ComposeNativeNotification"
 
 pluginManagement {
     repositories {
