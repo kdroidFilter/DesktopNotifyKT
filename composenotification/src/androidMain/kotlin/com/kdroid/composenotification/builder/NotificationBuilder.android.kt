@@ -54,7 +54,7 @@ class AndroidNotificationProvider(private val context: Context, private val acti
         NotificationManager(context).sendNotification(
             title = builder.title,
             message = builder.message,
-            largeImagePath = builder.largeImagePath,
+            largeImage = builder.largeImagePath,
             buttons = builder.buttons,
             onActivated = builder.onActivated,
             onDismissed = builder.onDismissed,

@@ -13,7 +13,7 @@ fun main() = application {
         NotificationInitializer.configure(
             AppConfig(
                 appName = "My awesome app",
-                smallIcon = Res.getUri("drawable/icon.png"),
+                smallIcon = Res.getUri("drawable/kdroid.png"),
             )
         )
         App()

@@ -10,7 +10,6 @@ import com.kdroid.composenotification.builder.NotificationInitializer.notificati
 
 
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

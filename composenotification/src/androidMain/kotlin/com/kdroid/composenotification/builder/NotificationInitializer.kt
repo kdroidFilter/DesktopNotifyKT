@@ -11,7 +11,7 @@ data class AndroidChannelConfig(
     val channelName: String = "Default",
     val channelDescription: String = "Default channel",
     val channelImportance: Int = NotificationManager.IMPORTANCE_DEFAULT,
-    val smallIcon : Int = android.R.drawable.ic_dialog_info
+    val smallIcon : Int = android.R.drawable.ic_notification_overlay
 )
 
 object NotificationInitializer {
