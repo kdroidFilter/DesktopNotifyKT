@@ -1,0 +1,3 @@
+[submodule "composenotification/src/jvmMain/c/WintoastLibC"]
+	path = composenotification/src/jvmMain/c/WintoastLibC
+	url = https://github.com/kdroidFilter/WinToastLibC
