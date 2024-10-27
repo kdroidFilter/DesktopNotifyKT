@@ -81,14 +81,14 @@ android {
 mavenPublishing {
     coordinates(
         groupId = "io.github.kdroidfilter",
-        artifactId = "composenotification",
+        artifactId = "compose-native-notification",
         version = version.toString()
     )
 
     // Configure POM metadata for the published artifact
     pom {
         name.set("Compose Native Notification")
-        description.set("Compose Native Notification is a Kotlin library for sending native notifications across different operating systems. It provides a simple, unified interface for sending notifications on Linux, Windows, and macOS.")
+        description.set("The Compose Native Notification library is a Kotlin Multiplatform library designed to work with Compose Multiplatform that enables developers to add notifications to their applications in a unified way across different platforms, including Windows, Linux, Android, and macOS. The main goal of this library is to provide a declarative way to send notifications on Android while removing all boilerplate code, and to enable sending native notifications on other platforms. The library provides seamless integration with Jetpack Compose, allowing notifications to be handled consistently within Compose-based applications.")
         inceptionYear.set("2024")
         url.set("https://github.com/kdroidFilter/ComposeNativeNotification")
 
