@@ -128,6 +128,9 @@ This code helps ensure that your app properly manages permissions, updating the 
 ### Gnome (Linux)
 ![Gnome](/screenshots/Gnome.png)
 
+### KDE (Linux)
+![KDE](/screenshots/KDE.png)
+
 ## Additional Usage Example
 
 Here's another example that shows how to handle permission requests and send a notification:
