@@ -185,7 +185,7 @@ The Compose Notification Library is distributed under the [MIT License](LICENSE)
 
 ## 🤝 Contributing
 
-If you would like to contribute, feel free to submit issues or pull requests on the [GitHub repository](https://github.com/kdroidFilter/SecondTempleTimerLibrary).
+If you would like to contribute, feel free to submit issues or pull requests on the [GitHub repository](https://github.com/kdroidFilter/ComposeNativeNotification).
 
 ## 🛠️ Troubleshooting
 
