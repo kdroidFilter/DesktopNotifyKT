@@ -1,6 +1,6 @@
 # Compose Native Notification
 
-## Overview
+## 🚀 Overview
 
 ⚠️ **Warning**: This library is highly experimental, and bugs may occur. The API is subject to change.
 
@@ -12,21 +12,21 @@ The Compose Native Notification library is a Kotlin Multiplatform library design
 
 This guide explains how to use the library in your KMP project.
 
-## Installation
+## 📦 Installation
 
 To use this library, add the following dependency to your KMP project:
 
 ```kotlin
-implementation("com.kdroid:compose-native-notification:latest-version")
+implementation("io.github.kdroidfilter:compose-native-notification:0.2.0")
 ```
 
 Make sure to replace `latest-version` with the version you want to use.
 
-## Setup
+## ⚙️ Setup
 
 The setup is platform-specific and involves initializing the notification settings for each platform where your app will run.
 
-### Android Setup
+### 🤖 Android Setup
 
 For Android, you need to initialize the notification channel in a context receiver:
 
@@ -42,7 +42,7 @@ notificationInitializer(
 )
 ```
 
-### JVM Setup (Linux, Windows)
+### 🖥️ JVM Setup (Linux, Windows)
 
 For JVM-based environments like Linux and Windows, the notification initialization can be done in the `main` function:
 
@@ -55,7 +55,7 @@ NotificationInitializer.configure(
 )
 ```
 
-## Usage Example
+## ✨ Usage Example
 
 The library uses a Kotlin DSL to define notifications in a declarative way, without the usual boilerplate code. Here is an example of how you can create and send a notification:
 
@@ -81,7 +81,7 @@ Notification(
 
 With this DSL approach, you can create rich and interactive notifications while keeping the code clean and readable. The library handles all the necessary details, allowing you to focus on your app's core logic.
 
-### Permission Handling Example
+### 🔑 Permission Handling Example
 
 Here's an example of how to handle notification permissions within your application:
 
@@ -102,13 +102,13 @@ notificationProvider.requestPermission(
 
 This code helps ensure that your app properly manages permissions, updating the notification state as permissions are granted or denied.
 
-## Platform-Specific Considerations
+## 🌍 Platform-Specific Considerations
 
 - **Android**: Notifications require proper permission setup. You need to request permissions at runtime, as shown in the example.
 - **Linux & Windows**: Full support, including callbacks such as `onActivated`, `onDismissed`, and `onFailed`.
 - **macOS**: Notifications can be sent, but callbacks (`onDismissed`, `onActivated`) are not supported yet.
 
-## Features
+## ⭐ Features
 
 - **Rich Interactive Notifications**: Use a Kotlin DSL to create rich notifications with multiple actions, images, and buttons.
 - **Callbacks for User Interaction**: Handle user actions such as `onActivated`, `onDismissed`, and `onFailed` to add interactivity to your notifications.
@@ -117,7 +117,7 @@ This code helps ensure that your app properly manages permissions, updating the 
 - **Permission Request Handling**: Manage notification permissions seamlessly using `hasPermissionState` and `requestPermission` to ensure smooth user interaction. Note: Permission handling is currently necessary only for Android.
 - **Cross-Platform Compatibility**: Seamless integration across Android, Linux, Windows, and macOS with platform-specific considerations.
 
-## Screenshots
+## 📸 Screenshots
 
 ### Android
 ![Android](/screenshots/Android.png)
@@ -131,7 +131,7 @@ This code helps ensure that your app properly manages permissions, updating the 
 ### KDE (Linux)
 ![KDE](/screenshots/KDE.png)
 
-## Additional Usage Example
+## ➕ Additional Usage Example
 
 Here's another example that shows how to handle permission requests and send a notification:
 
@@ -167,7 +167,7 @@ if (hasPermission) {
 
 This example illustrates how to first check for notification permission, and if granted, send a notification with a custom action button.
 
-## Roadmap
+## 🛤️ Roadmap
 
 - **Native iOS and macOS Support**: Integrate native support for iOS and macOS to extend full functionality across Apple platforms.
 
@@ -179,20 +179,20 @@ This example illustrates how to first check for notification permission, and if 
 
 - **Input Support for Notifications**: Add support for notifications with input fields, allowing users to respond directly within the notification.
 
-## License
+## 📜 License
 
 The Compose Notification Library is distributed under the [MIT License](LICENSE).
 
-## Contributing
+## 🤝 Contributing
 
 If you would like to contribute, feel free to submit issues or pull requests on the [GitHub repository](https://github.com/kdroidFilter/SecondTempleTimerLibrary).
 
-## Troubleshooting
+## 🛠️ Troubleshooting
 
 - **Android `onDismissed` callback**: This callback is not functional on Android. You can handle dismissal through other application state monitoring if needed.
 - **macOS Callbacks**: macOS does not support interactive callbacks for notifications. Only basic notifications are available.
 
-## Under the Hood
+## 🧰 Under the Hood
 
 - **Linux**: Uses `libnotify` for handling notifications.
 - **Windows**: Utilizes [WinToast](https://github.com/mohabouje/WinToast) and [WinToastLibC](https://github.com/AlienCowEatCake/WinToastLibC) for managing notifications.
