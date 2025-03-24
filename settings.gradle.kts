@@ -29,7 +29,7 @@ dependencyResolutionManagement {
         mavenLocal()
     }
 }
-includeBuild("convention-plugins")
+
 include(":composenotification")
 include(":demo")
 
