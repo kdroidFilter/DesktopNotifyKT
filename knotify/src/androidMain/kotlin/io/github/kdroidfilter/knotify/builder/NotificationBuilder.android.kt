@@ -60,13 +60,14 @@ class AndroidNotificationProvider(private val context: Context, private val acti
             buttons = builder.buttons,
             onActivated = builder.onActivated,
             onDismissed = builder.onDismissed,
-            onFailed = builder.onFailed
+            onFailed = builder.onFailed,
+            notificationId = builder.id
         )
     }
 
     override fun hideNotification(builder: NotificationBuilder) {
         // Use NotificationManagerCompat to cancel the notification with the same ID used in sendNotification
-        NotificationManagerCompat.from(context).cancel(1)
+        NotificationManagerCompat.from(context).cancel(builder.id)
     }
 
     override fun hasPermission(): Boolean {

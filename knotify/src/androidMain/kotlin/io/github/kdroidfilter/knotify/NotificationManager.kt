@@ -45,6 +45,7 @@ internal class NotificationManager(private val context: Context) {
      * @param onActivated A callback to be invoked when the notification is activated.
      * @param onDismissed A callback to be invoked when the notification is dismissed.
      * @param onFailed A callback to be invoked when sending the notification fails.
+     * @param notificationId The unique ID for this notification.
      */
     fun sendNotification(
         title: String,
@@ -53,7 +54,8 @@ internal class NotificationManager(private val context: Context) {
         buttons: List<Button>,
         onActivated: (() -> Unit)?,
         onDismissed: ((DismissalReason) -> Unit)?,
-        onFailed: (() -> Unit)?
+        onFailed: (() -> Unit)?,
+        notificationId: Int
     ) {
         val builder = createNotificationBuilder(title, message)
 
@@ -61,7 +63,7 @@ internal class NotificationManager(private val context: Context) {
         addLargeImage(builder, largeImage)
         addButtons(builder, buttons)
 
-        showNotification(builder, onFailed)
+        showNotification(builder, onFailed, notificationId)
     }
 
     /**
@@ -131,12 +133,13 @@ internal class NotificationManager(private val context: Context) {
 
     /**
      * Displays the notification and handles any failure.
+     * @param notificationId The unique ID for this notification
      */
-    private fun showNotification(builder: NotificationCompat.Builder, onFailed: (() -> Unit)?) {
+    private fun showNotification(builder: NotificationCompat.Builder, onFailed: (() -> Unit)?, notificationId: Int) {
         with(NotificationManagerCompat.from(context)) {
             if (areNotificationsEnabled()) {
                 try {
-                    notify(1, builder.build())
+                    notify(notificationId, builder.build())
                 } catch (e: SecurityException) {
                     onFailed?.invoke()
                 }

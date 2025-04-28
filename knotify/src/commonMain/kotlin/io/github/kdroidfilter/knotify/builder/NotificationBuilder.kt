@@ -127,6 +127,15 @@ class NotificationBuilder(
     var onFailed: (() -> Unit)? = null,
 ) {
     internal val buttons = mutableListOf<Button>()
+    internal val id: Int = generateUniqueId()
+
+    companion object {
+        private var lastId = 0
+
+        private fun generateUniqueId(): Int {
+            return ++lastId
+        }
+    }
 
     /**
      * Adds a button to the notification.
