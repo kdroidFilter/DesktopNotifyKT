@@ -29,10 +29,7 @@ interface NotificationProvider {
      *
      * @param builder The builder containing the notification properties and callbacks.
      */
-    fun hideNotification(builder: NotificationBuilder) {
-        // Default implementation does nothing
-        // Platform-specific implementations should override this method
-    }
+    fun hideNotification(builder: NotificationBuilder)
 
     /**
      * Checks if the application has permission to display notifications.

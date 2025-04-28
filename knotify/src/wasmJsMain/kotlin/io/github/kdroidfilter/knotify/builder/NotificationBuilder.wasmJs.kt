@@ -15,6 +15,10 @@ class WasmJsNotificationProvider : NotificationProvider {
        TODO()
     }
 
+    override fun hideNotification(builder: NotificationBuilder) {
+        TODO("Not yet implemented")
+    }
+
     override fun hasPermission(): Boolean {
         TODO()
     }

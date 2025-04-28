@@ -53,6 +53,10 @@ internal class MacNotificationProvider() : NotificationProvider {
         }
     }
 
+    override fun hideNotification(builder: NotificationBuilder) {
+        TODO("Not yet implemented")
+    }
+
     private fun findOsascriptPath(): String? {
         return try {
             val process = ProcessBuilder("which", "osascript").start()

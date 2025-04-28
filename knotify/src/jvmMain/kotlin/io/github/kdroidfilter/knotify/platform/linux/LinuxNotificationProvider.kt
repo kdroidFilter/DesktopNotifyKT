@@ -92,6 +92,10 @@ class LinuxNotificationProvider : NotificationProvider {
         }
     }
 
+    override fun hideNotification(builder: NotificationBuilder) {
+        TODO("Not yet implemented")
+    }
+
     override fun hasPermission(): Boolean {
         return true
     }

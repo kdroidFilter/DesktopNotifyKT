@@ -45,6 +45,10 @@ class JsNotificationProvider : NotificationProvider {
         }
     }
 
+    override fun hideNotification(builder: NotificationBuilder) {
+        TODO("Not yet implemented")
+    }
+
     override fun hasPermission(): Boolean {
         return permission == NotificationPermission.GRANTED
     }
