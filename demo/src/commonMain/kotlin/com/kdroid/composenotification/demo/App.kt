@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kdroid.composenotification.builder.ExperimentalNotificationsApi
 import com.kdroid.composenotification.builder.Notification
 import com.kdroid.composenotification.builder.getNotificationProvider
 import com.kdroid.composenotification.builder.notification
@@ -84,7 +85,7 @@ fun App() {
 }
 
 
-@OptIn(ExperimentalResourceApi::class)
+@OptIn(ExperimentalResourceApi::class, ExperimentalNotificationsApi::class)
 @Composable
 fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessage: (String?) -> Unit) {
     val myNotification = notification(
@@ -144,6 +145,7 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
     }
 }
 
+@OptIn(ExperimentalNotificationsApi::class)
 @Composable
 fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessage: (String?) -> Unit) {
     Column(
