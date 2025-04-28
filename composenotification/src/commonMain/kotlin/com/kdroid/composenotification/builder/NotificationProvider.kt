@@ -25,6 +25,16 @@ interface NotificationProvider {
     fun sendNotification(builder: NotificationBuilder)
 
     /**
+     * Hides a notification that was previously sent.
+     *
+     * @param builder The builder containing the notification properties and callbacks.
+     */
+    fun hideNotification(builder: NotificationBuilder) {
+        // Default implementation does nothing
+        // Platform-specific implementations should override this method
+    }
+
+    /**
      * Checks if the application has permission to display notifications.
      *
      * @return True if the application has notification permission, false otherwise.

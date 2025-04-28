@@ -16,6 +16,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kdroid.composenotification.builder.Notification
 import com.kdroid.composenotification.builder.getNotificationProvider
+import com.kdroid.composenotification.builder.notification
+import com.kdroid.composenotification.builder.sendNotification
 import com.kdroid.composenotification.demo.demo.generated.resources.Res
 import com.kdroid.kmplog.Log
 import com.kdroid.kmplog.d
@@ -85,6 +87,23 @@ fun App() {
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessage: (String?) -> Unit) {
+    val myNotification = notification(
+        title = "Notification from Screen 1",
+        message = "This is a test notification from Screen 1",
+        largeImage = Res.getUri("drawable/kdroid.png"),
+        onActivated = { Log.d("NotificationLog", "Notification 1 activated") },
+        onDismissed = { reason -> Log.d("NotificationLog", "Notification 1 dismissed: $reason")},
+        onFailed = {Log.d("NotificationLog", "Notification 1 failed")}
+    ) {
+        button(title = "Show Message from Button 1") {
+            Log.d("NotificationLog", "Button 1 from Screen 1 clicked")
+            onShowMessage("Button 1 clicked from Screen 1's notification")
+        }
+        button(title = "Hide Message from Button 2") {
+            Log.d("NotificationLog", "Button 2 from Screen 1 clicked")
+            onShowMessage("Button 2 clicked from Screen 1's notification")
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -108,23 +127,9 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                Notification(
-                    title = "Notification from Screen 1",
-                    message = "This is a test notification from Screen 1",
-                    largeImage = Res.getUri("drawable/kdroid.png"),
-                    onActivated = { Log.d("NotificationLog", "Notification 1 activated") },
-                    onDismissed = { reason -> Log.d("NotificationLog", "Notification 1 dismissed: $reason")},
-                    onFailed = {Log.d("NotificationLog", "Notification 1 failed")}
-                ) {
-                    Button("Show Message from Button 1") {
-                        Log.d("NotificationLog", "Button 1 from Screen 1 clicked")
-                        onShowMessage("Button 1 clicked from Screen 1's notification")
-                    }
-                    Button("Hide Message from Button 2") {
-                        Log.d("NotificationLog", "Button 2 from Screen 1 clicked")
-                        onShowMessage(null)
-                    }
-                }
+
+                // send it
+                myNotification.send()
             },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.fillMaxWidth(0.6f)
@@ -166,7 +171,7 @@ fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
 
         Button(
             onClick = {
-                Notification(
+                val myNotification = notification(
                     largeImage = Res.getUri("drawable/compose.png"),
                     title = "Notification from Screen 2",
                     message = "This is a test notification from Screen 2",
@@ -174,15 +179,17 @@ fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
                     onDismissed = { reason -> Log.d("NotificationLog", "Notification dismissed: $reason")},
                     onFailed = {Log.d("NotificationLog", "Notification failed")}
                 ) {
-                    Button("Show Message from Button 1") {
+                    button(title = "Show Message from Button 1") {
                         Log.d("NotificationLog", "Button 1 from Screen 2 clicked")
                         onShowMessage("Button 1 clicked from Screen 2's notification")
                     }
-                    Button("Hide Message from Button 2") {
+                    button(title = "Hide Message from Button 2") {
                         Log.d("NotificationLog", "Button 2 from Screen 2 clicked")
-                        onShowMessage(null)
+                        onShowMessage("Button 2 clicked from Screen 2's notification")
                     }
                 }
+                // send it
+                myNotification.send()
             },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.fillMaxWidth(0.6f)

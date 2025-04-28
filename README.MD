@@ -57,10 +57,13 @@ NotificationInitializer.configure(
 
 ## ✨ Usage Example
 
-The library uses a Kotlin DSL to define notifications in a declarative way, without the usual boilerplate code. Here is an example of how you can create and send a notification:
+The library uses a Kotlin DSL to define notifications in a declarative way, without the usual boilerplate code. Here are examples of how you can create and manage notifications:
+
+### Creating and Sending a Notification Later
 
 ```kotlin
-Notification(
+// Create a notification
+val myNotification = notification(
     title = "Notification from Screen 1",
     message = "This is a test notification from Screen 1",
     largeImage = Res.getUri("drawable/kdroid.png"),
@@ -68,15 +71,55 @@ Notification(
     onDismissed = { reason -> Log.d("NotificationLog", "Notification 1 dismissed: $reason") },
     onFailed = { Log.d("NotificationLog", "Notification 1 failed") }
 ) {
-    Button("Show Message from Button 1") {
+    button(title = "Show Message from Button 1") {
         Log.d("NotificationLog", "Button 1 from Screen 1 clicked")
         onShowMessage("Button 1 clicked from Screen 1's notification")
     }
-    Button("Hide Message from Button 2") {
+    button(title = "Hide Message from Button 2") {
         Log.d("NotificationLog", "Button 2 from Screen 1 clicked")
         onShowMessage(null)
     }
 }
+
+// Send it when needed
+myNotification.send()
+
+// Hide it when needed
+myNotification.hide()
+```
+
+### Sending a Notification Immediately
+
+```kotlin
+// Send a notification immediately
+sendNotification(
+    title = "Immediate Notification",
+    message = "This notification is sent immediately",
+    largeImage = Res.getUri("drawable/kdroid.png"),
+    onActivated = { Log.d("NotificationLog", "Notification activated") }
+) {
+    button(title = "Click Me") {
+        Log.d("NotificationLog", "Button clicked")
+    }
+}
+```
+
+### Creating and Sending a Notification with Reference
+
+```kotlin
+// Send a notification immediately but keep a reference to it
+val myNotification = sendNotification(
+    title = "Immediate Notification with Reference",
+    message = "This notification is sent immediately but can be manipulated later",
+    onActivated = { Log.d("NotificationLog", "Notification activated") }
+) {
+    button(title = "Click Me") {
+        Log.d("NotificationLog", "Button clicked")
+    }
+}
+
+// Hide it later when needed
+myNotification.hide()
 ```
 
 With this DSL approach, you can create rich and interactive notifications while keeping the code clean and readable. The library handles all the necessary details, allowing you to focus on your app's core logic.
@@ -198,4 +241,3 @@ If you would like to contribute, feel free to submit issues or pull requests on 
 - **Windows**: Utilizes [WinToast](https://github.com/mohabouje/WinToast) and [WinToastLibC](https://github.com/AlienCowEatCake/WinToastLibC) for managing notifications.
 
 Feel free to reach out for support or additional questions regarding implementation.
-
