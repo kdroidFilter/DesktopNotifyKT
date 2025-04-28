@@ -14,4 +14,3 @@ xcuserdata/
 Pods/
 *.jks
 *yarn.lock
-gradle.properties
