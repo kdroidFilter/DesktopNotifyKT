@@ -14,11 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kdroid.composenotification.builder.ExperimentalNotificationsApi
-import com.kdroid.composenotification.builder.Notification
-import com.kdroid.composenotification.builder.getNotificationProvider
-import com.kdroid.composenotification.builder.notification
-import com.kdroid.composenotification.builder.sendNotification
+import io.github.kdroidfilter.knotify.builder.ExperimentalNotificationsApi
+import io.github.kdroidfilter.knotify.builder.getNotificationProvider
+import io.github.kdroidfilter.knotify.builder.notification
 import com.kdroid.composenotification.demo.demo.generated.resources.Res
 import com.kdroid.kmplog.Log
 import com.kdroid.kmplog.d

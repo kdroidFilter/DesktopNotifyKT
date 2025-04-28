@@ -39,6 +39,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.kmplog)
             implementation(libs.runtime)
+            implementation("io.github.kdroidfilter:platformtools.core:0.2.9")
 
         }
 
@@ -56,6 +57,9 @@ kotlin {
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.jna)
             implementation(libs.jna.platform)
+        }
+        wasmJsMain.dependencies {
+            implementation(libs.kotlinx.browser.wasm.js)
         }
 
     }

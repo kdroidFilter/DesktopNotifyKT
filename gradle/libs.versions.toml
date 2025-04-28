@@ -17,6 +17,7 @@ appcompat = "1.7.0"
 runtimeAndroid = "1.8.0"
 lifecycleProcess = "2.8.7"
 runtimeDesktop = "1.7.0"
+kotlinxBrowserWasmJs = "0.3"
 
 [libraries]
 
@@ -26,6 +27,8 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+kotlinx-browser-wasm-js = { module = "org.jetbrains.kotlinx:kotlinx-browser-wasm-js", version.ref = "kotlinxBrowserWasmJs" }
+
 kmplog = {group = "io.github.kdroidfilter", name = "kmplog", version.ref = "kmplog"}
 core = { group = "androidx.core", name = "core", version.ref = "core" }
 activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
