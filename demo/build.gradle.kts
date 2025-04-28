@@ -93,7 +93,7 @@ kotlin {
                 implementation(compose.material3)
                 implementation(compose.ui)
                 implementation(libs.kmplog)
-                implementation(project(":composenotification"))
+                implementation(project(":knotify"))
                 implementation(compose.components.resources)
 
             }

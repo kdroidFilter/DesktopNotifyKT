@@ -30,6 +30,6 @@ dependencyResolutionManagement {
     }
 }
 
-include(":composenotification")
+include(":knotify")
 include(":demo")
 
