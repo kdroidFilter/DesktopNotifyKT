@@ -65,7 +65,8 @@ class AndroidNotificationProvider(private val context: Context, private val acti
     }
 
     override fun hideNotification(builder: NotificationBuilder) {
-        TODO("Not yet implemented")
+        // Use NotificationManagerCompat to cancel the notification with the same ID used in sendNotification
+        NotificationManagerCompat.from(context).cancel(1)
     }
 
     override fun hasPermission(): Boolean {
@@ -103,4 +104,3 @@ class AndroidNotificationProvider(private val context: Context, private val acti
         private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1001
     }
 }
-
