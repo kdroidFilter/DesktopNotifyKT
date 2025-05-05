@@ -52,7 +52,6 @@ class AndroidNotificationProvider(private val context: Context, private val acti
     }
 
     override fun sendNotification(builder: NotificationBuilder) {
-        // Use NotificationBuilder to configure title, message, actions, etc.
         NotificationManager(context).sendNotification(
             title = builder.title,
             message = builder.message,
