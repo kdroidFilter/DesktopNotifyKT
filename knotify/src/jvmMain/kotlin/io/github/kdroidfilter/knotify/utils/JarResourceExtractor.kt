@@ -34,6 +34,10 @@ fun extractToTempIfDifferent(jarPath: String): File? {
 
     val entryPath = jarPath.substringAfter("!").trimStart('/')
 
+    // Extract file extension from the original path
+    val fileExtension = getFileExtension(jarFile.name)
+    Log.d("extractToTempIfDifferent", "Original file extension: $fileExtension")
+
     // Logging to verify paths
         Log.d("extractToTempIfDifferent", "Corrected jarFilePath: $correctedJarFilePath")
         Log.d("extractToTempIfDifferent", "Encoded jarFilePath: $encodedJarFilePath")
@@ -43,7 +47,7 @@ fun extractToTempIfDifferent(jarPath: String): File? {
     // If the file is not a JAR, handle it differently
     if (!correctedJarFilePath.endsWith(".jar")) {
             Log.d("extractToTempIfDifferent", "The file is not a JAR. Direct copy.")
-        val tempFile = createTempFile("extracted_", ".tmp", File(System.getProperty("java.io.tmpdir"))).apply {
+        val tempFile = createTempFile("extracted_", fileExtension, File(System.getProperty("java.io.tmpdir"))).apply {
             deleteOnExit()
         }
 
@@ -56,8 +60,12 @@ fun extractToTempIfDifferent(jarPath: String): File? {
     JarFile(jarFile).use { jar ->
         val entry = jar.getJarEntry(entryPath) ?: return null
 
+        // Extract file extension from the entry name
+        val fileExtension = getFileExtension(entryPath)
+        Log.d("extractToTempIfDifferent", "JAR entry file extension: $fileExtension")
+
         // Create a temporary file to store the extracted resource
-        val tempFile = createTempFile("extracted_", ".tmp", File(System.getProperty("java.io.tmpdir"))).apply {
+        val tempFile = createTempFile("extracted_", fileExtension, File(System.getProperty("java.io.tmpdir"))).apply {
             deleteOnExit()
         }
 
@@ -95,4 +103,16 @@ fun InputStream.sha256(): String {
         digest.update(buffer, 0, bytesRead)
     }
     return digest.digest().joinToString("") { "%02x".format(it) }
+}
+
+// Helper function to extract file extension from a path
+private fun getFileExtension(path: String): String {
+    val lastDotIndex = path.lastIndexOf('.')
+    return if (lastDotIndex > 0) {
+        // Return the extension with the dot
+        path.substring(lastDotIndex)
+    } else {
+        // Default to .tmp if no extension is found
+        ".tmp"
+    }
 }

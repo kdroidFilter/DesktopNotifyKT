@@ -121,7 +121,7 @@ interface NotificationClosedCallback : Callback {
 }
 
 /**
- * Callback interface for button clicked events.
+ * Callback interface for button-clicked events.
  */
 interface ButtonClickedCallback : Callback {
     fun invoke(notification: Pointer?, buttonId: String?, userData: Pointer?)

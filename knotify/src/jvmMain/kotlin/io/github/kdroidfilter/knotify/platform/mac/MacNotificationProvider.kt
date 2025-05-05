@@ -9,11 +9,14 @@ import io.github.kdroidfilter.knotify.builder.NotificationBuilder
 import io.github.kdroidfilter.knotify.builder.NotificationInitializer
 import io.github.kdroidfilter.knotify.builder.NotificationProvider
 import io.github.kdroidfilter.knotify.model.DismissalReason
+import io.github.kdroidfilter.knotify.utils.RuntimeMode
+import io.github.kdroidfilter.knotify.utils.detectRuntimeMode
 import io.github.kdroidfilter.knotify.utils.extractToTempIfDifferent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import java.io.File
 
 internal class MacNotificationProvider() : NotificationProvider {
 
@@ -47,6 +50,13 @@ internal class MacNotificationProvider() : NotificationProvider {
         coroutineScope = CoroutineScope(Dispatchers.IO).also { scope ->
             scope.launch {
                 try {
+                    // Check if we're in development mode
+                    if (detectRuntimeMode() == RuntimeMode.DEV) {
+                        Log.w("MacNotificationProvider", "Notifications are only available in distributable mode due to Apple's restrictions. Current mode: DEV")
+                        builder.onFailed?.invoke()
+                        return@launch
+                    }
+
                     val appIconPath = appConfig.smallIcon
                     Log.d("sendNotification", "Sending notification with title: ${builder.title}")
 
@@ -94,12 +104,40 @@ internal class MacNotificationProvider() : NotificationProvider {
 
                         // Add large image if available
                         val largeImagePath = builder.largeImagePath as String?
+                        Log.d("MacNotificationProvider", "Large image path from builder: $largeImagePath")
+
                         largeImagePath?.let { path ->
-                            val largeImageAbsolutePath = extractToTempIfDifferent(path)?.absolutePath
-                            largeImageAbsolutePath?.let {
-                                lib.set_notification_image(notification, it)
+                            Log.d("MacNotificationProvider", "Processing large image path: $path")
+                            try {
+                                // Check if the path is a file that exists directly
+                                val file = File(path)
+                                if (file.exists() && file.isFile) {
+                                    Log.d("MacNotificationProvider", "Image file exists directly at: ${file.absolutePath}")
+                                    // Convert absolute path to file URL
+                                    val fileUrl = "file://${file.absolutePath}"
+                                    Log.d("MacNotificationProvider", "Image file URL: $fileUrl")
+                                    lib.set_notification_image(notification, fileUrl)
+                                    Log.d("MacNotificationProvider", "Notification image set successfully with direct path")
+                                } else {
+                                    // Try to extract from resources if not a direct file
+                                    val extractedFile = extractToTempIfDifferent(path)
+                                    Log.d("MacNotificationProvider", "Extracted file: $extractedFile")
+
+                                    val largeImageAbsolutePath = extractedFile?.absolutePath
+                                    Log.d("MacNotificationProvider", "Large image absolute path: $largeImageAbsolutePath")
+
+                                    largeImageAbsolutePath?.let {
+                                        // Convert absolute path to file URL
+                                        val fileUrl = "file://$it"
+                                        Log.d("MacNotificationProvider", "Image file URL: $fileUrl")
+                                        lib.set_notification_image(notification, fileUrl)
+                                        Log.d("MacNotificationProvider", "Notification image set successfully")
+                                    } ?: Log.e("MacNotificationProvider", "Failed to get absolute path for large image")
+                                }
+                            } catch (e: Exception) {
+                                Log.e("MacNotificationProvider", "Exception processing large image: ${e.message}")
                             }
-                        }
+                        } ?: Log.d("MacNotificationProvider", "No large image path provided")
 
                         // Add buttons
                         builder.buttons.forEach { button ->
@@ -158,6 +196,12 @@ internal class MacNotificationProvider() : NotificationProvider {
 
     override fun hideNotification(builder: NotificationBuilder) {
         try {
+            // Check if we're in development mode
+            if (detectRuntimeMode() == RuntimeMode.DEV) {
+                Log.w("MacNotificationProvider", "Notifications are only available in distributable mode due to Apple's restrictions. Current mode: DEV")
+                return
+            }
+
             val notification = activeNotifications[builder.id]
             if (notification != null) {
                 try {
