@@ -14,7 +14,6 @@ import io.github.kdroidfilter.knotify.utils.detectRuntimeMode
 import io.github.kdroidfilter.knotify.utils.extractToTempIfDifferent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -60,7 +59,7 @@ internal class MacNotificationProvider() : NotificationProvider {
                     val appIconPath = appConfig.smallIcon
                     Log.d("sendNotification", "Sending notification with title: ${builder.title}")
 
-                    // Try to create the notification, but handle any exceptions
+                    // Try to create the notification but handle any exceptions
                     val notification = try {
                         lib.create_notification(
                             title = builder.title,
@@ -82,7 +81,7 @@ internal class MacNotificationProvider() : NotificationProvider {
                     activeNotifications[builder.id] = notification
 
                     try {
-                        // Set up clicked callback
+                        // Set up a clicked callback
                         builder.onActivated?.let { onActivated ->
                             val clickedCallback = object : NotificationClickedCallback {
                                 override fun invoke(notification: Pointer?, userData: Pointer?) {
@@ -92,7 +91,7 @@ internal class MacNotificationProvider() : NotificationProvider {
                             lib.set_notification_clicked_callback(notification, clickedCallback, Pointer.NULL)
                         }
 
-                        // Set up closed callback
+                        // Set up a closed callback
                         builder.onDismissed?.let { onDismissed ->
                             val closedCallback = object : NotificationClosedCallback {
                                 override fun invoke(notification: Pointer?, userData: Pointer?) {
@@ -102,8 +101,8 @@ internal class MacNotificationProvider() : NotificationProvider {
                             lib.set_notification_closed_callback(notification, closedCallback, Pointer.NULL)
                         }
 
-                        // Add large image if available
-                        val largeImagePath = builder.largeImagePath as String?
+                        // Add a large image if available
+                        val largeImagePath = builder.largeImagePath
                         Log.d("MacNotificationProvider", "Large image path from builder: $largeImagePath")
 
                         largeImagePath?.let { path ->
@@ -113,7 +112,7 @@ internal class MacNotificationProvider() : NotificationProvider {
                                 val file = File(path)
                                 if (file.exists() && file.isFile) {
                                     Log.d("MacNotificationProvider", "Image file exists directly at: ${file.absolutePath}")
-                                    // Convert absolute path to file URL
+                                    // Convert an absolute path to file URL
                                     val fileUrl = "file://${file.absolutePath}"
                                     Log.d("MacNotificationProvider", "Image file URL: $fileUrl")
                                     lib.set_notification_image(notification, fileUrl)
@@ -127,7 +126,7 @@ internal class MacNotificationProvider() : NotificationProvider {
                                     Log.d("MacNotificationProvider", "Large image absolute path: $largeImageAbsolutePath")
 
                                     largeImageAbsolutePath?.let {
-                                        // Convert absolute path to file URL
+                                        // Convert an absolute path to file URL
                                         val fileUrl = "file://$it"
                                         Log.d("MacNotificationProvider", "Image file URL: $fileUrl")
                                         lib.set_notification_image(notification, fileUrl)
@@ -155,7 +154,7 @@ internal class MacNotificationProvider() : NotificationProvider {
                             )
                         }
 
-                        // Send the notification, but catch any exceptions
+                        // Send the notification but catch any exceptions
                         val result = try {
                             lib.send_notification(notification)
                         } catch (e: Exception) {
@@ -205,7 +204,16 @@ internal class MacNotificationProvider() : NotificationProvider {
             val notification = activeNotifications[builder.id]
             if (notification != null) {
                 try {
+                    // First, try to hide the notification
                     lib.hide_notification(notification)
+                    Log.d("MacNotificationProvider", "Notification hide called for ID: ${builder.id}")
+
+                    // Wait a short time to ensure the hide operation completes
+                    Thread.sleep(100)
+
+                    // Try to hide again to catch any pending notifications
+                    lib.hide_notification(notification)
+                    Log.d("MacNotificationProvider", "Second notification hide called for ID: ${builder.id}")
                 } catch (e: Exception) {
                     Log.e("MacNotificationProvider", "Exception hiding notification: ${e.message}")
                 }
@@ -217,7 +225,7 @@ internal class MacNotificationProvider() : NotificationProvider {
                 }
 
                 activeNotifications.remove(builder.id)
-                Log.d("MacNotificationProvider", "Notification hidden: ${builder.id}")
+                Log.d("MacNotificationProvider", "Notification hidden and cleaned up: ${builder.id}")
             } else {
                 Log.w("MacNotificationProvider", "No active notification found with ID: ${builder.id}")
             }
