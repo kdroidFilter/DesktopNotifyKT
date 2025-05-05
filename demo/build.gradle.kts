@@ -130,7 +130,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.kdroid.composenotification.sample"
-            packageVersion = "0.2.0"
+            packageVersion = "1.0.0"
             description = "Compose Native Notification Sample"
             copyright = "© 2024 KdroidFilter. All rights reserved."
         }
