@@ -29,6 +29,7 @@ kotlin {
     wasmJs {
         browser()
         binaries.executable()
+
     }
 
 
@@ -59,6 +60,8 @@ kotlin {
             implementation(libs.jna.platform)
         }
         wasmJsMain.dependencies {
+            // import kotlinx datetime
+            implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.browser.wasm.js)
         }
 
