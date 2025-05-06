@@ -20,6 +20,7 @@ import io.github.kdroidfilter.knotify.builder.notification
 import com.kdroid.composenotification.demo.demo.generated.resources.Res
 import com.kdroid.kmplog.Log
 import com.kdroid.kmplog.d
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 
@@ -86,6 +87,7 @@ fun App() {
 @OptIn(ExperimentalResourceApi::class, ExperimentalNotificationsApi::class)
 @Composable
 fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessage: (String?) -> Unit) {
+    val scope = rememberCoroutineScope()
     val myNotification = notification(
         title = "Notification from Screen 1",
         message = "This is a test notification from Screen 1",
@@ -126,8 +128,7 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                // send it
-                myNotification.send()
+                scope.launch { myNotification.send() }
             },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.fillMaxWidth(0.6f)
@@ -139,7 +140,7 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
         Button(
             onClick = {
                 // hide it
-                myNotification.hide()
+                scope.launch { myNotification.hide() }
             },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.fillMaxWidth(0.6f)
@@ -157,6 +158,7 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
 @OptIn(ExperimentalNotificationsApi::class)
 @Composable
 fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessage: (String?) -> Unit) {
+    val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -203,8 +205,7 @@ fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
 
         Button(
             onClick = {
-                // send it
-                myNotification.send()
+                scope.launch { myNotification.send() }
             },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.fillMaxWidth(0.6f)
@@ -216,7 +217,7 @@ fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
         Button(
             onClick = {
                 // hide it
-                myNotification.hide()
+                scope.launch { myNotification.hide() }
             },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.fillMaxWidth(0.6f)
