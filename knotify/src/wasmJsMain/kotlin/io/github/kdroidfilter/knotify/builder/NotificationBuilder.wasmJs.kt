@@ -12,33 +12,25 @@ import org.w3c.dom.MessageEvent
 import org.w3c.dom.WorkerNavigator
 import org.w3c.notifications.*
 import org.w3c.notifications.Notification
-import org.w3c.workers.ClientQueryOptions
-import org.w3c.workers.ClientType
-import org.w3c.workers.ServiceWorkerGlobalScope
 import org.w3c.workers.ServiceWorkerRegistration
-import org.w3c.workers.WINDOW
 import kotlin.time.ExperimentalTime
 
-
 external val navigator: WorkerNavigator
-external val self: ServiceWorkerGlobalScope
 
 external interface NotificationMessageData {
     val action: String?
 }
 
-fun createNotificationMessageData(action: String?): NotificationMessageData = js("{ action: 'action' }") // Create a dynamic object with the action property
-
 object NotificationServiceWorker : NotificationProvider {
 
-    var builder : NotificationBuilder? = null
+    var currentNotificationBuilder: NotificationBuilder? = null
     private val _hasPermissionState = mutableStateOf(
         NotificationPermission.GRANTED == Notification.permission
     )
     override val hasPermissionState: State<Boolean>
         get() = _hasPermissionState
 
-    val scope = CoroutineScope(Dispatchers.Main)
+    val scope = CoroutineScope(Dispatchers.Default)
 
 
     override fun hasPermission(): Boolean =
@@ -51,23 +43,16 @@ object NotificationServiceWorker : NotificationProvider {
             navigator.serviceWorker.addEventListener("message") { event ->
                 val messageEvent = event as MessageEvent
                 val data = (messageEvent.data as NotificationMessageData)
-                val action = data.action
 
-                // Accéder à la propriété action
-                println("Action reçue: $action")
+                val actions = mutableMapOf<String, (() -> Unit)?>()
+                currentNotificationBuilder?.buttons?.forEach { action ->
+                    actions.put(action.onClick.toString()) { action.onClick() }
+                }
 
-                // Traiter l'action
-                when (action) {
-                    "default" -> {
-                        builder?.onActivated?.let { it() }
-                    }
-                    builder?.buttons[0]?.onClick.toString() -> {
-                        builder?.buttons[0]?.onClick()
-                    }
-                    builder?.buttons[1]?.onClick.toString() -> {
-                        builder?.buttons[1]?.onClick()
-                    }
-                    else -> println("Notification cliquée (hors actions).")
+                if (data.action == "default") {
+                    currentNotificationBuilder?.onActivated?.let { it() }
+                } else {
+                    actions[data.action]?.let { it() }
                 }
             }
         }
@@ -76,17 +61,19 @@ object NotificationServiceWorker : NotificationProvider {
     @OptIn(ExperimentalTime::class)
     override fun sendNotification(builder: NotificationBuilder) {
         scope.launch {
-            NotificationServiceWorker.builder = builder
+            currentNotificationBuilder = builder
+            val actions = mutableListOf<NotificationAction>()
+            builder.buttons.forEach { button ->
+                actions.add(NotificationAction(action = button.onClick.toString(), button.label))
+            }
             val reg: ServiceWorkerRegistration = navigator.serviceWorker.ready.await()
             reg.showNotification(
                 builder.title,
                 NotificationOptions(
                     body = builder.message,
                     icon = builder.largeImagePath,
-                    actions = arrayOf(
-                        NotificationAction(action = builder.buttons[0].onClick.toString(), title = builder.buttons[0].label),
-                        NotificationAction(action = builder.buttons[1].onClick.toString(), title = builder.buttons[1].label),
-                    ).toJsArray()
+                    tag = "demo",
+                    actions = actions.toJsArray()
                 )
             )
         }
@@ -96,17 +83,14 @@ object NotificationServiceWorker : NotificationProvider {
     override fun hideNotification(builder: NotificationBuilder) {
         scope.launch {
             val reg: ServiceWorkerRegistration = navigator.serviceWorker.ready.await()
-            try {
-                val notifications =
-                    reg.getNotifications().await<Array<Notification>>()
-                if (notifications.isNotEmpty()) {
-                    notifications.forEach { notification ->
-                        notification.close()
-                    }
+            val notifications =
+                reg.getNotifications(filter = GetNotificationOptions(tag = "demo")).await<JsArray<Notification>>()
+            if (notifications.length > 0) {
+                notifications.toArray().forEach { notification ->
+                    notification.close()
                 }
-            } catch (e: Exception) {
-                println(e)
             }
+
         }
     }
 
@@ -114,26 +98,6 @@ object NotificationServiceWorker : NotificationProvider {
         if (!hasPermission()) {
             Notification.requestPermission()
         }
-    }
-}
-
-fun registerServiceWorker() {
-    self.addEventListener("notificationclick") { event ->
-        val notificationEvent = event as NotificationEvent
-        notificationEvent.notification.close()
-
-        notificationEvent.waitUntil(
-            self.clients.matchAll(
-                ClientQueryOptions(type = ClientType.WINDOW, includeUncontrolled = true)
-            ).then { clients ->
-                clients.toArray().forEach { client ->
-                    // Send the dynamic action data to the client
-                    val messageData = createNotificationMessageData(notificationEvent.action)
-                    client.postMessage(messageData as JsAny?)
-                }
-                null
-            }
-        )
     }
 }
 
