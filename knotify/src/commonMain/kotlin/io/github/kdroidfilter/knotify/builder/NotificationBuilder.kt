@@ -78,7 +78,7 @@ class Notification internal constructor(private val builder: NotificationBuilder
     /**
      * Sends the notification.
      */
-   suspend fun send() {
+    fun send() {
         val notificationProvider = getNotificationProvider()
         notificationProvider.sendNotification(builder)
     }
@@ -86,7 +86,7 @@ class Notification internal constructor(private val builder: NotificationBuilder
     /**
      * Hides the notification.
      */
-    suspend fun hide() {
+     fun hide() {
         val notificationProvider = getNotificationProvider()
         notificationProvider.hideNotification(builder)
     }

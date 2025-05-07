@@ -1,27 +1,33 @@
+@file:Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
+
 package io.github.kdroidfilter.knotify.builder
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import io.github.kdroidfilter.knotify.builder.NotificationBuilder
-import io.github.kdroidfilter.knotify.builder.NotificationProvider
-import io.github.kdroidfilter.knotify.model.DismissalReason
-import kotlinx.browser.window
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.await
+import kotlinx.coroutines.launch
+import org.w3c.dom.MessageEvent
 import org.w3c.dom.WorkerNavigator
 import org.w3c.notifications.*
 import org.w3c.notifications.Notification
-import org.w3c.workers.ExtendableEvent
+import org.w3c.workers.ClientQueryOptions
+import org.w3c.workers.ClientType
 import org.w3c.workers.ServiceWorkerGlobalScope
 import org.w3c.workers.ServiceWorkerRegistration
-import kotlin.js.Promise
-import kotlin.js.JsArray
-import kotlin.time.Clock
+import org.w3c.workers.WINDOW
 import kotlin.time.ExperimentalTime
 
 
-/** Service Worker Kotlin/Js implémentant NotificationProvider */
-
+external val navigator: WorkerNavigator
 external val self: ServiceWorkerGlobalScope
+
+external interface NotificationMessageData {
+    val action: String?
+}
+
+fun createNotificationMessageData(action: String?): NotificationMessageData = js("{ action: 'action' }") // Create a dynamic object with the action property
 
 object NotificationServiceWorker : NotificationProvider {
     private val _hasPermissionState = mutableStateOf(
@@ -30,56 +36,95 @@ object NotificationServiceWorker : NotificationProvider {
     override val hasPermissionState: State<Boolean>
         get() = _hasPermissionState
 
+    val scope = CoroutineScope(Dispatchers.Main)
+
 
     override fun hasPermission(): Boolean =
         NotificationPermission.GRANTED == Notification.permission
 
     init {
-        window.addEventListener("notificationclick", { event ->
+        scope.launch {
+            navigator.serviceWorker.register("sw.js")
 
-        })
+            navigator.serviceWorker.addEventListener("message") { event ->
+                val messageEvent = event as MessageEvent
+                val data = (messageEvent.data as NotificationMessageData)
+                val action = data.action
+
+                // Accéder à la propriété action
+                println("Action reçue: $action")
+
+                // Traiter l'action
+                when (action) {
+                    "bonhour" -> println("👋 Bonjour reçu !")
+                    "bonsoir" -> println("👋 Bonsoir reçu !")
+                    else -> println("Notification cliquée (hors actions).")
+                }
+            }
+        }
     }
 
     @OptIn(ExperimentalTime::class)
-    override suspend fun sendNotification(builder: NotificationBuilder) {
-        window.addEventListener("notificationclick", { event ->
-
-        })
-        val reg: ServiceWorkerRegistration =
-            window.navigator.serviceWorker.ready.unsafeCast<Promise<ServiceWorkerRegistration>>().await()
-        reg.showNotification(
-            builder.title,
-            NotificationOptions(
-                body = builder.message,
-                icon = builder.largeImagePath,
-                tag = "demo-actions",
-                actions = JsArray<NotificationAction>().apply {
-                    this[0] = NotificationAction(
-                        action = builder.buttons[0].onClick.toString(),
-                        title = builder.buttons[0].label
-                    )
-                    this[1] = NotificationAction(
-                        action = builder.buttons[1].onClick.toString(),
-                        title = builder.buttons[1].label
-                    )
-                }
-
+    override fun sendNotification(builder: NotificationBuilder) {
+        scope.launch {
+            val reg: ServiceWorkerRegistration = navigator.serviceWorker.ready.await()
+            reg.showNotification(
+                builder.title,
+                NotificationOptions(
+                    body = builder.message,
+                    icon = builder.largeImagePath,
+                    actions = arrayOf(
+                        NotificationAction(action = "bonhour", title = builder.buttons[0].label),
+                        NotificationAction(action = "bonsoir", title = builder.buttons[1].label),
+                    ).toJsArray()
+                )
             )
-        )
+        }
 
     }
 
-    override suspend fun hideNotification(builder: NotificationBuilder) {
-        val reg: ServiceWorkerRegistration =
-            window.navigator.serviceWorker.ready.unsafeCast<Promise<ServiceWorkerRegistration>>().await()
-        val notifications = reg.getNotifications(filter = GetNotificationOptions(tag = "demo-actions")).await<Array<Notification>>()
-        if (notifications.isNotEmpty()) {
-            notifications.forEach { notification ->
-                notification.close()
+    override fun hideNotification(builder: NotificationBuilder) {
+        scope.launch {
+            val reg: ServiceWorkerRegistration = navigator.serviceWorker.ready.await()
+            try {
+                val notifications =
+                    reg.getNotifications().await<Array<Notification>>()
+                if (notifications.isNotEmpty()) {
+                    notifications.forEach { notification ->
+                        notification.close()
+                    }
+                }
+            } catch (e: Exception) {
+                println(e)
             }
+        }
+    }
+
+    override fun requestPermission(onGranted: () -> Unit, onDenied: () -> Unit) {
+        if (!hasPermission()) {
+            Notification.requestPermission()
         }
     }
 }
 
+fun registerServiceWorker() {
+    self.addEventListener("notificationclick") { event ->
+        val notificationEvent = event as NotificationEvent
+        notificationEvent.notification.close()
+
+        notificationEvent.waitUntil(
+            self.clients.matchAll(
+                ClientQueryOptions(type = ClientType.WINDOW, includeUncontrolled = true)
+            ).then { clients ->
+                clients.toArray().forEach { client ->
+                    // Send the dynamic action data to the client
+                    val messageData = createNotificationMessageData(notificationEvent.action)
+                    client.postMessage(messageData as JsAny?)
+                }
+                null
+            }
+        )
+    }
+}
 
 actual fun getNotificationProvider(): NotificationProvider = NotificationServiceWorker

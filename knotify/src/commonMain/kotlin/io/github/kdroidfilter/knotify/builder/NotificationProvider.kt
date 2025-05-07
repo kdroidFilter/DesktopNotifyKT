@@ -22,14 +22,14 @@ interface NotificationProvider {
      *
      * @param builder The builder containing the notification properties and callbacks.
      */
-    suspend fun sendNotification(builder: NotificationBuilder)
+    fun sendNotification(builder: NotificationBuilder)
 
     /**
      * Hides a notification that was previously sent.
      *
      * @param builder The builder containing the notification properties and callbacks.
      */
-    suspend fun hideNotification(builder: NotificationBuilder)
+    fun hideNotification(builder: NotificationBuilder)
 
     /**
      * Checks if the application has permission to display notifications.

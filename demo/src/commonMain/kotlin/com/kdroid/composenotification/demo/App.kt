@@ -87,7 +87,6 @@ fun App() {
 @OptIn(ExperimentalResourceApi::class, ExperimentalNotificationsApi::class)
 @Composable
 fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessage: (String?) -> Unit) {
-    val scope = rememberCoroutineScope()
     val myNotification = notification(
         title = "Notification from Screen 1",
         message = "This is a test notification from Screen 1",
@@ -128,7 +127,7 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                scope.launch { myNotification.send() }
+                 myNotification.send()
             },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.fillMaxWidth(0.6f)
@@ -140,7 +139,7 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
         Button(
             onClick = {
                 // hide it
-                scope.launch { myNotification.hide() }
+                myNotification.hide()
             },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.fillMaxWidth(0.6f)
@@ -158,7 +157,6 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
 @OptIn(ExperimentalNotificationsApi::class)
 @Composable
 fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessage: (String?) -> Unit) {
-    val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -205,7 +203,7 @@ fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
 
         Button(
             onClick = {
-                scope.launch { myNotification.send() }
+                myNotification.send()
             },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.fillMaxWidth(0.6f)
@@ -217,7 +215,7 @@ fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
         Button(
             onClick = {
                 // hide it
-                scope.launch { myNotification.hide() }
+                myNotification.hide()
             },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.fillMaxWidth(0.6f)
