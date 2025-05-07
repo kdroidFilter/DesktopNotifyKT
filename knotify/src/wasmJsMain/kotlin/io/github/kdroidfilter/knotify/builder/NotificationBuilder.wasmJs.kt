@@ -30,6 +30,8 @@ external interface NotificationMessageData {
 fun createNotificationMessageData(action: String?): NotificationMessageData = js("{ action: 'action' }") // Create a dynamic object with the action property
 
 object NotificationServiceWorker : NotificationProvider {
+
+    var builder : NotificationBuilder? = null
     private val _hasPermissionState = mutableStateOf(
         NotificationPermission.GRANTED == Notification.permission
     )
@@ -56,8 +58,15 @@ object NotificationServiceWorker : NotificationProvider {
 
                 // Traiter l'action
                 when (action) {
-                    "bonhour" -> println("👋 Bonjour reçu !")
-                    "bonsoir" -> println("👋 Bonsoir reçu !")
+                    "default" -> {
+                        builder?.onActivated?.let { it() }
+                    }
+                    builder?.buttons[0]?.onClick.toString() -> {
+                        builder?.buttons[0]?.onClick()
+                    }
+                    builder?.buttons[1]?.onClick.toString() -> {
+                        builder?.buttons[1]?.onClick()
+                    }
                     else -> println("Notification cliquée (hors actions).")
                 }
             }
@@ -67,6 +76,7 @@ object NotificationServiceWorker : NotificationProvider {
     @OptIn(ExperimentalTime::class)
     override fun sendNotification(builder: NotificationBuilder) {
         scope.launch {
+            NotificationServiceWorker.builder = builder
             val reg: ServiceWorkerRegistration = navigator.serviceWorker.ready.await()
             reg.showNotification(
                 builder.title,
@@ -74,8 +84,8 @@ object NotificationServiceWorker : NotificationProvider {
                     body = builder.message,
                     icon = builder.largeImagePath,
                     actions = arrayOf(
-                        NotificationAction(action = "bonhour", title = builder.buttons[0].label),
-                        NotificationAction(action = "bonsoir", title = builder.buttons[1].label),
+                        NotificationAction(action = builder.buttons[0].onClick.toString(), title = builder.buttons[0].label),
+                        NotificationAction(action = builder.buttons[1].onClick.toString(), title = builder.buttons[1].label),
                     ).toJsArray()
                 )
             )
