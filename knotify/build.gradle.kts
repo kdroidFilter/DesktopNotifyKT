@@ -86,6 +86,27 @@ android {
     }
 }
 
+val buildNativeMac: TaskProvider<Exec> = tasks.register<Exec>("buildNativeMac") {
+    onlyIf { System.getProperty("os.name").startsWith("Mac") }
+    workingDir(rootDir.resolve("maclib"))
+    commandLine("./build.sh")
+}
+
+val buildNativeWin: TaskProvider<Exec> = tasks.register<Exec>("buildNativeWin") {
+    onlyIf { System.getProperty("os.name").startsWith("Windows") }
+    workingDir(rootDir.resolve("winlib"))
+    commandLine("cmd", "/c", "build.bat")
+}
+
+val buildNativeLinux: TaskProvider<Exec> = tasks.register<Exec>("buildNativeLinux") {
+    onlyIf { System.getProperty("os.name").startsWith("Linux") }
+    workingDir(rootDir.resolve("linuxlib"))
+    commandLine("./build.sh")
+}
+
+tasks.register("buildNativeLibraries") {
+    dependsOn( buildNativeMac, buildNativeWin, buildNativeLinux)
+}
 
 mavenPublishing {
     coordinates(
