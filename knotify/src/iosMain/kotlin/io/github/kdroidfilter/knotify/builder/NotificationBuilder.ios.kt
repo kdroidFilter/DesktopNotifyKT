@@ -2,6 +2,7 @@ package io.github.kdroidfilter.knotify.builder
 
 import androidx.compose.runtime.mutableStateOf
 import com.kdroid.kmplog.Log
+import com.kdroid.kmplog.d
 import com.kdroid.kmplog.e
 import io.github.kdroidfilter.knotify.model.DismissalReason
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -87,7 +88,7 @@ class IosNotificationProvider() : NotificationProvider {
         checkPermissionStatus()
         // Set the delegate for UNUserNotificationCenter
         notificationCenter.setDelegate(notificationDelegateManager)
-        println("[DEBUG_LOG] IosNotificationProvider initialized with delegate set")
+        Log.d("IosNotificationProvider", "Initializing with delegate set")
     }
 
     private fun checkPermissionStatus() {
@@ -95,7 +96,7 @@ class IosNotificationProvider() : NotificationProvider {
         notificationCenter.getNotificationSettingsWithCompletionHandler { settings ->
             val authStatus = settings?.authorizationStatus?.toInt()
             val isAuthorized = authStatus == 2 // UNAuthorizationStatusAuthorized = 2
-            println("[DEBUG_LOG] Notification authorization status: $authStatus (isAuthorized: $isAuthorized)")
+            Log.d("IosNotificationProvider", "Notification permission status: $authStatus (isAuthorized: $isAuthorized)")
             updatePermissionState(isAuthorized)
         }
     }
@@ -106,18 +107,18 @@ class IosNotificationProvider() : NotificationProvider {
 
     @OptIn(ExperimentalForeignApi::class)
     override fun sendNotification(builder: NotificationBuilder) {
-        println("[DEBUG_LOG] Sending notification with title: ${builder.title}")
+        Log.d("IosNotificationProvider", "Sending notification with title: ${builder.title}")
 
         // Check permission status synchronously before sending
         notificationCenter.getNotificationSettingsWithCompletionHandler { settings ->
             val authStatus = settings?.authorizationStatus?.toInt()
             val isAuthorized = authStatus == 2 // UNAuthorizationStatusAuthorized = 2
-            println("[DEBUG_LOG] Checking permission before sending: status=$authStatus, isAuthorized=$isAuthorized")
+            Log.d("IosNotificationProvider", "Notification permission status: $authStatus (isAuthorized: $isAuthorized)")
 
             updatePermissionState(isAuthorized)
 
             if (!isAuthorized) {
-                println("[DEBUG_LOG] No permission to send notifications")
+                Log.d("IosNotificationProvider", "Notification permission not granted, cannot send notification")
                 builder.onFailed?.invoke()
                 return@getNotificationSettingsWithCompletionHandler
             }
@@ -128,7 +129,7 @@ class IosNotificationProvider() : NotificationProvider {
 
     @OptIn(ExperimentalForeignApi::class)
     private fun sendNotificationWithPermission(builder: NotificationBuilder) {
-        println("[DEBUG_LOG] Has permission, creating notification content")
+        Log.d("IosNotificationProvider", "Sending notification with title: ${builder.title}")
         val content = UNMutableNotificationContent().apply {
             setTitle(builder.title)
             setBody(builder.message)
@@ -171,27 +172,27 @@ class IosNotificationProvider() : NotificationProvider {
         }
 
         // Create a trigger (immediate in this case)
-        println("[DEBUG_LOG] Creating notification trigger")
+        Log.d("IosNotificationProvider", "Creating notification trigger")
         val trigger = UNTimeIntervalNotificationTrigger.triggerWithTimeInterval(0.1, false)
 
         // Create the request
-        println("[DEBUG_LOG] Creating notification request with ID: notification_${builder.id}")
+        Log.d("IosNotificationProvider", "Creating notification request with id: ${builder.id}")
         val request = UNNotificationRequest.requestWithIdentifier(
             "notification_${builder.id}", content, trigger
         )
 
         // Register the notification with the delegate manager
-        println("[DEBUG_LOG] Registering notification with delegate manager")
+        Log.d("IosNotificationProvider", "Registering notification with delegate manager")
         notificationDelegateManager.registerNotification(builder)
 
         // Add the request to the notification center
-        println("[DEBUG_LOG] Adding notification request to notification center")
+        Log.d("IosNotificationProvider", "Adding notification request to notification center")
         notificationCenter.addNotificationRequest(request) { error ->
             if (error != null) {
-                println("[DEBUG_LOG] Failed to add notification request: $error")
+                Log.e("IosNotificationProvider", "Failed to add notification request: $error")
                 builder.onFailed?.invoke()
             } else {
-                println("[DEBUG_LOG] Successfully added notification request")
+                Log.d("IosNotificationProvider", "Successfully added notification request")
             }
         }
     }
@@ -213,22 +214,22 @@ class IosNotificationProvider() : NotificationProvider {
     }
 
     override fun requestPermission(onGranted: () -> Unit, onDenied: () -> Unit) {
-        println("[DEBUG_LOG] Requesting notification permission")
+        Log.d("IosNotificationProvider", "Requesting notification permission")
         // Check current permission status first
         notificationCenter.getNotificationSettingsWithCompletionHandler { settings ->
             val currentStatus = settings?.authorizationStatus?.toInt()
-            println("[DEBUG_LOG] Current permission status before request: $currentStatus")
+            Log.d("IosNotificationProvider", "Current notification permission status: $currentStatus")
         }
 
         val options = UNAuthorizationOptionAlert or UNAuthorizationOptionBadge or UNAuthorizationOptionSound
 
         notificationCenter.requestAuthorizationWithOptions(options) { granted, error ->
             if (granted) {
-                println("[DEBUG_LOG] Notification permission granted")
+                Log.d("IosNotificationProvider", "Notification permission granted")
                 updatePermissionState(true)
                 onGranted()
             } else {
-                println("[DEBUG_LOG] Notification permission denied: $error")
+                Log.e("IosNotificationProvider", "Notification permission denied: $error")
                 updatePermissionState(false)
                 onDenied()
             }
