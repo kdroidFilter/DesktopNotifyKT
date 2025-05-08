@@ -76,15 +76,8 @@ kotlin {
 
 }
 
-
-tasks.register<Copy>("copyWasmJsServiceWorker") {
-    from("${projectDir}/src/wasmJsMain/resources/knotifysw.js")
-    into("${layout.buildDirectory}/build/classes/kotlin/wasmJs/main/default/resources")
-}
-
-
 android {
-    namespace = "com.kdroid.composenotification"
+    namespace = "io.github.kdroidfilter.knotify"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
