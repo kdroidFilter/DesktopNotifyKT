@@ -20,14 +20,9 @@ kotlin {
 
     jvm()
 
-    js {
-        browser {
-            webpackTask {
-                mainOutputFileName = "shared.js"
-            }
-        }
-        binaries.executable()
-    }
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
 
     wasmJs {
         browser {
