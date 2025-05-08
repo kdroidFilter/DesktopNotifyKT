@@ -13,5 +13,11 @@
     <string>This app needs access to files to play local videos</string>
     <key>UIFileSharingEnabled</key>
     <true/>
+    <key>NSRemoteNotificationUsageDescription</key>
+    <string>This app needs to send notifications to alert you about important events</string>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>remote-notification</string>
+    </array>
 </dict>
 </plist>
