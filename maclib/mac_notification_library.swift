@@ -154,7 +154,11 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
                                willPresent notification: UNNotification, 
                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         // Allow the notification to be shown even when the app is in the foreground
-        completionHandler([.banner, .sound])
+        if #available(macOS 11.0, *) {
+            completionHandler([.banner, .sound])
+        } else {
+            completionHandler([.alert, .sound])
+        }
     }
 }
 
