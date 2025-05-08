@@ -1,7 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
@@ -18,50 +16,21 @@ val appPackageName = "io.github.kdroidfilter.knotify.demo"
 group = appPackageName
 version = appVersion
 
-android {
-    namespace = "io.github.kdroidfilter.knotify.demo"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
-
-    defaultConfig {
-        applicationId = "com.kdroid.composenotification.demo"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = appVersion
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    buildFeatures {
-        compose = true
-    }
-    dependencies {
-        debugImplementation(compose.uiTooling)
-    }
-}
-
-
 kotlin {
-    jvm("desktop")
     jvmToolchain(17)
-
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
+    androidTarget()
+    jvm()
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach {
+        it.binaries.framework {
+            baseName = "ComposeApp"
+            isStatic = true
+        }
+    }
+    @OptIn(ExperimentalWasmDsl::class) wasmJs {
         outputModuleName = "composeApp"
         browser {
             val projectDirPath = project.projectDir.path
@@ -78,57 +47,52 @@ kotlin {
         binaries.executable()
     }
 
-    androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
-        }
-    }
-
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material3)
-                implementation(compose.ui)
-                implementation(libs.kmplog)
-                implementation(project(":knotify"))
-                implementation(compose.components.resources)
+        commonMain.dependencies {
+            implementation(project(":knotify"))
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material3)
+            implementation(compose.ui)
+            implementation(libs.kmplog)
+            implementation(compose.components.resources)
+        }
 
-            }
+        jvmMain.dependencies {
+            implementation(compose.desktop.currentOs)
         }
-        val desktopMain by getting {
-            dependencies {
-                implementation(compose.desktop.currentOs)
-            }
+
+        androidMain.dependencies {
+            implementation(libs.activity.ktx)
+            implementation(libs.androidx.appcompat)
+            implementation(libs.androidx.activity.compose)
         }
-        val androidMain by getting {
-            dependencies {
-                implementation(libs.activity.ktx)
-                implementation(libs.androidx.appcompat)
-                implementation(libs.androidx.activity.compose)
-            }
-        }
-        val wasmJsMain by getting {
-            dependencies {
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material3)
-                implementation(compose.ui)
-            }
+        wasmJsMain.dependencies {
+
         }
     }
-
 }
 
+android {
+    namespace = "io.github.kdroidfilter.knotify.demo"
+    compileSdk = 35
+
+    defaultConfig {
+        minSdk = 21
+        targetSdk = 35
+
+        applicationId = "io.github.kdroidfilter.knotify.demo"
+        versionCode = 1
+        versionName = "1.0.0"
+    }
+}
 
 compose.desktop {
     application {
         mainClass = "io.github.kdroidfilter.knotify.demo.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Dmg)
             packageName = "io.github.kdroidfilter.knotify.sample"
             packageVersion = "1.0.0"
             description = "Compose Native Notification Sample"
