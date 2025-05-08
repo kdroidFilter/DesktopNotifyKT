@@ -1,4 +1,7 @@
+@file:OptIn(ExperimentalWasmDsl::class)
+
 import com.vanniktech.maven.publish.SonatypeHost
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     alias(libs.plugins.multiplatform)
@@ -27,9 +30,14 @@ kotlin {
     }
 
     wasmJs {
-        browser()
+        browser {
+            webpackTask {
+                mainOutputFileName = "knotifysw.js"
+                // Copy knotifysw.js to the output directory
+                output.libraryTarget = "umd"
+            }
+        }
         binaries.executable()
-
     }
 
 
@@ -41,7 +49,6 @@ kotlin {
             implementation(libs.kmplog)
             implementation(libs.runtime)
             implementation("io.github.kdroidfilter:platformtools.core:0.2.9")
-
         }
 
         commonTest.dependencies {
@@ -73,6 +80,13 @@ kotlin {
     }
 
 }
+
+
+tasks.register<Copy>("copyWasmJsServiceWorker") {
+    from("${projectDir}/src/wasmJsMain/resources/knotifysw.js")
+    into("${layout.buildDirectory}/build/classes/kotlin/wasmJs/main/default/resources")
+}
+
 
 android {
     namespace = "com.kdroid.composenotification"
@@ -131,4 +145,3 @@ mavenPublishing {
 
 
 task("testClasses") {}
-
