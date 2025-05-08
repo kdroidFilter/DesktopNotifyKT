@@ -1,42 +1,23 @@
 package io.github.kdroidfilter.knotify.builder
 
 import androidx.compose.runtime.mutableStateOf
+import com.kdroid.kmplog.Log
+import com.kdroid.kmplog.e
 import io.github.kdroidfilter.knotify.model.DismissalReason
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSURL
-import platform.Foundation.NSOperationQueue
-import platform.UIKit.UIApplication
-import platform.UserNotifications.UNAuthorizationOptionAlert
-import platform.UserNotifications.UNAuthorizationOptionBadge
-import platform.UserNotifications.UNAuthorizationOptionSound
-import platform.UserNotifications.UNMutableNotificationContent
-import platform.UserNotifications.UNNotification
-import platform.UserNotifications.UNNotificationAction
-import platform.UserNotifications.UNNotificationActionOptionForeground
-import platform.UserNotifications.UNNotificationCategory
-import platform.UserNotifications.UNNotificationCategoryOptionNone
-import platform.UserNotifications.UNNotificationDefaultActionIdentifier
-import platform.UserNotifications.UNNotificationDismissActionIdentifier
-import platform.UserNotifications.UNNotificationRequest
-import platform.UserNotifications.UNNotificationResponse
-import platform.UserNotifications.UNNotificationSound
-import platform.UserNotifications.UNTimeIntervalNotificationTrigger
-import platform.UserNotifications.UNUserNotificationCenter
-import platform.UserNotifications.UNUserNotificationCenterDelegateProtocol
+import platform.UserNotifications.*
 import platform.darwin.NSObject
 
 actual fun getNotificationProvider(): NotificationProvider = IosNotificationProvider()
 
 /**
- * A manager for notification delegates that can handle multiple notifications.
+ * A manager for notification delegates that can handle multiple
+ * notifications.
  */
 private class NotificationDelegateManager : NSObject(), UNUserNotificationCenterDelegateProtocol {
     // Map of notification IDs to their builders
     private val notificationBuilders = mutableMapOf<String, NotificationBuilder>()
-
-    // Callbacks for remote notification registration
-    var onRemoteNotificationRegistered: ((deviceToken: platform.Foundation.NSData) -> Unit)? = null
-    var onRemoteNotificationRegistrationFailed: ((error: platform.Foundation.NSError) -> Unit)? = null
 
     // Register a notification builder
     fun registerNotification(builder: NotificationBuilder) {
@@ -50,17 +31,6 @@ private class NotificationDelegateManager : NSObject(), UNUserNotificationCenter
         notificationBuilders.remove(notificationId)
     }
 
-    // Handle remote notification registration success
-    fun didRegisterForRemoteNotificationsWithDeviceToken(deviceToken: platform.Foundation.NSData) {
-        println("[DEBUG_LOG] Successfully registered for remote notifications with token: $deviceToken")
-        onRemoteNotificationRegistered?.invoke(deviceToken)
-    }
-
-    // Handle remote notification registration failure
-    fun didFailToRegisterForRemoteNotificationsWithError(error: platform.Foundation.NSError) {
-        println("[DEBUG_LOG] Failed to register for remote notifications: $error")
-        onRemoteNotificationRegistrationFailed?.invoke(error)
-    }
 
     override fun userNotificationCenter(
         center: UNUserNotificationCenter,
@@ -103,9 +73,7 @@ private class NotificationDelegateManager : NSObject(), UNUserNotificationCenter
     ) {
         // Allow showing the notification even when the app is in foreground
         withCompletionHandler(
-            UNAuthorizationOptionAlert.toULong() or 
-            UNAuthorizationOptionBadge.toULong() or 
-            UNAuthorizationOptionSound.toULong()
+            UNAuthorizationOptionAlert or UNAuthorizationOptionBadge or UNAuthorizationOptionSound
         )
     }
 }
@@ -114,19 +82,6 @@ class IosNotificationProvider() : NotificationProvider {
     override val hasPermissionState = mutableStateOf(true)
     private val notificationCenter = UNUserNotificationCenter.currentNotificationCenter()
     private val notificationDelegateManager = NotificationDelegateManager()
-
-    // Expose callbacks for remote notification registration
-    var onRemoteNotificationRegistered: ((deviceToken: platform.Foundation.NSData) -> Unit)? = null
-        set(value) {
-            field = value
-            notificationDelegateManager.onRemoteNotificationRegistered = value
-        }
-
-    var onRemoteNotificationRegistrationFailed: ((error: platform.Foundation.NSError) -> Unit)? = null
-        set(value) {
-            field = value
-            notificationDelegateManager.onRemoteNotificationRegistrationFailed = value
-        }
 
     init {
         checkPermissionStatus()
@@ -183,17 +138,14 @@ class IosNotificationProvider() : NotificationProvider {
 //             Add attachment for large image if provided
             builder.largeImagePath?.let { imagePath ->
                 try {
-                    val attachment = platform.UserNotifications.UNNotificationAttachment.attachmentWithIdentifier(
-                        identifier = "image",
-                        URL = NSURL.URLWithString(imagePath)!!,
-                        options = null,
-                        error = null
+                    val attachment = UNNotificationAttachment.attachmentWithIdentifier(
+                        identifier = "image", URL = NSURL.URLWithString(imagePath)!!, options = null, error = null
                     )
                     if (attachment != null) {
                         setAttachments(listOf(attachment))
                     }
                 } catch (e: Exception) {
-                    // Handle attachment error
+                    Log.e("Error", "Failed to create attachment: ${e.message}")
                 }
             }
 
@@ -205,18 +157,13 @@ class IosNotificationProvider() : NotificationProvider {
                 // Create actions for buttons
                 val actions = builder.buttons.mapIndexed { index, button ->
                     UNNotificationAction.actionWithIdentifier(
-                        "button_${index}",
-                        button.label,
-                        UNNotificationActionOptionForeground
+                        "button_${index}", button.label, UNNotificationActionOptionForeground
                     )
                 }
 
                 // Register category with actions
                 val category = UNNotificationCategory.categoryWithIdentifier(
-                    categoryId,
-                    actions,
-                    emptyList<UNNotificationCategory>(),
-                    UNNotificationCategoryOptionNone
+                    categoryId, actions, emptyList<UNNotificationCategory>(), UNNotificationCategoryOptionNone
                 )
 
                 notificationCenter.setNotificationCategories(setOf(category))
@@ -230,9 +177,7 @@ class IosNotificationProvider() : NotificationProvider {
         // Create the request
         println("[DEBUG_LOG] Creating notification request with ID: notification_${builder.id}")
         val request = UNNotificationRequest.requestWithIdentifier(
-            "notification_${builder.id}",
-            content,
-            trigger
+            "notification_${builder.id}", content, trigger
         )
 
         // Register the notification with the delegate manager
@@ -243,7 +188,7 @@ class IosNotificationProvider() : NotificationProvider {
         println("[DEBUG_LOG] Adding notification request to notification center")
         notificationCenter.addNotificationRequest(request) { error ->
             if (error != null) {
-                println("[DEBUG_LOG] Failed to add notification request: ${error}")
+                println("[DEBUG_LOG] Failed to add notification request: $error")
                 builder.onFailed?.invoke()
             } else {
                 println("[DEBUG_LOG] Successfully added notification request")
@@ -275,9 +220,7 @@ class IosNotificationProvider() : NotificationProvider {
             println("[DEBUG_LOG] Current permission status before request: $currentStatus")
         }
 
-        val options = UNAuthorizationOptionAlert or 
-                      UNAuthorizationOptionBadge or 
-                      UNAuthorizationOptionSound
+        val options = UNAuthorizationOptionAlert or UNAuthorizationOptionBadge or UNAuthorizationOptionSound
 
         notificationCenter.requestAuthorizationWithOptions(options) { granted, error ->
             if (granted) {
@@ -285,7 +228,7 @@ class IosNotificationProvider() : NotificationProvider {
                 updatePermissionState(true)
                 onGranted()
             } else {
-                println("[DEBUG_LOG] Notification permission denied: ${error}")
+                println("[DEBUG_LOG] Notification permission denied: $error")
                 updatePermissionState(false)
                 onDenied()
             }
