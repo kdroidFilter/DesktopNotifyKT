@@ -5,7 +5,7 @@ import androidx.compose.ui.window.application
 
 import io.github.kdroidfilter.knotify.builder.AppConfig
 import io.github.kdroidfilter.knotify.builder.NotificationInitializer
-import io.github.kdroidfilter.knotify.demo.demo.generated.resources.Res
+import io.github.kdroidfilter.knotify.demo.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @OptIn(ExperimentalResourceApi::class)

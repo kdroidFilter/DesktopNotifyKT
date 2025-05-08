@@ -19,7 +19,7 @@ import io.github.kdroidfilter.knotify.builder.getNotificationProvider
 import io.github.kdroidfilter.knotify.builder.notification
 import com.kdroid.kmplog.Log
 import com.kdroid.kmplog.d
-import io.github.kdroidfilter.knotify.demo.demo.generated.resources.Res
+import io.github.kdroidfilter.knotify.demo.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 

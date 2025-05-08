@@ -31,5 +31,5 @@ dependencyResolutionManagement {
 }
 
 include(":knotify")
-include(":demo")
+include(":demo:composeApp")
 
