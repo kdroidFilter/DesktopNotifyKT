@@ -5,9 +5,6 @@ set -e
 
 echo "Building MacNotification library..."
 
-# Create output directories if they don't exist
-mkdir -p ../lib
-mkdir -p ../../../resources
 
 # Create Info.plist file for bundle identification
 cat > Info.plist << EOF
@@ -30,7 +27,7 @@ cat > Info.plist << EOF
 EOF
 
 # Compile Swift file directly to dylib with bundle info
-swiftc -emit-library -o ../../../resources/libMacNotification.dylib \
+swiftc -emit-library -o ../knotify/src/jvmMain/resources/darwin-aarch64/libMacNotification.dylib \
     -module-name MacNotification \
     -swift-version 5 \
     -O -whole-module-optimization \
@@ -44,4 +41,4 @@ swiftc -emit-library -o ../../../resources/libMacNotification.dylib \
 # Clean up temporary files
 rm -f Info.plist
 
-echo "Build completed successfully. Library is available at knotify/src/jvmMain/resources"
+echo "Build completed successfully."
