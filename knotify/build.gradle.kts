@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.vannitktech.maven.publish)
 }
 
-group = "com.kdroid.composenotification"
+group = "io.github.kdroidfilter.knotify"
 version = "0.2.0"
 
 kotlin {
@@ -43,7 +43,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.kmplog)
             implementation(libs.runtime)
-            implementation("io.github.kdroidfilter:platformtools.core:0.2.9")
+            implementation(libs.platformtools.core)
         }
 
         commonTest.dependencies {

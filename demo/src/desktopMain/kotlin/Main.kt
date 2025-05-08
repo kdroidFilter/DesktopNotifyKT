@@ -1,11 +1,11 @@
-package com.kdroid.composenotification.demo
+package io.github.kdroidfilter.knotify.demo
 
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 
-import com.kdroid.composenotification.demo.demo.generated.resources.Res
 import io.github.kdroidfilter.knotify.builder.AppConfig
 import io.github.kdroidfilter.knotify.builder.NotificationInitializer
+import io.github.kdroidfilter.knotify.demo.demo.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @OptIn(ExperimentalResourceApi::class)

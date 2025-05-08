@@ -6,6 +6,7 @@ agp = "8.9.2"
 kotlinx-coroutines = "1.10.2"
 kmplog = "0.6.1"
 compose-plugin = "1.7.3"
+platformtoolsCore = "0.2.9"
 runtime = "1.7.3"
 vanniktech = "0.31.0"
 core = "1.16.0"
@@ -39,6 +40,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 androidx-runtime-android = { group = "androidx.compose.runtime", name = "runtime-android", version.ref = "runtimeAndroid" }
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleProcess" }
 androidx-runtime-desktop = { group = "androidx.compose.runtime", name = "runtime-desktop", version.ref = "runtimeDesktop" }
+platformtools-core = { module = "io.github.kdroidfilter:platformtools.core", version.ref = "platformtoolsCore" }
 runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "runtime" }
 
 [plugins]

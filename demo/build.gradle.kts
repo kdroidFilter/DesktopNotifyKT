@@ -13,13 +13,13 @@ plugins {
 }
 
 val appVersion = "1.0.0"
-val appPackageName = "com.kdroid.composenotification.demo"
+val appPackageName = "io.github.kdroidfilter.knotify.demo"
 
 group = appPackageName
 version = appVersion
 
 android {
-    namespace = "com.kdroid.composenotification.demo"
+    namespace = "io.github.kdroidfilter.knotify.demo"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -125,11 +125,11 @@ kotlin {
 
 compose.desktop {
     application {
-        mainClass = "com.kdroid.composenotification.demo.MainKt"
+        mainClass = "io.github.kdroidfilter.knotify.demo.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.kdroid.composenotification.sample"
+            packageName = "io.github.kdroidfilter.knotify.sample"
             packageVersion = "1.0.0"
             description = "Compose Native Notification Sample"
             copyright = "© 2024 KdroidFilter. All rights reserved."

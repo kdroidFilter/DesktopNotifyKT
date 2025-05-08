@@ -1,4 +1,4 @@
-package com.kdroid.composenotification.demo
+package io.github.kdroidfilter.knotify.demo
 
 import android.R
 import android.app.NotificationManager
@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import io.github.kdroidfilter.knotify.AndroidChannelConfig
 import io.github.kdroidfilter.knotify.NotificationInitializer.notificationInitializer
+import io.github.kdroidfilter.knotify.demo.App
 
 
 class MainActivity : ComponentActivity() {

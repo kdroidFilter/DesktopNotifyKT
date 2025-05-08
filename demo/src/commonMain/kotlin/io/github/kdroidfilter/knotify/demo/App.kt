@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalResourceApi::class)
 
-package com.kdroid.composenotification.demo
+package io.github.kdroidfilter.knotify.demo
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,10 +17,9 @@ import androidx.compose.ui.unit.sp
 import io.github.kdroidfilter.knotify.builder.ExperimentalNotificationsApi
 import io.github.kdroidfilter.knotify.builder.getNotificationProvider
 import io.github.kdroidfilter.knotify.builder.notification
-import com.kdroid.composenotification.demo.demo.generated.resources.Res
 import com.kdroid.kmplog.Log
 import com.kdroid.kmplog.d
-import kotlinx.coroutines.launch
+import io.github.kdroidfilter.knotify.demo.demo.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 
