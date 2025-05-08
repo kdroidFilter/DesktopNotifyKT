@@ -4,6 +4,8 @@ import androidx.compose.runtime.mutableStateOf
 import io.github.kdroidfilter.knotify.model.DismissalReason
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSURL
+import platform.Foundation.NSOperationQueue
+import platform.UIKit.UIApplication
 import platform.UserNotifications.UNAuthorizationOptionAlert
 import platform.UserNotifications.UNAuthorizationOptionBadge
 import platform.UserNotifications.UNAuthorizationOptionSound
@@ -32,6 +34,10 @@ private class NotificationDelegateManager : NSObject(), UNUserNotificationCenter
     // Map of notification IDs to their builders
     private val notificationBuilders = mutableMapOf<String, NotificationBuilder>()
 
+    // Callbacks for remote notification registration
+    var onRemoteNotificationRegistered: ((deviceToken: platform.Foundation.NSData) -> Unit)? = null
+    var onRemoteNotificationRegistrationFailed: ((error: platform.Foundation.NSError) -> Unit)? = null
+
     // Register a notification builder
     fun registerNotification(builder: NotificationBuilder) {
         val notificationId = "notification_${builder.id}"
@@ -42,6 +48,18 @@ private class NotificationDelegateManager : NSObject(), UNUserNotificationCenter
     fun unregisterNotification(builder: NotificationBuilder) {
         val notificationId = "notification_${builder.id}"
         notificationBuilders.remove(notificationId)
+    }
+
+    // Handle remote notification registration success
+    fun didRegisterForRemoteNotificationsWithDeviceToken(deviceToken: platform.Foundation.NSData) {
+        println("[DEBUG_LOG] Successfully registered for remote notifications with token: $deviceToken")
+        onRemoteNotificationRegistered?.invoke(deviceToken)
+    }
+
+    // Handle remote notification registration failure
+    fun didFailToRegisterForRemoteNotificationsWithError(error: platform.Foundation.NSError) {
+        println("[DEBUG_LOG] Failed to register for remote notifications: $error")
+        onRemoteNotificationRegistrationFailed?.invoke(error)
     }
 
     override fun userNotificationCenter(
@@ -97,10 +115,24 @@ class IosNotificationProvider() : NotificationProvider {
     private val notificationCenter = UNUserNotificationCenter.currentNotificationCenter()
     private val notificationDelegateManager = NotificationDelegateManager()
 
+    // Expose callbacks for remote notification registration
+    var onRemoteNotificationRegistered: ((deviceToken: platform.Foundation.NSData) -> Unit)? = null
+        set(value) {
+            field = value
+            notificationDelegateManager.onRemoteNotificationRegistered = value
+        }
+
+    var onRemoteNotificationRegistrationFailed: ((error: platform.Foundation.NSError) -> Unit)? = null
+        set(value) {
+            field = value
+            notificationDelegateManager.onRemoteNotificationRegistrationFailed = value
+        }
+
     init {
         checkPermissionStatus()
-        // Note: We don't set the delegate here as it's already set in the Swift app delegate
-        println("[DEBUG_LOG] IosNotificationProvider initialized")
+        // Set the delegate for UNUserNotificationCenter
+        notificationCenter.setDelegate(notificationDelegateManager)
+        println("[DEBUG_LOG] IosNotificationProvider initialized with delegate set")
     }
 
     private fun checkPermissionStatus() {
@@ -147,7 +179,8 @@ class IosNotificationProvider() : NotificationProvider {
             setBody(builder.message)
             setSound(UNNotificationSound.defaultSound)
 
-            // Add attachment for large image if provided
+
+//             Add attachment for large image if provided
             builder.largeImagePath?.let { imagePath ->
                 try {
                     val attachment = platform.UserNotifications.UNNotificationAttachment.attachmentWithIdentifier(
