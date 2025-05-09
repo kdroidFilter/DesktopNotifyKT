@@ -55,6 +55,9 @@ internal class WindowsNotificationProvider : NotificationProvider {
 
     private val appConfig = NotificationInitializer.getAppConfig()
 
+    // Map to store notification IDs returned by Windows Toast API
+    private val notificationIds = mutableMapOf<Int, Long>()
+
     override fun sendNotification(builder: NotificationBuilder) {
         CoroutineScope(Dispatchers.IO).launch {
             if (!initializeCOM()) return@launch
@@ -83,7 +86,37 @@ internal class WindowsNotificationProvider : NotificationProvider {
     }
 
     override fun hideNotification(builder: NotificationBuilder) {
-        TODO("Not yet implemented")
+        //TODO NOT WORK
+
+        // Get the notification ID from the map
+        val notificationId = notificationIds[builder.id] ?: return
+
+        CoroutineScope(Dispatchers.IO).launch {
+            if (!initializeCOM()) return@launch
+
+            val wtlc = WinToastLibC.INSTANCE
+
+            if (!checkCompatibility(wtlc)) return@launch
+
+            val instance = createWinToastInstance(wtlc) ?: return@launch
+
+            try {
+                if (!configureWinToastInstance(wtlc, instance)) return@launch
+
+                // Hide the notification
+                val hideResult = wtlc.WTLC_hideToast(instance, notificationId)
+
+                if (!hideResult) {
+                    Log.e("Notification", "Failed to hide notification with ID: $notificationId")
+                } else {
+                    // Remove the notification ID from the map
+                    notificationIds.remove(builder.id)
+                }
+            } finally {
+                wtlc.WTLC_Instance_Destroy(instance)
+                Ole32.INSTANCE.CoUninitialize()
+            }
+        }
     }
 
     override fun hasPermission(): Boolean {
@@ -235,6 +268,9 @@ internal class WindowsNotificationProvider : NotificationProvider {
                     Log.e("Notification", "Error displaying the toast: $errorMsg")
                     return@withContext
                 }
+
+                // Store the notification ID for later use
+                notificationIds[builder.id] = showResult
 
                 // Start the message loop only if the toast was displayed successfully
                 runMessageLoop(hEvent)

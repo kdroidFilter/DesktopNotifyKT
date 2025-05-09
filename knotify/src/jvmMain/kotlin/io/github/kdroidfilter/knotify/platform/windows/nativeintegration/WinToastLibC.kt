@@ -37,6 +37,8 @@ internal interface WinToastLibC : Library {
     fun WTLC_initialize(instance: WTLC_Instance, error: IntByReference): Boolean
     fun WTLC_strerror(error: WTLC_Error): WString
 
+    fun WTLC_hideToast(instance: WTLC_Instance, id: Long): Boolean
+
     fun WTLC_Template_Create(templateType: WTLC_TemplateType): WTLC_Template?
     fun WTLC_Template_Destroy(template: WTLC_Template)
 
