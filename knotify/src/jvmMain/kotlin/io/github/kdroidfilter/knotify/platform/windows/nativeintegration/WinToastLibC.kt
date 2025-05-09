@@ -1,9 +1,9 @@
 package io.github.kdroidfilter.knotify.platform.windows.nativeintegration
 
-import ToastActivatedActionCallback
-import ToastActivatedCallback
-import ToastDismissedCallback
-import ToastFailedCallback
+import io.github.kdroidfilter.knotify.platform.windows.callbacks.ToastActivatedActionCallback
+import io.github.kdroidfilter.knotify.platform.windows.callbacks.ToastActivatedCallback
+import io.github.kdroidfilter.knotify.platform.windows.callbacks.ToastDismissedCallback
+import io.github.kdroidfilter.knotify.platform.windows.callbacks.ToastFailedCallback
 import com.sun.jna.Library
 import com.sun.jna.Native
 import com.sun.jna.Pointer

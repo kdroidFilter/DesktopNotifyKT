@@ -1,8 +1,12 @@
 
+package io.github.kdroidfilter.knotify.platform.windows.callbacks
+
 import com.sun.jna.Pointer
 import com.sun.jna.win32.StdCallLibrary
 
-// Mise à jour des interfaces de callback
+/**
+ * Callback interfaces for Windows Toast notifications
+ */
 internal interface ToastActivatedCallback : StdCallLibrary.StdCallCallback {
     fun invoke(userData: Pointer?)
 }
@@ -18,4 +22,3 @@ internal interface ToastDismissedCallback : StdCallLibrary.StdCallCallback {
 internal interface ToastFailedCallback : StdCallLibrary.StdCallCallback {
     fun invoke(userData: Pointer?)
 }
-
