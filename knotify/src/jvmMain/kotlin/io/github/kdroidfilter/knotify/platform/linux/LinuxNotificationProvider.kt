@@ -28,8 +28,14 @@ class LinuxNotificationProvider : NotificationProvider {
             scope.launch {
                 val appIconPath = appConfig.smallIcon
                 Log.d("sendNotification", appConfig.appName)
+                // Initialize notify with app name
+                if (!lib.my_notify_init(appConfig.appName)) {
+                    Log.e("LinuxNotificationProvider", "Failed to initialize notifications.")
+                    builder.onFailed?.invoke()
+                    return@launch
+                }
+
                 val notification = lib.create_notification(
-                    app_name = appConfig.appName,
                     summary = builder.title,
                     body = builder.message,
                     icon_path = appIconPath ?: ""
@@ -41,20 +47,22 @@ class LinuxNotificationProvider : NotificationProvider {
                     return@launch
                 }
 
-                builder.onActivated?.let {
-                    lib.add_button_to_notification(notification, "default", "Open", { _, action, _ ->
-                        action.let {
-                            it()
-                        }
-                    }, Pointer.NULL)
+                builder.onActivated?.let { onActivated ->
+                    val actionCallback = NotifyActionCallback { _, _, _ ->
+                        // When the notification is clicked, call the onActivated callback
+                        onActivated()
+                        stopMainLoop() // Stop the main loop after the callback
+                    }
+                    lib.set_notification_clicked_callback(notification, actionCallback, Pointer.NULL)
                 }
 
 
-                builder.onDismissed?.let {
-                    val closedCallback = NotifyClosedCallback { notification, userData ->
-                        it(DismissalReason.UserCanceled)
+                builder.onDismissed?.let { onDismissed ->
+                    val closedCallback = NotifyClosedCallback { _, _ ->
+                        onDismissed(DismissalReason.UserCanceled)
+                        stopMainLoop() // Stop the main loop after the callback
                     }
-                    lib.set_notification_closed_callback(notification, closedCallback , Pointer.NULL)
+                    lib.set_notification_closed_callback(notification, closedCallback, Pointer.NULL)
                 }
 
                 val largeImagePath = builder.largeImagePath as String?
@@ -69,21 +77,23 @@ class LinuxNotificationProvider : NotificationProvider {
                 }
 
                 builder.buttons.forEach { button ->
-                    lib.add_button_to_notification(notification, button.label, button.label, { _, action, _ ->
+                    val buttonCallback = NotifyActionCallback { _, action, _ ->
                         if (action == button.label) {
                             button.onClick.invoke()
                         }
-                        stopMainLoop() // Arrêter la boucle après le callback
-                    }, Pointer.NULL)
+                        stopMainLoop() // Stop the main loop after the callback
+                    }
+                    lib.add_button_to_notification(notification, button.label, button.label, buttonCallback, Pointer.NULL)
                 }
 
                 val result = lib.send_notification(notification)
                 if (result == 0) {
                     Log.i("LinuxNotificationProvider", "Notification sent successfully.")
-                    builder.onActivated?.invoke()
+                    // Don't call onActivated here, it will be called by the callback
                 } else {
                     Log.e("LinuxNotificationProvider", "Failed to send notification.")
                     builder.onFailed?.invoke()
+                    return@launch // Don't start the main loop if notification failed
                 }
 
                 startMainLoop()

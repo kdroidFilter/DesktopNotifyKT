@@ -12,7 +12,9 @@ interface LinuxNativeNotificationIntegration : Library {
         val INSTANCE: LinuxNativeNotificationIntegration = Native.load("notification", LinuxNativeNotificationIntegration::class.java)
     }
 
-    fun create_notification(app_name : String, summary: String, body: String, icon_path: String): Pointer?
+    fun my_notify_init(app_name: String): Boolean
+
+    fun create_notification(summary: String, body: String, icon_path: String): Pointer?
 
     fun add_button_to_notification(notification: Pointer?, button_id: String, button_label: String, callback: NotifyActionCallback?, user_data: Pointer?)
 
@@ -24,6 +26,8 @@ interface LinuxNativeNotificationIntegration : Library {
 
     fun set_notification_closed_callback(notification: Pointer?, callback: NotifyClosedCallback, user_data: Pointer?)
 
+    fun set_notification_clicked_callback(notification: Pointer?, callback: NotifyActionCallback, user_data: Pointer?)
+
     fun cleanup_notification()
 
     fun run_main_loop()
@@ -31,4 +35,3 @@ interface LinuxNativeNotificationIntegration : Library {
     fun quit_main_loop()
 
 }
-

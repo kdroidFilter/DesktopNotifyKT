@@ -7,6 +7,14 @@
 // Déclaration globale de la boucle principale
 static GMainLoop *main_loop = NULL;
 
+// Initialise la bibliothèque de notification avec le nom de l'application
+int my_notify_init(const char *app_name) {
+    if (notify_is_initted()) {
+        return 1; // Already initialized
+    }
+    return notify_init(app_name) ? 1 : 0;
+}
+
 // Callback par défaut pour le clic sur un bouton
 void default_button_clicked_callback(NotifyNotification *notification, char *action, gpointer user_data) {
     g_print("Button clicked with action: %s\n", action);
@@ -96,13 +104,14 @@ void set_image_from_pixbuf(Notification *notification, GdkPixbuf *pixbuf) {
 
 // Définir un callback pour le clic sur la notification
 void set_notification_clicked_callback(Notification *notification, NotifyActionCallback callback, gpointer user_data) {
-    if (notification != NULL) {
-        g_signal_connect(notification, "action-invoked", G_CALLBACK(callback), user_data);
+    if (notification != NULL && callback != NULL) {
+        // Use notify_notification_add_action with "default" as the action ID
+        notify_notification_add_action(notification, "default", "Default", callback, user_data, NULL);
     }
 }
 
 // Définir un callback pour la fermeture de la notification
-void set_notification_closed_callback(Notification *notification, void (*callback)(NotifyNotification *notification, gpointer user_data), gpointer user_data) {
+void set_notification_closed_callback(Notification *notification, NotifyClosedCallback callback, gpointer user_data) {
     if (notification != NULL) {
         g_signal_connect(notification, "closed", G_CALLBACK(callback), user_data);
     }
