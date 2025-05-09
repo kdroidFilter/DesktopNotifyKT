@@ -4,12 +4,6 @@
 
 ⚠️ **Warning**: This library is highly experimental, and bugs may occur. The API is subject to change.
 
-The Compose Native Notification library is a Kotlin Multiplatform library designed to work with Compose Multiplatform that enables developers to add notifications to their applications in a unified way across different platforms, including Windows, Linux, Android, and macOS. The main goal of this library is to provide a declarative way to send notifications on Android while removing all boilerplate code, and to enable sending native notifications on other platforms. The library provides seamless integration with Jetpack Compose, allowing notifications to be handled consistently within Compose-based applications.
-
-- **Android**: Full notification support, except for `onDismissed` callback which is currently not functional.
-- **Windows & Linux**: Full notification support, including all callbacks (`onActivated`, `onDismissed`, `onFailed`).
-- **macOS**: Supports only sending notifications without any callbacks.
-
 This guide explains how to use the library in your KMP project.
 
 ## 📦 Installation
