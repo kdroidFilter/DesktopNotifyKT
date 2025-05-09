@@ -13,3 +13,7 @@ xcuserdata/
 Pods/
 *.jks
 *yarn.lock
+/linuxlib/.idea
+/linuxlib/cmake-build-release
+.cache
+.idea
