@@ -2,7 +2,7 @@
 #include <glib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <stdlib.h>
-#include "notification_library.h"
+#include "linux_notification_library.h"
 
 // Déclaration globale de la boucle principale
 static GMainLoop *main_loop = NULL;
@@ -120,4 +120,4 @@ GdkPixbuf *load_pixbuf_from_file(const char *image_path) {
 
 /* Compilation en bibliothèque partagée (libnotification.so) */
 // Pour compiler cette bibliothèque en un fichier .so (bibliothèque partagée), vous pouvez utiliser la commande suivante :
-// gcc -shared -o libnotification.so -fPIC notification_library.c $(pkg-config --cflags --libs libnotify glib-2.0 gdk-pixbuf-2.0)
+//sudo apt install libnotify-dev libglib2.0-dev libgdk-pixbuf2.0-dev
