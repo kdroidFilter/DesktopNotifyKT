@@ -17,7 +17,7 @@ This guide explains how to use the library in your KMP project.
 To use this library, add the following dependency to your KMP project:
 
 ```kotlin
-implementation("io.github.kdroidfilter:compose-native-notification:0.2.0")
+implementation("io.github.kdroidfilter:knotify:0.2.0")
 ```
 
 Make sure to replace `latest-version` with the version you want to use.
@@ -148,8 +148,6 @@ This code helps ensure that your app properly manages permissions, updating the 
 ## 🌍 Platform-Specific Considerations
 
 - **Android**: Notifications require proper permission setup. You need to request permissions at runtime, as shown in the example.
-- **Linux & Windows**: Full support, including callbacks such as `onActivated`, `onDismissed`, and `onFailed`.
-- **macOS**: Notifications can be sent, but callbacks (`onDismissed`, `onActivated`) are not supported yet.
 
 ## ⭐ Features
 
@@ -174,47 +172,8 @@ This code helps ensure that your app properly manages permissions, updating the 
 ### KDE (Linux)
 ![KDE](/screenshots/KDE.png)
 
-## ➕ Additional Usage Example
-
-Here's another example that shows how to handle permission requests and send a notification:
-
-```kotlin
-val notificationProvider = getNotificationProvider()
-val hasPermission by notificationProvider.hasPermissionState
-
-if (hasPermission) {
-    Notification(
-        title = "Permission Granted Notification",
-        message = "You have successfully granted notification permissions!",
-        onActivated = { Log.d("NotificationLog", "Permission Granted Notification activated") },
-        onFailed = { Log.d("NotificationLog", "Permission Granted Notification failed") }
-    ) {
-        Button("Acknowledge") {
-            Log.d("NotificationLog", "Acknowledge button clicked")
-            onShowMessage("Thank you for acknowledging!")
-        }
-    }
-} else {
-    notificationProvider.requestPermission(
-        onGranted = {
-            notificationProvider.updatePermissionState(true)
-            Log.d("NotificationLog", "Notification permission granted")
-        },
-        onDenied = {
-            notificationProvider.updatePermissionState(false)
-            Log.d("NotificationLog", "Notification permission denied")
-        }
-    )
-}
-```
-
-This example illustrates how to first check for notification permission, and if granted, send a notification with a custom action button.
 
 ## 🛤️ Roadmap
-
-- **Native iOS and macOS Support**: Integrate native support for iOS and macOS to extend full functionality across Apple platforms.
-
-- **WASM and JavaScript Support**: Add support for WebAssembly (WASM) and JavaScript environments.
 
 - **Persistent Notifications for Audio Players**: Integrate persistent notifications, specifically tailored for use cases such as audio players.
 
@@ -233,11 +192,5 @@ If you would like to contribute, feel free to submit issues or pull requests on 
 ## 🛠️ Troubleshooting
 
 - **Android `onDismissed` callback**: This callback is not functional on Android. You can handle dismissal through other application state monitoring if needed.
-- **macOS Callbacks**: macOS does not support interactive callbacks for notifications. Only basic notifications are available.
-
-## 🧰 Under the Hood
-
-- **Linux**: Uses `libnotify` for handling notifications.
-- **Windows**: Utilizes [WinToast](https://github.com/mohabouje/WinToast) and [WinToastLibC](https://github.com/AlienCowEatCake/WinToastLibC) for managing notifications.
 
 Feel free to reach out for support or additional questions regarding implementation.
