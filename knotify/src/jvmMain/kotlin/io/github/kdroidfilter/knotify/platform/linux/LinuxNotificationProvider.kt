@@ -14,7 +14,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
-class LinuxNotificationProvider : NotificationProvider {
+/**
+ * Linux implementation of the NotificationProvider interface.
+ * Uses the native Linux notification library via JNA.
+ */
+class LinuxNotificationProvider(
+    private val debugMode: Boolean = false
+) : NotificationProvider {
     private val _hasPermissionState = mutableStateOf(hasPermission())
     override val hasPermissionState: State<Boolean> get() = _hasPermissionState
 
@@ -23,11 +29,22 @@ class LinuxNotificationProvider : NotificationProvider {
     private var coroutineScope: CoroutineScope? = null
     private val appConfig = NotificationInitializer.getAppConfig()
 
+    init {
+        // Set debug mode in the native library
+        lib.set_debug_mode(if (debugMode) 1 else 0)
+        if (debugMode) {
+            Log.d("LinuxNotificationProvider", "Debug mode enabled")
+        }
+    }
+
     override fun sendNotification(builder: NotificationBuilder) {
         coroutineScope = CoroutineScope(Dispatchers.IO).also { scope ->
             scope.launch {
                 val appIconPath = appConfig.smallIcon
-                Log.d("sendNotification", appConfig.appName)
+                if (debugMode) {
+                    Log.d("LinuxNotificationProvider", "Sending notification with app name: ${appConfig.appName}")
+                }
+
                 // Initialize notify with app name
                 if (!lib.my_notify_init(appConfig.appName)) {
                     Log.e("LinuxNotificationProvider", "Failed to initialize notifications.")
@@ -50,15 +67,20 @@ class LinuxNotificationProvider : NotificationProvider {
                 builder.onActivated?.let { onActivated ->
                     val actionCallback = NotifyActionCallback { _, _, _ ->
                         // When the notification is clicked, call the onActivated callback
+                        if (debugMode) {
+                            Log.d("LinuxNotificationProvider", "Notification clicked, invoking onActivated")
+                        }
                         onActivated()
                         stopMainLoop() // Stop the main loop after the callback
                     }
                     lib.set_notification_clicked_callback(notification, actionCallback, Pointer.NULL)
                 }
 
-
                 builder.onDismissed?.let { onDismissed ->
                     val closedCallback = NotifyClosedCallback { _, _ ->
+                        if (debugMode) {
+                            Log.d("LinuxNotificationProvider", "Notification dismissed, invoking onDismissed")
+                        }
                         onDismissed(DismissalReason.UserCanceled)
                         stopMainLoop() // Stop the main loop after the callback
                     }
@@ -68,6 +90,9 @@ class LinuxNotificationProvider : NotificationProvider {
                 val largeImagePath = builder.largeImagePath as String?
                 val largeImageAbsolutePath = largeImagePath?.let { extractToTempIfDifferent(it) }?.absolutePath
                 largeImageAbsolutePath?.let {
+                    if (debugMode) {
+                        Log.d("LinuxNotificationProvider", "Loading image from: $it")
+                    }
                     val pixbufPointer = lib.load_pixbuf_from_file(it)
                     if (pixbufPointer != Pointer.NULL) {
                         lib.set_image_from_pixbuf(notification, pixbufPointer)
@@ -77,8 +102,14 @@ class LinuxNotificationProvider : NotificationProvider {
                 }
 
                 builder.buttons.forEach { button ->
+                    if (debugMode) {
+                        Log.d("LinuxNotificationProvider", "Adding button: ${button.label}")
+                    }
                     val buttonCallback = NotifyActionCallback { _, action, _ ->
                         if (action == button.label) {
+                            if (debugMode) {
+                                Log.d("LinuxNotificationProvider", "Button clicked: $action")
+                            }
                             button.onClick.invoke()
                         }
                         stopMainLoop() // Stop the main loop after the callback
@@ -88,7 +119,9 @@ class LinuxNotificationProvider : NotificationProvider {
 
                 val result = lib.send_notification(notification)
                 if (result == 0) {
-                    Log.i("LinuxNotificationProvider", "Notification sent successfully.")
+                    if (debugMode) {
+                        Log.i("LinuxNotificationProvider", "Notification sent successfully.")
+                    }
                     // Don't call onActivated here, it will be called by the callback
                 } else {
                     Log.e("LinuxNotificationProvider", "Failed to send notification.")
@@ -112,7 +145,9 @@ class LinuxNotificationProvider : NotificationProvider {
 
     private fun startMainLoop() {
         if (!isMainLoopRunning) {
-            Log.d("LinuxNotificationProvider", "Starting main loop...")
+            if (debugMode) {
+                Log.d("LinuxNotificationProvider", "Starting main loop...")
+            }
             isMainLoopRunning = true
             lib.run_main_loop()
         }
@@ -120,7 +155,9 @@ class LinuxNotificationProvider : NotificationProvider {
 
     private fun stopMainLoop() {
         if (isMainLoopRunning) {
-            Log.d("LinuxNotificationProvider", "Stopping main loop...")
+            if (debugMode) {
+                Log.d("LinuxNotificationProvider", "Stopping main loop...")
+            }
             lib.quit_main_loop()
             isMainLoopRunning = false
             coroutineScope?.cancel()

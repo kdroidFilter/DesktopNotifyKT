@@ -2,50 +2,57 @@
 #define NOTIFICATION_LIBRARY_H
 
 #include <libnotify/notify.h>
-#include <gdk-pixbuf/gdk-pixbuf.h>  // Inclusion de GdkPixbuf
+#include <gdk-pixbuf/gdk-pixbuf.h>  // Include GdkPixbuf
 
-// Type défini pour la notification
+// Global debug flag
+extern int debug_mode;
+
+// Set debug mode (0 = disabled, 1 = enabled)
+void set_debug_mode(int enable);
+
+// Type definition for notification
 typedef NotifyNotification Notification;
 
-// Type défini pour les callbacks d'action
+// Type definition for action callbacks
 typedef void (*NotifyActionCallback)(NotifyNotification *notification, char *action, gpointer user_data);
 
-// Type défini pour les callbacks de fermeture
+// Type definition for closed callbacks
 typedef void (*NotifyClosedCallback)(NotifyNotification *notification, gpointer user_data);
 
-// Initialise la bibliothèque de notification avec le nom de l'application
+// Initialize notification library with application name
 int my_notify_init(const char *app_name);
 
-// Crée une nouvelle notification avec une icône
+// Create a new notification with an icon
 Notification *create_notification(const char *summary, const char *body, const char *icon_path);
 
-// Crée une nouvelle notification avec une image GdkPixbuf
+// Create a new notification with a GdkPixbuf image
 Notification *create_notification_with_pixbuf(const char *summary, const char *body, const char *image_path);
 
-// Ajoute un bouton facultatif à la notification
+// Add an optional button to the notification
 void add_button_to_notification(Notification *notification, const char *button_id, const char *button_label, NotifyActionCallback callback, gpointer user_data);
 
-// Envoie la notification
+// Send the notification
 int send_notification(Notification *notification);
 
-// Ajoute un callback pour le clic sur la notification
+// Add a callback for notification click
 void set_notification_clicked_callback(Notification *notification, NotifyActionCallback callback, gpointer user_data);
 
-// Ajoute un callback pour la fermeture de la notification
+// Add a callback for notification close
 void set_notification_closed_callback(Notification *notification, NotifyClosedCallback callback, gpointer user_data);
 
+// Set image from GdkPixbuf
 void set_image_from_pixbuf(Notification *notification, GdkPixbuf *pixbuf);
 
-// Charge un GdkPixbuf à partir d'un fichier
+// Load a GdkPixbuf from a file
 GdkPixbuf *load_pixbuf_from_file(const char *image_path);
 
-// Démarre la boucle principale pour gérer les événements
+// Start the main loop to handle events
 void run_main_loop();
 
-// Arrête la boucle principale
+// Stop the main loop
 void quit_main_loop();
 
-// Nettoyage des ressources
+// Clean up resources
 void cleanup_notification();
 
 
