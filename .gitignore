@@ -17,3 +17,7 @@ Pods/
 /linuxlib/cmake-build-release
 .cache
 .idea
+/knotify/src/jvmMain/resources/win32-arm64/wintoastlibc_lazy.dll
+/knotify/src/jvmMain/resources/win32-arm64/wintoastlibc_static.lib
+/knotify/src/jvmMain/resources/win32-x86-64/wintoastlibc_lazy.dll
+/knotify/src/jvmMain/resources/win32-x86-64/wintoastlibc_static.lib
