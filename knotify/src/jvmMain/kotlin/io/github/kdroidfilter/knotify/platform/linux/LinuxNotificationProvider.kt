@@ -28,6 +28,7 @@ class LinuxNotificationProvider(
     private var isMainLoopRunning = false
     private var coroutineScope: CoroutineScope? = null
     private val appConfig = NotificationInitializer.getAppConfig()
+    private var activeNotifications = mutableMapOf<NotificationBuilder, Pointer?>()
 
     init {
         // Set debug mode in the native library
@@ -62,19 +63,23 @@ class LinuxNotificationProvider(
                 }
 
                 builder.onActivated?.let { onActivated ->
-                    val actionCallback = NotifyActionCallback { _, _, _ ->
+                    val actionCallback = NotifyActionCallback { notif, _, _ ->
                         // When the notification is clicked, call the onActivated callback
                         if (debugMode) Log.d("LinuxNotificationProvider", "Notification clicked, invoking onActivated")
                         onActivated()
+                        // Remove the notification from the active notifications map
+                        activeNotifications.entries.removeIf { it.value == notif }
                         stopMainLoop() // Stop the main loop after the callback
                     }
                     lib.set_notification_clicked_callback(notification, actionCallback, Pointer.NULL)
                 }
 
                 builder.onDismissed?.let { onDismissed ->
-                    val closedCallback = NotifyClosedCallback { _, _ ->
+                    val closedCallback = NotifyClosedCallback { notif, _ ->
                         if (debugMode) Log.d("LinuxNotificationProvider", "Notification dismissed, invoking onDismissed")
                         onDismissed(DismissalReason.UserCanceled)
+                        // Remove the notification from the active notifications map
+                        activeNotifications.entries.removeIf { it.value == notif }
                         stopMainLoop() // Stop the main loop after the callback
                     }
                     lib.set_notification_closed_callback(notification, closedCallback, Pointer.NULL)
@@ -95,11 +100,13 @@ class LinuxNotificationProvider(
 
                 builder.buttons.forEach { button ->
                         Log.d("LinuxNotificationProvider", "Adding button: ${button.label}")
-                    val buttonCallback = NotifyActionCallback { _, action, _ ->
+                    val buttonCallback = NotifyActionCallback { notif, action, _ ->
                         if (action == button.label) {
                             Log.d("LinuxNotificationProvider", "Button clicked: $action")
                             button.onClick.invoke()
                         }
+                        // Remove the notification from the active notifications map
+                        activeNotifications.entries.removeIf { it.value == notif }
                         stopMainLoop() // Stop the main loop after the callback
                     }
                     lib.add_button_to_notification(notification, button.label, button.label, buttonCallback, Pointer.NULL)
@@ -108,6 +115,8 @@ class LinuxNotificationProvider(
                 val result = lib.send_notification(notification)
                 if (result == 0) {
                     Log.i("LinuxNotificationProvider", "Notification sent successfully.")
+                    // Store the notification pointer in the map
+                    activeNotifications[builder] = notification
                     // Don't call onActivated here, it will be called by the callback
                 } else {
                     Log.e("LinuxNotificationProvider", "Failed to send notification.")
@@ -122,7 +131,26 @@ class LinuxNotificationProvider(
     }
 
     override fun hideNotification(builder: NotificationBuilder) {
-        TODO("Not yet implemented")
+        //TODO NOT WORK
+        val notification = activeNotifications[builder]
+        if (notification != null) {
+            if (debugMode) Log.d("LinuxNotificationProvider", "Hiding notification")
+
+            val result = lib.close_notification(notification)
+            if (result == 0) {
+                Log.i("LinuxNotificationProvider", "Notification hidden successfully.")
+                activeNotifications.remove(builder)
+
+                // If this was the last notification and main loop is running, stop it
+                if (activeNotifications.isEmpty() && isMainLoopRunning) {
+                    stopMainLoop()
+                }
+            } else {
+                Log.e("LinuxNotificationProvider", "Failed to hide notification.")
+            }
+        } else {
+            Log.w("LinuxNotificationProvider", "No active notification found to hide.")
+        }
     }
 
     override fun hasPermission(): Boolean {

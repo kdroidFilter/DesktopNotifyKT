@@ -88,6 +88,13 @@ interface LinuxNativeNotificationIntegration : Library {
     fun cleanup_notification()
 
     /**
+     * Close/hide a notification
+     * @param notification Pointer to the notification
+     * @return 0 if successful, non-zero otherwise
+     */
+    fun close_notification(notification: Pointer?): Int
+
+    /**
      * Start the main loop to handle events
      */
     fun run_main_loop()

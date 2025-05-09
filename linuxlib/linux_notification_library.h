@@ -55,6 +55,9 @@ void quit_main_loop();
 // Clean up resources
 void cleanup_notification();
 
+// Close/hide a notification
+int close_notification(Notification *notification);
+
 
 
 #endif // NOTIFICATION_LIBRARY_H

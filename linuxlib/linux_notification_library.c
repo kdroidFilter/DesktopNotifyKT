@@ -204,6 +204,26 @@ GdkPixbuf *load_pixbuf_from_file(const char *image_path) {
     return pixbuf;
 }
 
+/* Close/hide a notification */
+int close_notification(Notification *notification) {
+    if (notification == NULL) {
+        debug_log("Cannot close notification: notification is NULL\n");
+        return EXIT_FAILURE;
+    }
+
+    debug_log("Closing notification\n");
+
+    GError *error = NULL;
+    if (!notify_notification_close(notification, &error)) {
+        fprintf(stderr, "Failed to close notification: %s\n", error->message);
+        g_error_free(error);
+        return EXIT_FAILURE;
+    }
+
+    debug_log("Notification closed successfully\n");
+    return EXIT_SUCCESS;
+}
+
 /* Compilation as shared library (libnotification.so) */
 /* To compile this library as a .so file (shared library), you can use the following command: */
 /* sudo apt install libnotify-dev libglib2.0-dev libgdk-pixbuf2.0-dev */
