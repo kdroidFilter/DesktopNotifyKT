@@ -94,7 +94,7 @@ val buildNativeMac: TaskProvider<Exec> = tasks.register<Exec>("buildNativeMac") 
 
 val buildNativeWin: TaskProvider<Exec> = tasks.register<Exec>("buildNativeWin") {
     onlyIf { System.getProperty("os.name").startsWith("Windows") }
-    workingDir(rootDir.resolve("winlib"))
+    workingDir(rootDir.resolve("winlib/WinToastLibC"))
     commandLine("cmd", "/c", "build.bat")
 }
 
