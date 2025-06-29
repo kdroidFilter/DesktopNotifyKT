@@ -6,7 +6,6 @@
 
 <p align="center">
   <a href="https://central.sonatype.com/artifact/io.github.kdroidfilter/knotify"><img src="https://img.shields.io/maven-central/v/io.github.kdroidfilter/knotify.svg?label=Maven%20Central" alt="Maven Central"></a>
-  <a href="https://github.com/kdroidFilter/ComposeNativeNotification/actions/workflows/publish-on-maven.yml"><img src="https://github.com/kdroidFilter/ComposeNativeNotification/actions/workflows/publish-on-maven.yml/badge.svg" alt="Publish to Maven Central"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
   <a href="#"><img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey" alt="Platform"></a>
 </p>
