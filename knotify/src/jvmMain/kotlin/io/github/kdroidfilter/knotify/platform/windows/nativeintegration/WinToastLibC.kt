@@ -48,6 +48,7 @@ internal interface WinToastLibC : Library {
     fun WTLC_Template_setAudioOption(template: WTLC_Template, option: WTLC_AudioOption)
     fun WTLC_Template_setExpiration(template: WTLC_Template, milliseconds: Long)
     fun WTLC_Template_setImagePath(template: WTLC_Template, imagePath: WString)
+    fun WTLC_Template_setAttributionText(template: WTLC_Template, attributionText: WString)
     fun WTLC_Template_addAction(template: WTLC_Template, label: WString)
     fun WTLC_Template_addInput(template: WTLC_Template)
 

@@ -219,8 +219,11 @@ internal class WindowsNotificationProvider : NotificationProvider {
                 }
 
                 // Add text input fields for text input actions
-                builder.textInputActions.forEach { _ ->
+                builder.textInputActions.forEach { textInputAction ->
                     wtlc.WTLC_Template_addInput(template)
+                    // Set the placeholder text using the attribution text field
+                    // This is a workaround since WinToastLibC doesn't expose a direct method to set placeholder text
+                    wtlc.WTLC_Template_setAttributionText(template, WString(textInputAction.placeholder))
                 }
 
                 wtlc.WTLC_Template_setAudioOption(template, WTLC_AudioOption_Constants.Default)
