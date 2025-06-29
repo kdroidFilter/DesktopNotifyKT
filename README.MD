@@ -126,6 +126,10 @@ val notification = notification(
     largeIcon = {
         // Your Composable UI here
         // For example, a blue circle with text "KN" in the center
+        // IMPORTANT: Always use modifier.fillMaxSize() for proper rendering
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Your content here
+        }
     }
 )
 
@@ -138,9 +142,15 @@ sendNotification(
     message = "This notification has a Compose UI element as its image",
     largeIcon = {
         // Your Composable UI here
+        // IMPORTANT: Always use modifier.fillMaxSize() for proper rendering
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Your content here
+        }
     }
 )
 ```
+
+> **Important Note**: When using Composable UI elements in notifications, always use `modifier.fillMaxSize()` to ensure proper rendering. Without this modifier, the content may not display correctly.
 
 ## 📸 Screenshots
 
