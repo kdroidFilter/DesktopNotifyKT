@@ -8,6 +8,7 @@ import io.github.kdroidfilter.knotify.demo.composeapp.generated.resources.Res
 import io.github.kdroidfilter.knotify.demo.composeapp.generated.resources.compose
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import java.io.File
 
 @OptIn(ExperimentalResourceApi::class)
 fun main() = application {
@@ -19,7 +20,18 @@ fun main() = application {
                 smallIcon = Res.getUri("drawable/compose.png"),
             )
         )
+        getAppInfo()
         App()
     }
 }
 
+fun getAppInfo() {
+    val appName = System.getProperty("sun.java.command")?.split(" ")?.first()
+    val jarName = System.getProperty("java.class.path")
+        ?.split(File.pathSeparator)
+        ?.firstOrNull()
+        ?.substringAfterLast(File.separator)
+
+    println("App: $appName")
+    println("JAR: $jarName")
+}
