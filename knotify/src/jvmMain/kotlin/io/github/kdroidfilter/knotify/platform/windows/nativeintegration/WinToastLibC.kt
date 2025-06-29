@@ -2,6 +2,7 @@ package io.github.kdroidfilter.knotify.platform.windows.nativeintegration
 
 import io.github.kdroidfilter.knotify.platform.windows.callbacks.ToastActivatedActionCallback
 import io.github.kdroidfilter.knotify.platform.windows.callbacks.ToastActivatedCallback
+import io.github.kdroidfilter.knotify.platform.windows.callbacks.ToastActivatedInputCallback
 import io.github.kdroidfilter.knotify.platform.windows.callbacks.ToastDismissedCallback
 import io.github.kdroidfilter.knotify.platform.windows.callbacks.ToastFailedCallback
 import com.sun.jna.Library
@@ -12,6 +13,7 @@ import com.sun.jna.ptr.IntByReference
 import com.sun.jna.win32.W32APIOptions
 import io.github.kdroidfilter.knotify.platform.windows.types.WTLC_AudioOption
 import io.github.kdroidfilter.knotify.platform.windows.types.WTLC_Error
+import io.github.kdroidfilter.knotify.platform.windows.types.WTLC_Handler
 import io.github.kdroidfilter.knotify.platform.windows.types.WTLC_Instance
 import io.github.kdroidfilter.knotify.platform.windows.types.WTLC_Template
 import io.github.kdroidfilter.knotify.platform.windows.types.WTLC_TemplateType
@@ -47,6 +49,7 @@ internal interface WinToastLibC : Library {
     fun WTLC_Template_setExpiration(template: WTLC_Template, milliseconds: Long)
     fun WTLC_Template_setImagePath(template: WTLC_Template, imagePath: WString)
     fun WTLC_Template_addAction(template: WTLC_Template, label: WString)
+    fun WTLC_Template_addInput(template: WTLC_Template)
 
     fun WTLC_showToast(
         instance: WTLC_Instance,
@@ -56,6 +59,13 @@ internal interface WinToastLibC : Library {
         activatedActionCallback: ToastActivatedActionCallback?,
         dismissedCallback: ToastDismissedCallback?,
         failedCallback: ToastFailedCallback?,
+        error: IntByReference
+    ): Long
+
+    fun WTLC_showToastEx(
+        instance: WTLC_Instance,
+        template: WTLC_Template,
+        handler: WTLC_Handler?,
         error: IntByReference
     ): Long
 }

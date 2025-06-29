@@ -2,6 +2,7 @@ package io.github.kdroidfilter.knotify.platform.windows.provider
 
 import io.github.kdroidfilter.knotify.platform.windows.callbacks.ToastActivatedActionCallback
 import io.github.kdroidfilter.knotify.platform.windows.callbacks.ToastActivatedCallback
+import io.github.kdroidfilter.knotify.platform.windows.callbacks.ToastActivatedInputCallback
 import io.github.kdroidfilter.knotify.platform.windows.callbacks.ToastDismissedCallback
 import io.github.kdroidfilter.knotify.platform.windows.callbacks.ToastFailedCallback
 import androidx.compose.runtime.State
@@ -31,6 +32,7 @@ import io.github.kdroidfilter.knotify.platform.windows.constants.WTLC_TemplateTy
 import io.github.kdroidfilter.knotify.platform.windows.constants.WTLC_TextField_Constants
 import io.github.kdroidfilter.knotify.platform.windows.nativeintegration.ExtendedUser32
 import io.github.kdroidfilter.knotify.platform.windows.nativeintegration.WinToastLibC
+import io.github.kdroidfilter.knotify.platform.windows.types.WTLC_Handler
 import io.github.kdroidfilter.knotify.platform.windows.utils.registerBasicAUMID
 import io.github.kdroidfilter.knotify.utils.extractToTempIfDifferent
 import kotlinx.coroutines.CoroutineScope
@@ -216,6 +218,11 @@ internal class WindowsNotificationProvider : NotificationProvider {
                     wtlc.WTLC_Template_addAction(template, WString(button.label))
                 }
 
+                // Add text input fields for text input actions
+                builder.textInputActions.forEach { _ ->
+                    wtlc.WTLC_Template_addInput(template)
+                }
+
                 wtlc.WTLC_Template_setAudioOption(template, WTLC_AudioOption_Constants.Default)
                 wtlc.WTLC_Template_setExpiration(template, 30000) // 30 seconds
 
@@ -250,16 +257,37 @@ internal class WindowsNotificationProvider : NotificationProvider {
             try {
                 val callbacks = createCallbacks(hEvent, builder)
 
-                val showResult = wtlc.WTLC_showToast(
-                    instance,
-                    template,
-                    null,
-                    callbacks.activatedCallback,
-                    callbacks.activatedActionCallback,
-                    callbacks.dismissedCallback,
-                    callbacks.failedCallback,
-                    errorRef
-                )
+                val showResult = if (callbacks.activatedInputCallback != null) {
+                    // Create a handler with the input callback
+                    val handler = WTLC_Handler().apply {
+                        version = WTLC_Handler.TOAST_ACTIVATED_INPUT_VERSION
+                        toastActivated = callbacks.activatedCallback
+                        toastActivatedAction = callbacks.activatedActionCallback
+                        toastActivatedInput = callbacks.activatedInputCallback
+                        toastDismissed = callbacks.dismissedCallback
+                        toastFailed = callbacks.failedCallback
+                    }
+
+                    // Use WTLC_showToastEx with the handler that includes the input callback
+                    wtlc.WTLC_showToastEx(
+                        instance,
+                        template,
+                        handler,
+                        errorRef
+                    )
+                } else {
+                    // Fall back to WTLC_showToast if no input callback
+                    wtlc.WTLC_showToast(
+                        instance,
+                        template,
+                        null,
+                        callbacks.activatedCallback,
+                        callbacks.activatedActionCallback,
+                        callbacks.dismissedCallback,
+                        callbacks.failedCallback,
+                        errorRef
+                    )
+                }
 
                 if (showResult < 0) {
                     val errorMsg = wtlc.WTLC_strerror(errorRef.value).toString()
@@ -354,7 +382,15 @@ internal class WindowsNotificationProvider : NotificationProvider {
 
         val activatedActionCallback = object : ToastActivatedActionCallback {
             override fun invoke(userData: Pointer?, actionIndex: Int) {
-                builder.buttons.getOrNull(actionIndex)?.onClick?.invoke()
+                // If actionIndex is 0 and there are no buttons but there are text input actions,
+                // this might be a text input response (handled by toastActivated(std::wstring response) in C++)
+                if (actionIndex == 0 && builder.buttons.isEmpty() && builder.textInputActions.isNotEmpty()) {
+                    // We can't get the text input response here, but we can trigger the action
+                    // The actual text will be handled by the native code
+                    builder.textInputActions.firstOrNull()?.onTextSubmitted("")
+                } else {
+                    builder.buttons.getOrNull(actionIndex)?.onClick?.invoke()
+                }
                 Kernel32.INSTANCE.SetEvent(hEvent)
             }
         }
@@ -379,11 +415,27 @@ internal class WindowsNotificationProvider : NotificationProvider {
             }
         }
 
+        // Create input callback if there are text input actions
+        val activatedInputCallback = if (builder.textInputActions.isNotEmpty()) {
+            object : ToastActivatedInputCallback {
+                override fun invoke(userData: Pointer?, response: WString) {
+                    // Find the first text input action (we can only have one in Windows)
+                    builder.textInputActions.firstOrNull()?.let { textInputAction ->
+                        textInputAction.onTextSubmitted(response.toString())
+                    }
+                    Kernel32.INSTANCE.SetEvent(hEvent)
+                }
+            }
+        } else {
+            null
+        }
+
         return Callbacks(
             activatedCallback,
             activatedActionCallback,
             dismissedCallback,
-            failedCallback
+            failedCallback,
+            activatedInputCallback
         )
     }
 
@@ -391,6 +443,7 @@ internal class WindowsNotificationProvider : NotificationProvider {
         val activatedCallback: ToastActivatedCallback,
         val activatedActionCallback: ToastActivatedActionCallback,
         val dismissedCallback: ToastDismissedCallback,
-        val failedCallback: ToastFailedCallback
+        val failedCallback: ToastFailedCallback,
+        val activatedInputCallback: ToastActivatedInputCallback? = null
     )
 }
