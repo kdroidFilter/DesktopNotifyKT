@@ -78,7 +78,7 @@ myNotification.hide()
 
 With this DSL approach, you can create rich and interactive notifications while keeping the code clean and readable. The library handles all the necessary details, allowing you to focus on your app's core logic.
 
-### Creating a Notification with Text Input (macOS)
+### Creating a Notification with Text Input (macOS and Linux)
 
 ```kotlin
 // Create a notification with text input
@@ -106,6 +106,8 @@ val textInputNotification = notification(
 textInputNotification.send()
 ```
 
+> **Note**: On macOS, the text input field is directly integrated into the notification. On Linux, clicking the text input button opens a zenity dialog where the user can enter text.
+
 This code helps ensure that your app properly manages permissions, updating the notification state as permissions are granted or denied.
 
 ## ⭐ Features
@@ -114,7 +116,7 @@ This code helps ensure that your app properly manages permissions, updating the 
 - **Callbacks for User Interaction**: Handle user actions such as `onActivated`, `onDismissed`, and `onFailed` to add interactivity to your notifications.
 - **Custom Actions**: Add buttons with custom actions to your notifications, such as showing or hiding messages.
 - **Button Support**: Notifications can include interactive buttons, allowing users to take specific actions directly from the notification.
-- **Text Input Support**: Add text input fields to notifications, allowing users to respond directly from the notification (currently supported on macOS).
+- **Text Input Support**: Add text input fields to notifications, allowing users to respond directly from the notification (supported on macOS and Linux).
 - **Cross-Platform Compatibility**: Seamless integration across Linux, Windows, and macOS with platform-specific considerations.
 
 ## 🎨 KNotify Compose

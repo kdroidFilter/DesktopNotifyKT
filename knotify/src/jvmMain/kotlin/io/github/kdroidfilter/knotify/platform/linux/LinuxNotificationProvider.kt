@@ -1,18 +1,16 @@
 package io.github.kdroidfilter.knotify.platform.linux
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
+import co.touchlab.kermit.Logger
+import com.sun.jna.Pointer
 import io.github.kdroidfilter.knotify.builder.NotificationBuilder
 import io.github.kdroidfilter.knotify.builder.NotificationProvider
 import io.github.kdroidfilter.knotify.model.DismissalReason
-import com.sun.jna.Pointer
 import io.github.kdroidfilter.knotify.utils.WindowUtils
 import io.github.kdroidfilter.knotify.utils.extractToTempIfDifferent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import co.touchlab.kermit.Logger
 
 /**
  * Linux implementation of the NotificationProvider interface.
@@ -144,6 +142,53 @@ class LinuxNotificationProvider(
                     // Store the callback in the class-level map
                     buttonCallbacks[notification]?.put(button.label, buttonCallback)
                     lib.add_button_to_notification(notification, button.label, button.label, buttonCallback, Pointer.NULL)
+                }
+
+                // Add text input actions as buttons that open zenity dialogs
+                builder.textInputActions.forEach { textInputAction ->
+                    logger.d { "Adding text input button: ${textInputAction.label}" }
+                    val textInputButtonCallback = NotifyActionCallback { notif, action, _ ->
+                        if (action == textInputAction.label) {
+                            logger.d { "Text input button clicked: $action" }
+
+                            // Launch zenity dialog in a separate thread to avoid blocking
+                            Thread {
+                                try {
+                                    // Create zenity command with the placeholder as the prompt
+                                    val zenityCommand = arrayOf(
+                                        "zenity", 
+                                        "--entry", 
+                                        "--title", builder.title,
+                                        "--text", textInputAction.placeholder
+                                    )
+
+                                    // Execute zenity command and get the result
+                                    val process = Runtime.getRuntime().exec(zenityCommand)
+                                    val inputStream = process.inputStream
+                                    val reader = inputStream.bufferedReader()
+                                    val text = reader.readLine()?.trim()
+
+                                    // Wait for process to complete
+                                    process.waitFor()
+
+                                    // If text was submitted, invoke the callback
+                                    if (!text.isNullOrEmpty()) {
+                                        logger.d { "Text submitted: $text" }
+                                        textInputAction.onTextSubmitted.invoke(text)
+                                    }
+                                } catch (e: Exception) {
+                                    logger.e { "Error opening zenity dialog: ${e.message}" }
+                                }
+                            }.start()
+                        }
+
+                        // Don't remove the notification yet, as we want it to stay visible
+                        // after the text input dialog is closed
+                    }
+
+                    // Store the callback in the class-level map
+                    buttonCallbacks[notification]?.put(textInputAction.label, textInputButtonCallback)
+                    lib.add_button_to_notification(notification, textInputAction.label, textInputAction.label, textInputButtonCallback, Pointer.NULL)
                 }
 
                 val result = lib.send_notification(notification)
