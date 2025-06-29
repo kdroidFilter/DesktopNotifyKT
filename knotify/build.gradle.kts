@@ -9,8 +9,11 @@ plugins {
 }
 
 group = "io.github.kdroidfilter.knotify"
-version = "0.2.0"
-
+val ref = System.getenv("GITHUB_REF") ?: ""
+val version = if (ref.startsWith("refs/tags/")) {
+    val tag = ref.removePrefix("refs/tags/")
+    if (tag.startsWith("v")) tag.substring(1) else tag
+} else "dev"
 kotlin {
     jvmToolchain(17)
 
@@ -70,14 +73,14 @@ tasks.register("buildNativeLibraries") {
 mavenPublishing {
     coordinates(
         groupId = "io.github.kdroidfilter",
-        artifactId = "compose-native-notification",
+        artifactId = "knotify",
         version = version.toString()
     )
 
     // Configure POM metadata for the published artifact
     pom {
-        name.set("K-Notify")
-        description.set("The K-Notifylibrary is a Kotlin Multiplatform library designed to work with Compose Multiplatform that enables developers to add notifications to their applications in a unified way across different platforms, including Windows, macOS, Linux, Android, iOS and Web. The main goal of this library is to provide a declarative way to send notifications on Android while removing all boilerplate code, and to enable sending native notifications on other platforms. The library provides seamless integration with Jetpack Compose, allowing notifications to be handled consistently within Compose-based applications.")
+        name.set("DesktopNotify-KT")
+        description.set("The DesktopNotify-KT is a Kotlin JVM library taht enables developers to add notifications to their desktop applications in a unified way across different platforms, including Windows, macOS and Linux.")
         inceptionYear.set("2024")
         url.set("https://github.com/kdroidFilter/ComposeNativeNotification")
 
@@ -92,7 +95,7 @@ mavenPublishing {
         developers {
             developer {
                 id.set("kdroidfilter")
-                name.set("Elyahou Hadass")
+                name.set("Elie Gambache")
                 email.set("elyahou.hadass@gmail.com")
             }
         }

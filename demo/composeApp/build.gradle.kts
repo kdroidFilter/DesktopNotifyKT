@@ -47,7 +47,7 @@ compose.desktop {
             targetFormats(TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Dmg)
             packageName = "KnotifyDemo"
             packageVersion = "1.0.0"
-            description = "Compose Native Notification Sample"
+            description = "DesktopNotify-KT Sample"
             copyright = "© 2024 KdroidFilter. All rights reserved."
 
         }
