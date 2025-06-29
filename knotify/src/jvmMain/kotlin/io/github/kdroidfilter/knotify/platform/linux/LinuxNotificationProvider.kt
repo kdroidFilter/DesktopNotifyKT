@@ -30,6 +30,11 @@ class LinuxNotificationProvider(
     private val appConfig = NotificationInitializer.getAppConfig()
     private var activeNotifications = mutableMapOf<NotificationBuilder, Pointer?>()
 
+    // Store callbacks to prevent garbage collection
+    private val notificationCallbacks = mutableMapOf<Pointer, NotifyActionCallback>()
+    private val closedCallbacks = mutableMapOf<Pointer, NotifyClosedCallback>()
+    private val buttonCallbacks = mutableMapOf<Pointer, MutableMap<String, NotifyActionCallback>>()
+
     init {
         // Set debug mode in the native library
         lib.set_debug_mode(if (debugMode) 1 else 0)
@@ -44,7 +49,7 @@ class LinuxNotificationProvider(
 
 
                 // Initialize notify with app name
-                if (!lib.my_notify_init(appConfig.appName)) {
+                if (lib.my_notify_init(appConfig.appName) == 0) {
                     Log.e("LinuxNotificationProvider", "Failed to initialize notifications.")
                     builder.onFailed?.invoke()
                     return@launch
@@ -62,26 +67,45 @@ class LinuxNotificationProvider(
                     return@launch
                 }
 
-                builder.onActivated?.let { onActivated ->
-                    val actionCallback = NotifyActionCallback { notif, _, _ ->
+                // Store callbacks as instance variables to prevent garbage collection
+                val actionCallback = builder.onActivated?.let { onActivated ->
+                    NotifyActionCallback { notif, _, _ ->
                         // When the notification is clicked, call the onActivated callback
                         if (debugMode) Log.d("LinuxNotificationProvider", "Notification clicked, invoking onActivated")
                         onActivated()
                         // Remove the notification from the active notifications map
                         activeNotifications.entries.removeIf { it.value == notif }
+                        // Clean up callbacks
+                        notificationCallbacks.remove(notif)
+                        closedCallbacks.remove(notif)
+                        buttonCallbacks.remove(notif)
                         stopMainLoop() // Stop the main loop after the callback
                     }
+                }
+
+                if (actionCallback != null) {
+                    // Store the callback in the map
+                    notificationCallbacks[notification] = actionCallback
                     lib.set_notification_clicked_callback(notification, actionCallback, Pointer.NULL)
                 }
 
-                builder.onDismissed?.let { onDismissed ->
-                    val closedCallback = NotifyClosedCallback { notif, _ ->
+                val closedCallback = builder.onDismissed?.let { onDismissed ->
+                    NotifyClosedCallback { notif, _ ->
                         if (debugMode) Log.d("LinuxNotificationProvider", "Notification dismissed, invoking onDismissed")
                         onDismissed(DismissalReason.UserCanceled)
                         // Remove the notification from the active notifications map
                         activeNotifications.entries.removeIf { it.value == notif }
+                        // Clean up callbacks
+                        notificationCallbacks.remove(notif)
+                        closedCallbacks.remove(notif)
+                        buttonCallbacks.remove(notif)
                         stopMainLoop() // Stop the main loop after the callback
                     }
+                }
+
+                if (closedCallback != null) {
+                    // Store the callback in the map
+                    closedCallbacks[notification] = closedCallback
                     lib.set_notification_closed_callback(notification, closedCallback, Pointer.NULL)
                 }
 
@@ -98,8 +122,11 @@ class LinuxNotificationProvider(
                     }
                 }
 
+                // Initialize button callbacks map for this notification
+                buttonCallbacks[notification] = mutableMapOf()
+
                 builder.buttons.forEach { button ->
-                        Log.d("LinuxNotificationProvider", "Adding button: ${button.label}")
+                    Log.d("LinuxNotificationProvider", "Adding button: ${button.label}")
                     val buttonCallback = NotifyActionCallback { notif, action, _ ->
                         if (action == button.label) {
                             Log.d("LinuxNotificationProvider", "Button clicked: $action")
@@ -107,8 +134,14 @@ class LinuxNotificationProvider(
                         }
                         // Remove the notification from the active notifications map
                         activeNotifications.entries.removeIf { it.value == notif }
+                        // Clean up callbacks
+                        notificationCallbacks.remove(notif)
+                        closedCallbacks.remove(notif)
+                        buttonCallbacks.remove(notif)
                         stopMainLoop() // Stop the main loop after the callback
                     }
+                    // Store the callback in the class-level map
+                    buttonCallbacks[notification]?.put(button.label, buttonCallback)
                     lib.add_button_to_notification(notification, button.label, button.label, buttonCallback, Pointer.NULL)
                 }
 
@@ -120,18 +153,20 @@ class LinuxNotificationProvider(
                     // Don't call onActivated here, it will be called by the callback
                 } else {
                     Log.e("LinuxNotificationProvider", "Failed to send notification.")
+                    // Clean up callbacks since notification failed
+                    notificationCallbacks.remove(notification)
+                    closedCallbacks.remove(notification)
+                    buttonCallbacks.remove(notification)
                     builder.onFailed?.invoke()
                     return@launch // Don't start the main loop if notification failed
                 }
 
                 startMainLoop()
-                lib.cleanup_notification()
             }
         }
     }
 
     override fun hideNotification(builder: NotificationBuilder) {
-        //TODO NOT WORK
         val notification = activeNotifications[builder]
         if (notification != null) {
             if (debugMode) Log.d("LinuxNotificationProvider", "Hiding notification")
@@ -139,6 +174,12 @@ class LinuxNotificationProvider(
             val result = lib.close_notification(notification)
             if (result == 0) {
                 Log.i("LinuxNotificationProvider", "Notification hidden successfully.")
+
+                // Clean up callbacks
+                notificationCallbacks.remove(notification)
+                closedCallbacks.remove(notification)
+                buttonCallbacks.remove(notification)
+
                 activeNotifications.remove(builder)
 
                 // If this was the last notification and main loop is running, stop it
@@ -161,7 +202,13 @@ class LinuxNotificationProvider(
         if (!isMainLoopRunning) {
             Log.d("LinuxNotificationProvider", "Starting main loop...")
             isMainLoopRunning = true
-            lib.run_main_loop()
+            // Start the main loop in a separate thread to avoid blocking the UI thread
+            Thread {
+                lib.run_main_loop()
+            }.apply {
+                isDaemon = true
+                start()
+            }
         }
     }
 
@@ -171,6 +218,8 @@ class LinuxNotificationProvider(
             lib.quit_main_loop()
             isMainLoopRunning = false
             coroutineScope?.cancel()
+            // Clean up notification resources after stopping the main loop
+            lib.cleanup_notification()
         }
     }
 }

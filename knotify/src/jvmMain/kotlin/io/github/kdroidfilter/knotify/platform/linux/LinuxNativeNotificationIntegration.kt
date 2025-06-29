@@ -22,9 +22,9 @@ interface LinuxNativeNotificationIntegration : Library {
     /**
      * Initialize the notification library with the application name
      * @param app_name The name of the application
-     * @return true if initialization was successful, false otherwise
+     * @return 1 if initialization was successful, 0 otherwise
      */
-    fun my_notify_init(app_name: String): Boolean
+    fun my_notify_init(app_name: String): Int
 
     /**
      * Create a new notification with an icon
@@ -105,12 +105,17 @@ interface LinuxNativeNotificationIntegration : Library {
     fun quit_main_loop()
 }
 
+/**
+ * Callback interface for notification actions (button clicks or notification clicks)
+ */
 @FunctionalInterface
 fun interface NotifyActionCallback : Callback {
     fun invoke(notification: Pointer?, action: String?, user_data: Pointer?)
 }
 
-// Define the closed callback as a functional interface
+/**
+ * Callback interface for notification closure
+ */
 @FunctionalInterface
 fun interface NotifyClosedCallback : Callback {
     fun invoke(notification: Pointer?, user_data: Pointer?)
