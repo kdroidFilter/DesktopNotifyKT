@@ -5,7 +5,6 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     alias(libs.plugins.multiplatform)
-    alias(libs.plugins.android.library)
     alias(libs.plugins.vannitktech.maven.publish)
 }
 
@@ -14,28 +13,8 @@ version = "0.2.0"
 
 kotlin {
     jvmToolchain(17)
-    androidTarget {
-        publishLibraryVariants("release")
-    }
 
     jvm()
-
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-
-    wasmJs {
-        browser {
-            webpackTask {
-                mainOutputFileName = "knotifysw.js"
-                // Copy knotifysw.js to the output directory
-                output.libraryTarget = "umd"
-            }
-        }
-        binaries.executable()
-    }
-
-
 
     sourceSets {
         commonMain.dependencies {
@@ -50,23 +29,12 @@ kotlin {
             implementation(kotlin("test"))
         }
 
-        androidMain.dependencies {
-            implementation(libs.core)
-            implementation(libs.kotlinx.coroutines.android)
-            implementation(libs.androidx.lifecycle.process)
-        }
 
         jvmMain.dependencies {
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.jna)
             implementation(libs.jna.platform)
         }
-        wasmJsMain.dependencies {
-            // import kotlinx datetime
-            implementation(libs.kotlinx.datetime)
-            implementation(libs.kotlinx.browser.wasm.js)
-        }
-
     }
 
     //https://kotlinlang.org/docs/native-objc-interop.html#export-of-kdoc-comments-to-generated-objective-c-headers
@@ -76,15 +44,6 @@ kotlin {
 
 }
 
-android {
-    namespace = "io.github.kdroidfilter.knotify"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        testOptions.targetSdk = libs.versions.android.targetSdk.get().toInt()
-    }
-}
 
 val buildNativeMac: TaskProvider<Exec> = tasks.register<Exec>("buildNativeMac") {
     onlyIf { System.getProperty("os.name").startsWith("Mac") }

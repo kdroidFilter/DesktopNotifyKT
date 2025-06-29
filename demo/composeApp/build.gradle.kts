@@ -5,7 +5,6 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.jetbrainsCompose)
-    alias(libs.plugins.androidApplication)
     alias(libs.plugins.compose.compiler)
 
 }
@@ -18,34 +17,7 @@ version = appVersion
 
 kotlin {
     jvmToolchain(17)
-    androidTarget()
     jvm()
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach {
-        it.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-        }
-    }
-    @OptIn(ExperimentalWasmDsl::class) wasmJs {
-        outputModuleName = "composeApp"
-        browser {
-            val projectDirPath = project.projectDir.path
-            commonWebpackConfig {
-                outputFileName = "composeApp.js"
-                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                    static = (static ?: mutableListOf()).apply {
-                        // Serve sources to debug inside browser
-                        add(projectDirPath)
-                    }
-                }
-            }
-        }
-        binaries.executable()
-    }
 
     sourceSets {
         commonMain.dependencies {
@@ -62,30 +34,10 @@ kotlin {
             implementation(compose.desktop.currentOs)
         }
 
-        androidMain.dependencies {
-            implementation(libs.activity.ktx)
-            implementation(libs.androidx.appcompat)
-            implementation(libs.androidx.activity.compose)
-        }
-        wasmJsMain.dependencies {
-
-        }
     }
 }
 
-android {
-    namespace = "io.github.kdroidfilter.knotify.demo"
-    compileSdk = 35
 
-    defaultConfig {
-        minSdk = 21
-        targetSdk = 35
-
-        applicationId = "io.github.kdroidfilter.knotify.demo"
-        versionCode = 1
-        versionName = "1.0.0"
-    }
-}
 
 compose.desktop {
     application {
