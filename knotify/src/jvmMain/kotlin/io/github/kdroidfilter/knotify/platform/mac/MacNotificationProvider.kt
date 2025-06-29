@@ -3,7 +3,6 @@ package io.github.kdroidfilter.knotify.platform.mac
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import com.kdroid.kmplog.*
 import com.sun.jna.Pointer
 import io.github.kdroidfilter.knotify.builder.NotificationBuilder
 import io.github.kdroidfilter.knotify.builder.NotificationInitializer
@@ -16,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
+import co.touchlab.kermit.Logger
 
 internal class MacNotificationProvider() : NotificationProvider {
 
@@ -25,6 +25,9 @@ internal class MacNotificationProvider() : NotificationProvider {
     private val lib = MacNativeNotificationIntegration.INSTANCE
     private var coroutineScope: CoroutineScope? = null
     private val appConfig = NotificationInitializer.getAppConfig()
+
+    // Initialize Kermit logger
+    private val logger = Logger.withTag("MacNotificationProvider")
 
     // Map to store notifications by their ID
     private val activeNotifications = mutableMapOf<Int, Pointer?>()
@@ -51,13 +54,13 @@ internal class MacNotificationProvider() : NotificationProvider {
                 try {
                     // Check if we're in development mode
                     if (detectRuntimeMode() == RuntimeMode.DEV) {
-                        Log.w("MacNotificationProvider", "Notifications are only available in distributable mode due to Apple's restrictions. Current mode: DEV")
+                        logger.w { "Notifications are only available in distributable mode due to Apple's restrictions. Current mode: DEV" }
                         builder.onFailed?.invoke()
                         return@launch
                     }
 
                     val appIconPath = appConfig.smallIcon
-                    Log.d("sendNotification", "Sending notification with title: ${builder.title}")
+                    logger.d { "Sending notification with title: ${builder.title}" }
 
                     // Try to create the notification but handle any exceptions
                     val notification = try {
@@ -67,12 +70,12 @@ internal class MacNotificationProvider() : NotificationProvider {
                             iconPath = appIconPath
                         )
                     } catch (e: Exception) {
-                        Log.e("MacNotificationProvider", "Exception creating notification: ${e.message}")
+                        logger.e { "Exception creating notification: ${e.message}" }
                         null
                     }
 
                     if (notification == null) {
-                        Log.e("MacNotificationProvider", "Failed to create notification.")
+                        logger.e { "Failed to create notification." }
                         builder.onFailed?.invoke()
                         return@launch
                     }
@@ -103,40 +106,40 @@ internal class MacNotificationProvider() : NotificationProvider {
 
                         // Add a large image if available
                         val largeImagePath = builder.largeImagePath
-                        Log.d("MacNotificationProvider", "Large image path from builder: $largeImagePath")
+                        logger.d { "Large image path from builder: $largeImagePath" }
 
-                        largeImagePath?.let { path ->
-                            Log.d("MacNotificationProvider", "Processing large image path: $path")
+                        largeImagePath?.let { path: String ->
+                            logger.d { "Processing large image path: $path" }
                             try {
                                 // Check if the path is a file that exists directly
                                 val file = File(path)
                                 if (file.exists() && file.isFile) {
-                                    Log.d("MacNotificationProvider", "Image file exists directly at: ${file.absolutePath}")
+                                    logger.d { "Image file exists directly at: ${file.absolutePath}" }
                                     // Convert an absolute path to file URL
                                     val fileUrl = "file://${file.absolutePath}"
-                                    Log.d("MacNotificationProvider", "Image file URL: $fileUrl")
+                                    logger.d { "Image file URL: $fileUrl" }
                                     lib.set_notification_image(notification, fileUrl)
-                                    Log.d("MacNotificationProvider", "Notification image set successfully with direct path")
+                                    logger.d { "Notification image set successfully with direct path" }
                                 } else {
                                     // Try to extract from resources if not a direct file
                                     val extractedFile = extractToTempIfDifferent(path)
-                                    Log.d("MacNotificationProvider", "Extracted file: $extractedFile")
+                                    logger.d { "Extracted file: $extractedFile" }
 
                                     val largeImageAbsolutePath = extractedFile?.absolutePath
-                                    Log.d("MacNotificationProvider", "Large image absolute path: $largeImageAbsolutePath")
+                                    logger.d { "Large image absolute path: $largeImageAbsolutePath" }
 
-                                    largeImageAbsolutePath?.let {
+                                    largeImageAbsolutePath?.let { it: String ->
                                         // Convert an absolute path to file URL
                                         val fileUrl = "file://$it"
-                                        Log.d("MacNotificationProvider", "Image file URL: $fileUrl")
+                                        logger.d { "Image file URL: $fileUrl" }
                                         lib.set_notification_image(notification, fileUrl)
-                                        Log.d("MacNotificationProvider", "Notification image set successfully")
-                                    } ?: Log.e("MacNotificationProvider", "Failed to get absolute path for large image")
+                                        logger.d { "Notification image set successfully" }
+                                    } ?: logger.e { "Failed to get absolute path for large image" }
                                 }
                             } catch (e: Exception) {
-                                Log.e("MacNotificationProvider", "Exception processing large image: ${e.message}")
+                                logger.e { "Exception processing large image: ${e.message}" }
                             }
-                        } ?: Log.d("MacNotificationProvider", "No large image path provided")
+                        } ?: logger.d { "No large image path provided" }
 
                         // Add buttons
                         builder.buttons.forEach { button ->
@@ -158,35 +161,35 @@ internal class MacNotificationProvider() : NotificationProvider {
                         val result = try {
                             lib.send_notification(notification)
                         } catch (e: Exception) {
-                            Log.e("MacNotificationProvider", "Exception sending notification: ${e.message}")
+                            logger.e { "Exception sending notification: ${e.message}" }
                             // If we get an exception, consider it a failure
                             -1
                         }
 
                         if (result == 0) {
-                            Log.i("MacNotificationProvider", "Notification sent successfully.")
+                            logger.i { "Notification sent successfully." }
                         } else {
-                            Log.e("MacNotificationProvider", "Failed to send notification.")
+                            logger.e { "Failed to send notification." }
                             builder.onFailed?.invoke()
                             activeNotifications.remove(builder.id)
                             try {
                                 lib.cleanup_notification(notification)
                             } catch (e: Exception) {
-                                Log.e("MacNotificationProvider", "Exception cleaning up notification: ${e.message}")
+                                logger.e { "Exception cleaning up notification: ${e.message}" }
                             }
                         }
                     } catch (e: Exception) {
-                        Log.e("MacNotificationProvider", "Unexpected exception: ${e.message}")
+                        logger.e { "Unexpected exception: ${e.message}" }
                         builder.onFailed?.invoke()
                         activeNotifications.remove(builder.id)
                         try {
                             lib.cleanup_notification(notification)
                         } catch (e: Exception) {
-                            Log.e("MacNotificationProvider", "Exception cleaning up notification: ${e.message}")
+                            logger.e { "Exception cleaning up notification: ${e.message}" }
                         }
                     }
                 } catch (e: Exception) {
-                    Log.e("MacNotificationProvider", "Critical exception in sendNotification: ${e.message}")
+                    logger.e { "Critical exception in sendNotification: ${e.message}" }
                     builder.onFailed?.invoke()
                 }
             }
@@ -197,7 +200,7 @@ internal class MacNotificationProvider() : NotificationProvider {
         try {
             // Check if we're in development mode
             if (detectRuntimeMode() == RuntimeMode.DEV) {
-                Log.w("MacNotificationProvider", "Notifications are only available in distributable mode due to Apple's restrictions. Current mode: DEV")
+                logger.w { "Notifications are only available in distributable mode due to Apple's restrictions. Current mode: DEV" }
                 return
             }
 
@@ -206,31 +209,31 @@ internal class MacNotificationProvider() : NotificationProvider {
                 try {
                     // First, try to hide the notification
                     lib.hide_notification(notification)
-                    Log.d("MacNotificationProvider", "Notification hide called for ID: ${builder.id}")
+                    logger.d { "Notification hide called for ID: ${builder.id}" }
 
                     // Wait a short time to ensure the hide operation completes
                     Thread.sleep(100)
 
                     // Try to hide again to catch any pending notifications
                     lib.hide_notification(notification)
-                    Log.d("MacNotificationProvider", "Second notification hide called for ID: ${builder.id}")
+                    logger.d { "Second notification hide called for ID: ${builder.id}" }
                 } catch (e: Exception) {
-                    Log.e("MacNotificationProvider", "Exception hiding notification: ${e.message}")
+                    logger.e { "Exception hiding notification: ${e.message}" }
                 }
 
                 try {
                     lib.cleanup_notification(notification)
                 } catch (e: Exception) {
-                    Log.e("MacNotificationProvider", "Exception cleaning up notification: ${e.message}")
+                    logger.e { "Exception cleaning up notification: ${e.message}" }
                 }
 
                 activeNotifications.remove(builder.id)
-                Log.d("MacNotificationProvider", "Notification hidden and cleaned up: ${builder.id}")
+                logger.d { "Notification hidden and cleaned up: ${builder.id}" }
             } else {
-                Log.w("MacNotificationProvider", "No active notification found with ID: ${builder.id}")
+                logger.w { "No active notification found with ID: ${builder.id}" }
             }
         } catch (e: Exception) {
-            Log.e("MacNotificationProvider", "Critical exception in hideNotification: ${e.message}")
+            logger.e { "Critical exception in hideNotification: ${e.message}" }
         }
     }
 }

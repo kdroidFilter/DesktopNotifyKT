@@ -26,7 +26,7 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
-            implementation(libs.kmplog)
+            implementation("co.touchlab:kermit:2.0.4")
             implementation(compose.components.resources)
         }
 

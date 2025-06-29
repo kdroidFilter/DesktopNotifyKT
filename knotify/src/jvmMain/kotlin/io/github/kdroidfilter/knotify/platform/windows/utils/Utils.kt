@@ -1,9 +1,10 @@
 package io.github.kdroidfilter.knotify.platform.windows.utils
 
-import com.kdroid.kmplog.Log
-import com.kdroid.kmplog.e
+import co.touchlab.kermit.Logger
 import com.sun.jna.platform.win32.Advapi32Util
 import com.sun.jna.platform.win32.WinReg
+
+private val logger = Logger.withTag("WindowsUtils")
 
 internal fun registerBasicAUMID(aumid: String, displayName: String, iconUri: String): Boolean {
     val rootKeyPath = "Software\\Classes\\AppUserModelId"
@@ -22,7 +23,7 @@ internal fun registerBasicAUMID(aumid: String, displayName: String, iconUri: Str
         }
         return true
     } catch (e: Exception) {
-        Log.e("registerBasicAUMID","Exception : ${e.message}")
+        logger.e { "Exception : ${e.message}" }
         return false
     }
 }

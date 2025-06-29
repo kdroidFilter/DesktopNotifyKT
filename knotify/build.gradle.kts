@@ -23,7 +23,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.coroutines.test)
-            implementation(libs.kmplog)
+            implementation("co.touchlab:kermit:2.0.4")
             implementation(libs.runtime)
             implementation(libs.platformtools.core)
         }

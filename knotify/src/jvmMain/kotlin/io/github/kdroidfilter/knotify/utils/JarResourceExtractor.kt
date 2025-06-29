@@ -1,7 +1,6 @@
 package io.github.kdroidfilter.knotify.utils
 
-import com.kdroid.kmplog.Log
-import com.kdroid.kmplog.d
+import co.touchlab.kermit.Logger
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
@@ -11,6 +10,9 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
 import java.util.jar.JarFile
+
+// Initialize Kermit logger
+private val logger = Logger.withTag("JarResourceExtractor")
 
 
 fun extractToTempIfDifferent(jarPath: String): File? {
@@ -36,17 +38,17 @@ fun extractToTempIfDifferent(jarPath: String): File? {
 
     // Extract file extension from the original path
     val fileExtension = getFileExtension(jarFile.name)
-    Log.d("extractToTempIfDifferent", "Original file extension: $fileExtension")
+    logger.d { "Original file extension: $fileExtension" }
 
     // Logging to verify paths
-        Log.d("extractToTempIfDifferent", "Corrected jarFilePath: $correctedJarFilePath")
-        Log.d("extractToTempIfDifferent", "Encoded jarFilePath: $encodedJarFilePath")
-        Log.d("extractToTempIfDifferent", "Entry path: $entryPath")
+        logger.d { "Corrected jarFilePath: $correctedJarFilePath" }
+        logger.d { "Encoded jarFilePath: $encodedJarFilePath" }
+        logger.d { "Entry path: $entryPath" }
 
 
     // If the file is not a JAR, handle it differently
     if (!correctedJarFilePath.endsWith(".jar")) {
-            Log.d("extractToTempIfDifferent", "The file is not a JAR. Direct copy.")
+            logger.d { "The file is not a JAR. Direct copy." }
         val tempFile = createTempFile("extracted_", fileExtension, File(System.getProperty("java.io.tmpdir"))).apply {
             deleteOnExit()
         }
@@ -62,7 +64,7 @@ fun extractToTempIfDifferent(jarPath: String): File? {
 
         // Extract file extension from the entry name
         val fileExtension = getFileExtension(entryPath)
-        Log.d("extractToTempIfDifferent", "JAR entry file extension: $fileExtension")
+        logger.d { "JAR entry file extension: $fileExtension" }
 
         // Create a temporary file to store the extracted resource
         val tempFile = createTempFile("extracted_", fileExtension, File(System.getProperty("java.io.tmpdir"))).apply {

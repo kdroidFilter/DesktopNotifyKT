@@ -17,15 +17,17 @@ import androidx.compose.ui.unit.sp
 import io.github.kdroidfilter.knotify.builder.ExperimentalNotificationsApi
 import io.github.kdroidfilter.knotify.builder.getNotificationProvider
 import io.github.kdroidfilter.knotify.builder.notification
-import com.kdroid.kmplog.Log
-import com.kdroid.kmplog.d
+import co.touchlab.kermit.Logger
 import io.github.kdroidfilter.knotify.demo.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+
+// Initialize Kermit logger
+private val logger = Logger.withTag("NotificationDemo")
 
 
 @Composable
 fun App() {
-    Log.setDevelopmentMode(true)
+    // Kermit doesn't need development mode to be set explicitly
 
     val notificationProvider = getNotificationProvider()
 
@@ -90,16 +92,16 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
         title = "Notification from Screen 1",
         message = "This is a test notification from Screen 1",
         largeImage = Res.getUri("drawable/kdroid.png"),
-        onActivated = { Log.d("NotificationLog", "Notification 1 activated") },
-        onDismissed = { reason -> Log.d("NotificationLog", "Notification 1 dismissed: $reason")},
-        onFailed = {Log.d("NotificationLog", "Notification 1 failed")}
+        onActivated = { logger.d { "Notification 1 activated" } },
+        onDismissed = { reason -> logger.d { "Notification 1 dismissed: $reason" } },
+        onFailed = { logger.d { "Notification 1 failed" } }
     ) {
         button(title = "Show Message from Button 1") {
-            Log.d("NotificationLog", "Button 1 from Screen 1 clicked")
+            logger.d { "Button 1 from Screen 1 clicked" }
             onShowMessage("Button 1 clicked from Screen 1's notification")
         }
         button(title = "Hide Message from Button 2") {
-            Log.d("NotificationLog", "Button 2 from Screen 1 clicked")
+            logger.d { "Button 2 from Screen 1 clicked" }
             onShowMessage("Button 2 clicked from Screen 1's notification")
         }
     }
@@ -185,16 +187,16 @@ fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
                 largeImage = Res.getUri("drawable/compose.png"),
                 title = "Notification from Screen 2",
                 message = "This is a test notification from Screen 2",
-                onActivated = { Log.d("NotificationLog", "Notification activated") },
-                onDismissed = { reason -> Log.d("NotificationLog", "Notification dismissed: $reason")},
-                onFailed = {Log.d("NotificationLog", "Notification failed")}
+                onActivated = { logger.d { "Notification activated" } },
+                onDismissed = { reason -> logger.d { "Notification dismissed: $reason" } },
+                onFailed = { logger.d { "Notification failed" } }
             ) {
                 button(title = "Show Message from Button 1") {
-                    Log.d("NotificationLog", "Button 1 from Screen 2 clicked")
+                    logger.d { "Button 1 from Screen 2 clicked" }
                     onShowMessage("Button 1 clicked from Screen 2's notification")
                 }
                 button(title = "Hide Message from Button 2") {
-                    Log.d("NotificationLog", "Button 2 from Screen 2 clicked")
+                    logger.d { "Button 2 from Screen 2 clicked" }
                     onShowMessage("Button 2 clicked from Screen 2's notification")
                 }
             }
