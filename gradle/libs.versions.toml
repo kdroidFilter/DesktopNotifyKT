@@ -1,5 +1,6 @@
 [versions]
 
+kermit = "2.0.4"
 jna = "5.17.0"
 kotlin = "2.2.0"
 agp = "8.9.2"
@@ -11,6 +12,7 @@ vanniktech = "0.33.0"
 
 [libraries]
 
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
 jna-platform = { module = "net.java.dev.jna:jna-platform", version.ref = "jna" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }

@@ -14,6 +14,7 @@ val version = if (ref.startsWith("refs/tags/")) {
     val tag = ref.removePrefix("refs/tags/")
     if (tag.startsWith("v")) tag.substring(1) else tag
 } else "dev"
+
 kotlin {
     jvmToolchain(17)
 
@@ -23,7 +24,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.coroutines.test)
-            implementation("co.touchlab:kermit:2.0.4")
+            implementation(libs.kermit)
             implementation(libs.runtime)
             implementation(libs.platformtools.core)
         }
@@ -34,6 +35,7 @@ kotlin {
 
 
         jvmMain.dependencies {
+
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.jna)
             implementation(libs.jna.platform)
