@@ -27,58 +27,24 @@ private val logger = Logger.withTag("NotificationDemo")
 
 @Composable
 fun App() {
-    // Kermit doesn't need development mode to be set explicitly
 
-    val notificationProvider = getNotificationProvider()
-
-    val hasPermission by notificationProvider.hasPermissionState
     var currentScreen by remember { mutableStateOf(Screen.Screen1) }
     var notificationMessage by remember { mutableStateOf<String?>(null) }
-    var permissionDenied by remember { mutableStateOf(false) }
 
     MaterialTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            if (hasPermission) {
-                when (currentScreen) {
-                    Screen.Screen1 -> ScreenOne(
-                        onNavigate = { currentScreen = Screen.Screen2 },
-                        notificationMessage = notificationMessage,
-                        onShowMessage = { message -> notificationMessage = message }
-                    )
+            when (currentScreen) {
+                Screen.Screen1 -> ScreenOne(
+                    onNavigate = { currentScreen = Screen.Screen2 },
+                    notificationMessage = notificationMessage,
+                    onShowMessage = { message -> notificationMessage = message }
+                )
 
-                    Screen.Screen2 -> ScreenTwo(
-                        onNavigate = { currentScreen = Screen.Screen1 },
-                        notificationMessage = notificationMessage,
-                        onShowMessage = { message -> notificationMessage = message }
-                    )
-                }
-            } else {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    if (permissionDenied) {
-                        Text("Permission denied. Please enable notifications in settings.", color = Color.Red)
-                    }
-                    Button(
-                        onClick = {
-                            notificationProvider.requestPermission(
-                                onGranted = {
-                                    notificationProvider.updatePermissionState(true)
-                                },
-                                onDenied = {
-                                    notificationProvider.updatePermissionState(false)
-                                    permissionDenied = true
-                                }
-                            )
-                        }
-                    ) {
-                        Text("Grant permission to show notifications")
-                    }
-                }
+                Screen.Screen2 -> ScreenTwo(
+                    onNavigate = { currentScreen = Screen.Screen1 },
+                    notificationMessage = notificationMessage,
+                    onShowMessage = { message -> notificationMessage = message }
+                )
             }
         }
     }
@@ -128,7 +94,7 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                 myNotification.send()
+                myNotification.send()
             },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.fillMaxWidth(0.6f)

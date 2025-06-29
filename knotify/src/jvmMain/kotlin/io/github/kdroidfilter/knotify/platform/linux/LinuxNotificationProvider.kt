@@ -21,8 +21,6 @@ import co.touchlab.kermit.Logger
 class LinuxNotificationProvider(
 ) : NotificationProvider {
     private val debugMode: Boolean = false
-    private val _hasPermissionState = mutableStateOf(hasPermission())
-    override val hasPermissionState: State<Boolean> get() = _hasPermissionState
 
     private val lib = LinuxNativeNotificationIntegration.INSTANCE
     private var isMainLoopRunning = false
@@ -195,10 +193,6 @@ class LinuxNotificationProvider(
         } else {
             logger.w { "No active notification found to hide." }
         }
-    }
-
-    override fun hasPermission(): Boolean {
-        return true
     }
 
     private fun startMainLoop() {

@@ -48,8 +48,6 @@ import java.io.File
  * necessary to initialize and display these notifications.
  */
 internal class WindowsNotificationProvider : NotificationProvider {
-    private val _hasPermissionState = mutableStateOf(hasPermission())
-    override val hasPermissionState: State<Boolean> get() = _hasPermissionState
 
     private val appConfig = NotificationInitializer.getAppConfig()
     
@@ -120,9 +118,6 @@ internal class WindowsNotificationProvider : NotificationProvider {
         }
     }
 
-    override fun hasPermission(): Boolean {
-        return true
-    }
 
     private suspend fun initializeCOM(): Boolean {
         return withContext(Dispatchers.IO) {

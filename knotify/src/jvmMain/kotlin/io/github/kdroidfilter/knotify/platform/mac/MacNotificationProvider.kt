@@ -19,8 +19,6 @@ import co.touchlab.kermit.Logger
 
 internal class MacNotificationProvider() : NotificationProvider {
 
-    private val _hasPermissionState: MutableState<Boolean> = mutableStateOf(true)
-    override val hasPermissionState: State<Boolean> get() = _hasPermissionState
 
     private val lib = MacNativeNotificationIntegration.INSTANCE
     private var coroutineScope: CoroutineScope? = null
@@ -31,22 +29,6 @@ internal class MacNotificationProvider() : NotificationProvider {
 
     // Map to store notifications by their ID
     private val activeNotifications = mutableMapOf<Int, Pointer?>()
-
-    override fun updatePermissionState(isGranted: Boolean) {
-        _hasPermissionState.value = isGranted
-    }
-
-    override fun hasPermission(): Boolean {
-        return true
-    }
-
-    override fun requestPermission(onGranted: () -> Unit, onDenied: () -> Unit) {
-        if (hasPermission()) {
-            onGranted()
-        } else {
-            onDenied()
-        }
-    }
 
     override fun sendNotification(builder: NotificationBuilder) {
         coroutineScope = CoroutineScope(Dispatchers.IO).also { scope ->
