@@ -9,12 +9,13 @@ import io.github.kdroidfilter.knotify.compose.utils.ComposableIconRenderer
 import io.github.kdroidfilter.knotify.compose.utils.IconRenderProperties
 
 /**
- * A wrapper for notification building that supports Composable content for large images.
+ * A wrapper for notification building that supports Composable content for large images and small icons.
  */
 class ComposeNotificationWrapper(
     var title: String = "",
     var message: String = "",
     var largeImageComposable: (@Composable () -> Unit)? = null,
+    var smallIconComposable: (@Composable () -> Unit)? = null,
     var onActivated: (() -> Unit)? = null,
     var onDismissed: ((DismissalReason) -> Unit)? = null,
     var onFailed: (() -> Unit)? = null
@@ -43,11 +44,12 @@ class ComposeNotificationWrapper(
 }
 
 /**
- * Creates a notification with customizable settings, including support for Composable content as the large image.
+ * Creates a notification with customizable settings, including support for Composable content as the large image and small icon.
  *
  * @param title The title of the notification. Defaults to an empty string.
  * @param message The message of the notification. Defaults to an empty string.
  * @param largeIcon A Composable function that renders the large image for the notification. Can be null.
+ * @param smallIcon A Composable function that renders the small icon for the notification. Can be null.
  * @param onActivated Callback that is invoked when the notification is activated.
  * @param onDismissed Callback that is invoked when the notification is dismissed.
  * @param onFailed Callback that is invoked when the notification fails to display.
@@ -59,12 +61,13 @@ fun notification(
     title: String = "",
     message: String = "",
     largeIcon: (@Composable () -> Unit)? = null,
+    smallIcon: (@Composable () -> Unit)? = null,
     onActivated: (() -> Unit)? = null,
     onDismissed: ((DismissalReason) -> Unit)? = null,
     onFailed: (() -> Unit)? = null,
     builderAction: ComposeNotificationWrapper.() -> Unit = {}
 ): Notification {
-    val wrapper = ComposeNotificationWrapper(title, message, largeIcon, onActivated, onDismissed, onFailed)
+    val wrapper = ComposeNotificationWrapper(title, message, largeIcon, smallIcon, onActivated, onDismissed, onFailed)
     wrapper.builderAction()
 
     // If we have a Composable for the large image, render it to a file
@@ -75,11 +78,20 @@ fun notification(
         )
     }
 
+    // If we have a Composable for the small icon, render it to a file
+    val smallIconPath = wrapper.smallIconComposable?.let {
+        ComposableIconRenderer.renderComposableToPngFile(
+            IconRenderProperties.withoutScalingAndAliasing(64, 64),
+            it
+        )
+    }
+
     // Create a notification using the standard notification function
     return notification(
         title = wrapper.title,
         message = wrapper.message,
         largeIcon = largeIconPath,
+        smallIcon = smallIconPath,
         onActivated = wrapper.onActivated,
         onDismissed = wrapper.onDismissed,
         onFailed = wrapper.onFailed
@@ -92,11 +104,12 @@ fun notification(
 }
 
 /**
- * Creates and immediately sends a notification with customizable settings, including support for Composable content as the large image.
+ * Creates and immediately sends a notification with customizable settings, including support for Composable content as the large image and small icon.
  *
  * @param title The title of the notification. Defaults to an empty string.
  * @param message The message of the notification. Defaults to an empty string.
  * @param largeIcon A Composable function that renders the large image for the notification. Can be null.
+ * @param smallIcon A Composable function that renders the small icon for the notification. Can be null.
  * @param onActivated Callback that is invoked when the notification is activated.
  * @param onDismissed Callback that is invoked when the notification is dismissed.
  * @param onFailed Callback that is invoked when the notification fails to display.
@@ -108,12 +121,13 @@ suspend fun sendComposeNotification(
     title: String = "",
     message: String = "",
     largeIcon: (@Composable () -> Unit)? = null,
+    smallIcon: (@Composable () -> Unit)? = null,
     onActivated: (() -> Unit)? = null,
     onDismissed: ((DismissalReason) -> Unit)? = null,
     onFailed: (() -> Unit)? = null,
     builderAction: ComposeNotificationWrapper.() -> Unit = {}
 ): Notification {
-    val notification = notification(title, message, largeIcon, onActivated, onDismissed, onFailed, builderAction)
+    val notification = notification(title, message, largeIcon, smallIcon, onActivated, onDismissed, onFailed, builderAction)
     notification.send()
     return notification
 }

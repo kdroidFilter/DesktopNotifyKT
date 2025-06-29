@@ -6,7 +6,7 @@ import io.github.kdroidfilter.knotify.builder.NotificationBuilder
 import io.github.kdroidfilter.knotify.builder.NotificationProvider
 import io.github.kdroidfilter.knotify.model.DismissalReason
 import com.sun.jna.Pointer
-import io.github.kdroidfilter.knotify.builder.NotificationInitializer
+import io.github.kdroidfilter.knotify.utils.WindowUtils
 import io.github.kdroidfilter.knotify.utils.extractToTempIfDifferent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +25,6 @@ class LinuxNotificationProvider(
     private val lib = LinuxNativeNotificationIntegration.INSTANCE
     private var isMainLoopRunning = false
     private var coroutineScope: CoroutineScope? = null
-    private val appConfig = NotificationInitializer.getAppConfig()
     private var activeNotifications = mutableMapOf<NotificationBuilder, Pointer?>()
 
     // Initialize Kermit logger
@@ -45,12 +44,13 @@ class LinuxNotificationProvider(
     override fun sendNotification(builder: NotificationBuilder) {
         coroutineScope = CoroutineScope(Dispatchers.IO).also { scope ->
             scope.launch {
-                val appIconPath = appConfig.smallIcon
-                if (debugMode) logger.d { "Sending notification with app name: ${appConfig.appName}" }
+                val appIconPath = builder.smallIconPath
+                val appName = WindowUtils.getWindowsTitle()
+                if (debugMode) logger.d { "Sending notification with app name: $appName" }
 
 
                 // Initialize notify with app name
-                if (lib.my_notify_init(appConfig.appName) == 0) {
+                if (lib.my_notify_init(appName) == 0) {
                     logger.e { "Failed to initialize notifications." }
                     builder.onFailed?.invoke()
                     return@launch

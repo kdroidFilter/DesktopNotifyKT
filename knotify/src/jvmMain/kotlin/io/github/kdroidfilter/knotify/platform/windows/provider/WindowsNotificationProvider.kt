@@ -20,7 +20,7 @@ import com.sun.jna.platform.win32.COM.COMUtils
 import com.sun.jna.platform.win32.WinBase.WAIT_OBJECT_0
 import com.sun.jna.platform.win32.WinError.WAIT_TIMEOUT
 import com.sun.jna.ptr.IntByReference
-import io.github.kdroidfilter.knotify.builder.NotificationInitializer
+import io.github.kdroidfilter.knotify.utils.WindowUtils
 import io.github.kdroidfilter.knotify.platform.windows.constants.PM_REMOVE
 import io.github.kdroidfilter.knotify.platform.windows.constants.QS_ALLEVENTS
 import io.github.kdroidfilter.knotify.platform.windows.constants.QS_ALLINPUT
@@ -49,8 +49,8 @@ import java.io.File
  */
 internal class WindowsNotificationProvider : NotificationProvider {
 
-    private val appConfig = NotificationInitializer.getAppConfig()
-    
+    // No longer using appConfig, using WindowUtils.getWindowsTitle() and builder.smallIconPath instead
+
     // Initialize Kermit logger
     private val logger = Logger.withTag("WindowsNotificationProvider")
 
@@ -68,7 +68,7 @@ internal class WindowsNotificationProvider : NotificationProvider {
             val instance = createWinToastInstance(wtlc) ?: return@launch
 
             try {
-                if (!configureWinToastInstance(wtlc, instance)) return@launch
+                if (!configureWinToastInstance(wtlc, instance, builder.smallIconPath)) return@launch
 
                 val template = createNotificationTemplate(wtlc, builder) ?: return@launch
 
@@ -100,7 +100,7 @@ internal class WindowsNotificationProvider : NotificationProvider {
             val instance = createWinToastInstance(wtlc) ?: return@launch
 
             try {
-                if (!configureWinToastInstance(wtlc, instance)) return@launch
+                if (!configureWinToastInstance(wtlc, instance, builder.smallIconPath)) return@launch
 
                 // Hide the notification
                 val hideResult = wtlc.WTLC_hideToast(instance, notificationId)
@@ -154,17 +154,19 @@ internal class WindowsNotificationProvider : NotificationProvider {
 
     private suspend fun configureWinToastInstance(
         wtlc: WinToastLibC,
-        instance: Pointer
+        instance: Pointer,
+        smallIconPath: String? = null
     ): Boolean {
         return withContext(Dispatchers.IO) {
-            wtlc.WTLC_setAppName(instance, WString(appConfig.appName))
+            val appName = WindowUtils.getWindowsTitle()
+            wtlc.WTLC_setAppName(instance, WString(appName))
 
-            val aumid = "${appConfig.appName.replace(" ", "")}Toast"
-            val registeredAUMID = if (registerBasicAUMID(aumid, appConfig.appName, appConfig.smallIcon ?: "")) {
+            val aumid = "${appName.replace(" ", "")}Toast"
+            val registeredAUMID = if (registerBasicAUMID(aumid, appName, smallIconPath ?: "")) {
                 aumid
             } else {
                 logger.w { "Failed to register the AUMID. Using the application name as AUMID." }
-                appConfig.appName
+                appName
             }
 
             wtlc.WTLC_setAppUserModelId(instance, WString(registeredAUMID))

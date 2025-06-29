@@ -34,12 +34,13 @@ fun notification(
     title: String = "",
     message: String = "",
     largeIcon: String? = null,
+    smallIcon: String? = null,
     onActivated: (() -> Unit)? = null,
     onDismissed: ((DismissalReason) -> Unit)? = null,
     onFailed: (() -> Unit)? = null,
     builderAction: NotificationBuilder.() -> Unit = {}
 ): Notification {
-    val builder = NotificationBuilder(title, message, largeIcon, onActivated, onDismissed, onFailed)
+    val builder = NotificationBuilder(title, message, largeIcon, smallIcon, onActivated, onDismissed, onFailed)
     builder.builderAction()
     return Notification(builder)
 }
@@ -61,12 +62,13 @@ suspend fun sendNotification(
     title: String = "",
     message: String = "",
     largeImage: String? = null,
+    smallIcon: String? = null,
     onActivated: (() -> Unit)? = null,
     onDismissed: ((DismissalReason) -> Unit)? = null,
     onFailed: (() -> Unit)? = null,
     builderAction: NotificationBuilder.() -> Unit = {}
 ): Notification {
-    val notification = notification(title, message, largeImage, onActivated, onDismissed, onFailed, builderAction)
+    val notification = notification(title, message, largeImage, smallIcon, onActivated, onDismissed, onFailed, builderAction)
     notification.send()
     return notification
 }
@@ -96,6 +98,7 @@ class NotificationBuilder(
     var title: String = "",
     var message: String = "",
     var largeImagePath: String?,
+    var smallIconPath: String? = null,
     var onActivated: (() -> Unit)? = null,
     var onDismissed: ((DismissalReason) -> Unit)? = null,
     var onFailed: (() -> Unit)? = null,

@@ -5,7 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.sun.jna.Pointer
 import io.github.kdroidfilter.knotify.builder.NotificationBuilder
-import io.github.kdroidfilter.knotify.builder.NotificationInitializer
+import io.github.kdroidfilter.knotify.utils.WindowUtils
 import io.github.kdroidfilter.knotify.builder.NotificationProvider
 import io.github.kdroidfilter.knotify.model.DismissalReason
 import io.github.kdroidfilter.knotify.utils.RuntimeMode
@@ -22,7 +22,6 @@ internal class MacNotificationProvider() : NotificationProvider {
 
     private val lib = MacNativeNotificationIntegration.INSTANCE
     private var coroutineScope: CoroutineScope? = null
-    private val appConfig = NotificationInitializer.getAppConfig()
 
     // Initialize Kermit logger
     private val logger = Logger.withTag("MacNotificationProvider")
@@ -41,7 +40,7 @@ internal class MacNotificationProvider() : NotificationProvider {
                         return@launch
                     }
 
-                    val appIconPath = appConfig.smallIcon
+                    val appIconPath = builder.smallIconPath
                     logger.d { "Sending notification with title: ${builder.title}" }
 
                     // Try to create the notification but handle any exceptions

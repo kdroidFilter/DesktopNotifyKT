@@ -26,23 +26,6 @@ To use this library, add the following dependency to your Kotlin project:
 implementation("io.github.kdroidfilter:knotify:<version>")
 ```
 
-## ⚙️ Setup
-
-The setup is platform-specific and involves initializing the notification settings for each platform where your app will run.
-
-### 🖥️ Setup 
-
-The notification initialization can be done in the `main` function:
-
-```kotlin
-NotificationInitializer.configure(
-    AppConfig(
-        appName = "My awesome app",
-        smallIcon = Res.getUri("drawable/kdroid.png"),
-    )
-)
-```
-
 ## ✨ Usage Example
 
 The library uses a Kotlin DSL to define notifications in a declarative way, without the usual boilerplate code. Here are examples of how you can create and manage notifications:
@@ -55,6 +38,7 @@ val myNotification = notification(
     title = "Notification from Screen 1",
     message = "This is a test notification from Screen 1",
     largeImage = Res.getUri("drawable/kdroid.png"),
+    smallIcon = Res.getUri("drawable/small_icon.png"),
     onActivated = { Log.d("NotificationLog", "Notification 1 activated") },
     onDismissed = { reason -> Log.d("NotificationLog", "Notification 1 dismissed: $reason") },
     onFailed = { Log.d("NotificationLog", "Notification 1 failed") }
@@ -81,6 +65,7 @@ myNotification.send()
 val myNotification = sendNotification(
     title = "Immediate Notification with Reference",
     message = "This notification is sent immediately but can be manipulated later",
+    smallIcon = Res.getUri("drawable/small_icon.png"),
     onActivated = { Log.d("NotificationLog", "Notification activated") }
 ) {
     button(title = "Click Me") {
@@ -126,13 +111,21 @@ implementation("io.github.kdroidfilter:knotify-compose:<version>")
 ### Usage
 
 ```kotlin
-// Create a notification with a Composable as the large image
+// Create a notification with Composable elements as the large image and small icon
 val notification = notification(
     title = "Hello from Compose",
-    message = "This notification has a Compose UI element as its image",
+    message = "This notification has Compose UI elements as its images",
     largeIcon = {
-        // Your Composable UI here
+        // Your Composable UI for large image here
         // For example, a blue circle with text "KN" in the center
+        // IMPORTANT: Always use modifier.fillMaxSize() for proper rendering
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Your content here
+        }
+    },
+    smallIcon = {
+        // Your Composable UI for small icon here
+        // This will be rendered at a smaller size (typically 64x64)
         // IMPORTANT: Always use modifier.fillMaxSize() for proper rendering
         Box(modifier = Modifier.fillMaxSize()) {
             // Your content here
@@ -146,9 +139,16 @@ notification.send()
 // Or create and send in one step
 sendNotification(
     title = "Hello from Compose",
-    message = "This notification has a Compose UI element as its image",
+    message = "This notification has Compose UI elements as its images",
     largeIcon = {
-        // Your Composable UI here
+        // Your Composable UI for large image here
+        // IMPORTANT: Always use modifier.fillMaxSize() for proper rendering
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Your content here
+        }
+    },
+    smallIcon = {
+        // Your Composable UI for small icon here
         // IMPORTANT: Always use modifier.fillMaxSize() for proper rendering
         Box(modifier = Modifier.fillMaxSize()) {
             // Your content here

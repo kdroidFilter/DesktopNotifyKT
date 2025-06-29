@@ -33,6 +33,7 @@ fun ScreenOne(
         title = "Notification from Screen 1",
         message = "This is a test notification from Screen 1",
         largeIcon = Res.getUri("drawable/kdroid.png"),
+        smallIcon = Res.getUri("drawable/compose.png"),
         onActivated = { logger.d { "Notification 1 activated" } },
         onDismissed = { reason -> logger.d { "Notification 1 dismissed: $reason" } },
         onFailed = { logger.d { "Notification 1 failed" } }

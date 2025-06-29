@@ -75,6 +75,7 @@ fun ScreenThree(
                 title = "Compose Notification",
                 message = "This notification uses a Composable UI as its image",
                 largeIcon = { NotificationLogo() },
+                smallIcon = { NotificationLogo() },
                 onActivated = { logger.d { "Compose notification activated" } },
                 onDismissed = { reason -> logger.d { "Compose notification dismissed: $reason" } },
                 onFailed = { logger.d { "Compose notification failed" } }
