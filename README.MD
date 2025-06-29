@@ -86,8 +86,6 @@ myNotification.hide()
 With this DSL approach, you can create rich and interactive notifications while keeping the code clean and readable. The library handles all the necessary details, allowing you to focus on your app's core logic.
 
 
-```
-
 This code helps ensure that your app properly manages permissions, updating the notification state as permissions are granted or denied.
 
 ## ⭐ Features
@@ -102,6 +100,9 @@ This code helps ensure that your app properly manages permissions, updating the 
 
 ### Windows
 ![Windows](/screenshots/Windows.png)
+
+### MacOS
+![MacOs](/screenshots/MacOS.png)
 
 ### Gnome (Linux)
 ![Gnome](/screenshots/Gnome.png)
