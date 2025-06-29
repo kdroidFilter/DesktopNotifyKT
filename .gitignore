@@ -1,7 +1,6 @@
 
 *.iml
 .gradle
-.idea
 .kotlin
 .DS_Store
 build
@@ -14,4 +13,11 @@ xcuserdata/
 Pods/
 *.jks
 *yarn.lock
-gradle.properties
+/linuxlib/.idea
+/linuxlib/cmake-build-release
+.cache
+.idea
+/knotify/src/jvmMain/resources/win32-arm64/wintoastlibc_lazy.dll
+/knotify/src/jvmMain/resources/win32-arm64/wintoastlibc_static.lib
+/knotify/src/jvmMain/resources/win32-x86-64/wintoastlibc_lazy.dll
+/knotify/src/jvmMain/resources/win32-x86-64/wintoastlibc_static.lib

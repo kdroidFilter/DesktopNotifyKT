@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="composenotification-js-0.2.0">
+    <output-path>$PROJECT_DIR$/composenotification/build/libs</output-path>
+    <root id="archive" name="composenotification-js-0.2.0.jar" />
+  </artifact>
+</component>

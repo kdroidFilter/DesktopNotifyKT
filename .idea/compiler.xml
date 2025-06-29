@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel target="17">
+      <module name="convention-plugins" target="23" />
+      <module name="convention-plugins.main" target="23" />
+      <module name="convention-plugins.test" target="23" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
