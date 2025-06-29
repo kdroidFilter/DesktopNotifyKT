@@ -2,6 +2,8 @@
 
 package io.github.kdroidfilter.knotify.demo
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -11,15 +13,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.kdroidfilter.knotify.builder.ExperimentalNotificationsApi
-import io.github.kdroidfilter.knotify.builder.getNotificationProvider
 import io.github.kdroidfilter.knotify.builder.notification
+import io.github.kdroidfilter.knotify.compose.builder.notification
 import co.touchlab.kermit.Logger
 import io.github.kdroidfilter.knotify.demo.composeapp.generated.resources.Res
+import io.github.kdroidfilter.knotify.demo.composeapp.generated.resources.compose
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 
 // Initialize Kermit logger
 private val logger = Logger.withTag("NotificationDemo")
@@ -36,12 +42,20 @@ fun App() {
             when (currentScreen) {
                 Screen.Screen1 -> ScreenOne(
                     onNavigate = { currentScreen = Screen.Screen2 },
+                    onNavigateToComposeDemo = { currentScreen = Screen.Screen3 },
                     notificationMessage = notificationMessage,
                     onShowMessage = { message -> notificationMessage = message }
                 )
 
                 Screen.Screen2 -> ScreenTwo(
                     onNavigate = { currentScreen = Screen.Screen1 },
+                    onNavigateToComposeDemo = { currentScreen = Screen.Screen3 },
+                    notificationMessage = notificationMessage,
+                    onShowMessage = { message -> notificationMessage = message }
+                )
+
+                Screen.Screen3 -> ScreenThree(
+                    onNavigateBack = { currentScreen = Screen.Screen1 },
                     notificationMessage = notificationMessage,
                     onShowMessage = { message -> notificationMessage = message }
                 )
@@ -53,11 +67,16 @@ fun App() {
 
 @OptIn(ExperimentalResourceApi::class, ExperimentalNotificationsApi::class)
 @Composable
-fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessage: (String?) -> Unit) {
+fun ScreenOne(
+    onNavigate: () -> Unit,
+    onNavigateToComposeDemo: () -> Unit,
+    notificationMessage: String?,
+    onShowMessage: (String?) -> Unit
+) {
     val myNotification = notification(
         title = "Notification from Screen 1",
         message = "This is a test notification from Screen 1",
-        largeImage = Res.getUri("drawable/kdroid.png"),
+        largeIcon = Res.getUri("drawable/kdroid.png"),
         onActivated = { logger.d { "Notification 1 activated" } },
         onDismissed = { reason -> logger.d { "Notification 1 dismissed: $reason" } },
         onFailed = { logger.d { "Notification 1 failed" } }
@@ -114,6 +133,15 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
             Text("Hide notification from Screen 1")
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = onNavigateToComposeDemo,
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier.fillMaxWidth(0.6f)
+        ) {
+            Text("Go to Compose Notification Demo")
+        }
+
         notificationMessage?.let {
             Spacer(modifier = Modifier.height(16.dp))
             Text(it, fontSize = 20.sp, color = MaterialTheme.colorScheme.secondary)
@@ -123,7 +151,12 @@ fun ScreenOne(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
 
 @OptIn(ExperimentalNotificationsApi::class)
 @Composable
-fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessage: (String?) -> Unit) {
+fun ScreenTwo(
+    onNavigate: () -> Unit,
+    onNavigateToComposeDemo: () -> Unit,
+    notificationMessage: String?,
+    onShowMessage: (String?) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -150,7 +183,7 @@ fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
         // Store the notification in a remember variable so we can reference it later
         val myNotification = remember {
             notification(
-                largeImage = Res.getUri("drawable/compose.png"),
+                largeIcon = Res.getUri("drawable/compose.png"),
                 title = "Notification from Screen 2",
                 message = "This is a test notification from Screen 2",
                 onActivated = { logger.d { "Notification activated" } },
@@ -190,6 +223,15 @@ fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
             Text("Hide notification from Screen 2")
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = onNavigateToComposeDemo,
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier.fillMaxWidth(0.6f)
+        ) {
+            Text("Go to Compose Notification Demo")
+        }
+
         notificationMessage?.let {
             Spacer(modifier = Modifier.height(16.dp))
             Text(it, fontSize = 20.sp, color = MaterialTheme.colorScheme.secondary)
@@ -199,5 +241,121 @@ fun ScreenTwo(onNavigate: () -> Unit, notificationMessage: String?, onShowMessag
 
 enum class Screen {
     Screen1,
-    Screen2
+    Screen2,
+    Screen3
+}
+
+@OptIn(ExperimentalNotificationsApi::class)
+@Composable
+fun ScreenThree(
+    onNavigateBack: () -> Unit,
+    notificationMessage: String?,
+    onShowMessage: (String?) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Compose Notification Demo",
+            style = MaterialTheme.typography.bodyLarge.copy(fontSize = 28.sp),
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Preview of the notification logo
+        Box(
+            modifier = Modifier
+                .size(120.dp)
+                .clip(RoundedCornerShape(8.dp))
+        ) {
+            NotificationLogo()
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = "This screen demonstrates using a Composable UI as a notification image",
+            fontSize = 16.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Store the notification in a remember variable so we can reference it later
+        val composeNotif = remember {
+            notification(
+                title = "Compose Notification",
+                message = "This notification uses a Composable UI as its image",
+                largeIcon = { NotificationLogo() },
+                onActivated = { logger.d { "Compose notification activated" } },
+                onDismissed = { reason -> logger.d { "Compose notification dismissed: $reason" } },
+                onFailed = { logger.d { "Compose notification failed" } }
+            ) {
+                button(title = "Show Message") {
+                    logger.d { "Button clicked from Compose notification" }
+                    onShowMessage("Button clicked from Compose notification")
+                }
+            }
+        }
+
+        Button(
+            onClick = {
+                composeNotif.send()
+            },
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier.fillMaxWidth(0.6f)
+        ) {
+            Text("Send Compose Notification")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {
+                composeNotif.hide()
+            },
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier.fillMaxWidth(0.6f)
+        ) {
+            Text("Hide Compose Notification")
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = onNavigateBack,
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier.fillMaxWidth(0.6f)
+        ) {
+            Text("Go back to Screen 1")
+        }
+
+        notificationMessage?.let {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(it, fontSize = 20.sp, color = MaterialTheme.colorScheme.secondary)
+        }
+    }
+}
+
+/**
+ * A Composable function that creates a simple logo for use in notifications.
+ * This demonstrates how to create a custom UI for notifications using Compose.
+ */
+@Composable
+fun NotificationLogo() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Red)
+
+    ) {
+        Image(painter = painterResource(Res.drawable.compose), contentDescription = "Notification Logo", modifier = Modifier.align(Alignment.Center))
+    }
+
 }

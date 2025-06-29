@@ -22,7 +22,7 @@ annotation class ExperimentalNotificationsApi
  *
  * @param title The title of the notification. Defaults to an empty string.
  * @param message The message of the notification. Defaults to an empty string.
- * @param largeImage The file path to a large image to be displayed within the notification. Can be null.
+ * @param largeIcon The file path to a large image to be displayed within the notification. Can be null.
  * @param onActivated Callback that is invoked when the notification is activated.
  * @param onDismissed Callback that is invoked when the notification is dismissed.
  * @param onFailed Callback that is invoked when the notification fails to display.
@@ -33,13 +33,13 @@ annotation class ExperimentalNotificationsApi
 fun notification(
     title: String = "",
     message: String = "",
-    largeImage: String? = null,
+    largeIcon: String? = null,
     onActivated: (() -> Unit)? = null,
     onDismissed: ((DismissalReason) -> Unit)? = null,
     onFailed: (() -> Unit)? = null,
     builderAction: NotificationBuilder.() -> Unit = {}
 ): Notification {
-    val builder = NotificationBuilder(title, message, largeImage, onActivated, onDismissed, onFailed)
+    val builder = NotificationBuilder(title, message, largeIcon, onActivated, onDismissed, onFailed)
     builder.builderAction()
     return Notification(builder)
 }

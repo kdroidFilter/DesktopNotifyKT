@@ -22,6 +22,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":knotify"))
+            implementation(project(":knotify-compose"))
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
