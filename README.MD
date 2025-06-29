@@ -4,9 +4,7 @@
   <img src="assets/header.png" alt="logo">
 </p>
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.kdroidfilter/compose-native-notification)](https://central.sonatype.com/artifact/io.github.kdroidfilter/compose-native-notification)
-[![License](https://img.shields.io/github/license/kdroidFilter/ComposeNativeNotification)](https://github.com/kdroidFilter/ComposeNativeNotification/blob/main/LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-blue)](https://github.com/kdroidFilter/ComposeNativeNotification)
+
 ## 🚀 Overview
 
 ⚠️ **Warning**: This library is highly experimental, and bugs may occur. The API is subject to change.
@@ -99,6 +97,50 @@ This code helps ensure that your app properly manages permissions, updating the 
 - **Custom Actions**: Add buttons with custom actions to your notifications, such as showing or hiding messages.
 - **Button Support**: Notifications can include interactive buttons, allowing users to take specific actions directly from the notification.
 - **Cross-Platform Compatibility**: Seamless integration across Linux, Windows, and macOS with platform-specific considerations.
+
+## 🎨 KNotify Compose
+
+This module extends the KNotify library to support Compose UI elements in notifications.
+
+### Features
+
+- Render Composable UI elements as notification images
+- Use the same familiar API as the core KNotify library
+- Seamlessly integrate your Compose UI with desktop notifications
+
+### Installation
+
+To use the Compose extension, add the following dependency to your Kotlin project:
+
+```kotlin
+implementation("io.github.kdroidfilter:knotify-compose:<version>")
+```
+
+### Usage
+
+```kotlin
+// Create a notification with a Composable as the large image
+val notification = notification(
+    title = "Hello from Compose",
+    message = "This notification has a Compose UI element as its image",
+    largeIcon = {
+        // Your Composable UI here
+        // For example, a blue circle with text "KN" in the center
+    }
+)
+
+// Send the notification
+notification.send()
+
+// Or create and send in one step
+sendNotification(
+    title = "Hello from Compose",
+    message = "This notification has a Compose UI element as its image",
+    largeIcon = {
+        // Your Composable UI here
+    }
+)
+```
 
 ## 📸 Screenshots
 

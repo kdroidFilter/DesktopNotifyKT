@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/demo" />
             <option value="$PROJECT_DIR$/demo/composeApp" />
             <option value="$PROJECT_DIR$/knotify" />
+            <option value="$PROJECT_DIR$/knotify-compose" />
           </set>
         </option>
       </GradleProjectSettings>
