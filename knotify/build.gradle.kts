@@ -82,7 +82,7 @@ mavenPublishing {
     // Configure POM metadata for the published artifact
     pom {
         name.set("DesktopNotify-KT")
-        description.set("The DesktopNotify-KT is a Kotlin JVM library taht enables developers to add notifications to their desktop applications in a unified way across different platforms, including Windows, macOS and Linux.")
+        description.set("The DesktopNotify-KT is a Kotlin JVM library that enables developers to add notifications to their desktop applications in a unified way across different platforms, including Windows, macOS and Linux.")
         inceptionYear.set("2024")
         url.set("https://github.com/kdroidFilter/ComposeNativeNotification")
 
