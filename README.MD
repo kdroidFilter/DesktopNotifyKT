@@ -1,5 +1,9 @@
 # DesktopNotify-KT
 
+<p align="center">
+  <img src="assets/header.png" alt="logo">
+</p>
+
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.kdroidfilter/compose-native-notification)](https://central.sonatype.com/artifact/io.github.kdroidfilter/compose-native-notification)
 [![License](https://img.shields.io/github/license/kdroidFilter/ComposeNativeNotification)](https://github.com/kdroidFilter/ComposeNativeNotification/blob/main/LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-blue)](https://github.com/kdroidFilter/ComposeNativeNotification)
@@ -99,16 +103,16 @@ This code helps ensure that your app properly manages permissions, updating the 
 ## 📸 Screenshots
 
 ### Windows
-![Windows](/screenshots/Windows.png)
+![Windows](/assets/screenshots/Windows.png)
 
 ### MacOS
-![MacOs](/screenshots/MacOS.png)
+![MacOs](/assets/screenshots/MacOS.png)
 
 ### Gnome (Linux)
-![Gnome](/screenshots/Gnome.png)
+![Gnome](/assets/screenshots/Gnome.png)
 
 ### KDE (Linux)
-![KDE](/screenshots/KDE.png)
+![KDE](/assets/screenshots/KDE.png)
 
 
 ## 📜 License
