@@ -82,22 +82,6 @@ myNotification.send()
 myNotification.hide()
 ```
 
-### Sending a Notification Immediately
-
-```kotlin
-// Send a notification immediately
-sendNotification(
-    title = "Immediate Notification",
-    message = "This notification is sent immediately",
-    largeImage = Res.getUri("drawable/kdroid.png"),
-    onActivated = { Log.d("NotificationLog", "Notification activated") }
-) {
-    button(title = "Click Me") {
-        Log.d("NotificationLog", "Button clicked")
-    }
-}
-```
-
 ### Creating and Sending a Notification with Reference
 
 ```kotlin
