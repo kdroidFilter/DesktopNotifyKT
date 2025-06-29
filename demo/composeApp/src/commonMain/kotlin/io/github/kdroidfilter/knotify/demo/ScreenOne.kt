@@ -47,6 +47,27 @@ fun ScreenOne(
             onShowMessage("Button 2 clicked from Screen 1's notification")
         }
     }
+
+    // Create a notification with text input
+    val textInputNotification = notification(
+        title = "Text Input Notification",
+        message = "This notification has a text input field",
+        largeIcon = Res.getUri("drawable/kdroid.png"),
+        smallIcon = Res.getUri("drawable/compose.png"),
+        onActivated = { logger.d { "Text Input notification activated" } },
+        onDismissed = { reason -> logger.d { "Text Input notification dismissed: $reason" } },
+        onFailed = { logger.d { "Text Input notification failed" } }
+    ) {
+        textInput(
+            id = "text_input_1",
+            label = "Reply",
+            placeholder = "Type your response here...",
+            onTextSubmitted = { text ->
+                logger.d { "Text submitted: $text" }
+                onShowMessage("You submitted: $text")
+            }
+        )
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -88,6 +109,28 @@ fun ScreenOne(
             modifier = Modifier.fillMaxWidth(0.6f)
         ) {
             Text("Hide notification from Screen 1")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = {
+                textInputNotification.send()
+            },
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier.fillMaxWidth(0.6f)
+        ) {
+            Text("Send Text Input Notification")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = {
+                textInputNotification.hide()
+            },
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier.fillMaxWidth(0.6f)
+        ) {
+            Text("Hide Text Input Notification")
         }
 
         Spacer(modifier = Modifier.height(16.dp))

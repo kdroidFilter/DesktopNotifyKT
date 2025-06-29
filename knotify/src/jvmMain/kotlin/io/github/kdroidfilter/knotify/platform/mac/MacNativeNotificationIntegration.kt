@@ -50,6 +50,25 @@ interface MacNativeNotificationIntegration : Library {
     )
 
     /**
+     * Adds a text input action to the notification.
+     *
+     * @param notification The notification to add the text input action to
+     * @param actionId The ID of the text input action
+     * @param actionLabel The label text for the text input action
+     * @param placeholder The placeholder text for the text input field
+     * @param callback The callback to invoke when text is submitted
+     * @param userData User data to pass to the callback
+     */
+    fun add_text_input_to_notification(
+        notification: Pointer?,
+        actionId: String,
+        actionLabel: String,
+        placeholder: String,
+        callback: TextInputSubmittedCallback?,
+        userData: Pointer?
+    )
+
+    /**
      * Sets a callback to be invoked when the notification is clicked.
      *
      * @param notification The notification to set the callback for
@@ -128,12 +147,19 @@ interface ButtonClickedCallback : Callback {
 }
 
 /**
+ * Callback interface for text input submission events.
+ */
+interface TextInputSubmittedCallback : Callback {
+    fun invoke(notification: Pointer?, actionId: String?, text: String?, userData: Pointer?)
+}
+
+/**
  * Dummy implementation of MacNativeNotificationIntegration for when the native library is not available.
  * This allows the application to continue running without crashing, but notifications won't be displayed.
  */
 private class DummyMacNotificationIntegration : MacNativeNotificationIntegration {
     override fun create_notification(title: String, body: String, iconPath: String?): Pointer? = null
-    
+
     override fun add_button_to_notification(
         notification: Pointer?,
         buttonId: String,
@@ -141,24 +167,33 @@ private class DummyMacNotificationIntegration : MacNativeNotificationIntegration
         callback: ButtonClickedCallback?,
         userData: Pointer?
     ) {}
-    
+
+    override fun add_text_input_to_notification(
+        notification: Pointer?,
+        actionId: String,
+        actionLabel: String,
+        placeholder: String,
+        callback: TextInputSubmittedCallback?,
+        userData: Pointer?
+    ) {}
+
     override fun set_notification_clicked_callback(
         notification: Pointer?,
         callback: NotificationClickedCallback?,
         userData: Pointer?
     ) {}
-    
+
     override fun set_notification_closed_callback(
         notification: Pointer?,
         callback: NotificationClosedCallback?,
         userData: Pointer?
     ) {}
-    
+
     override fun set_notification_image(notification: Pointer?, imagePath: String) {}
-    
+
     override fun send_notification(notification: Pointer?): Int = -1
-    
+
     override fun hide_notification(notification: Pointer?) {}
-    
+
     override fun cleanup_notification(notification: Pointer?) {}
 }

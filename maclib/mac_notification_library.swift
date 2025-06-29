@@ -9,6 +9,7 @@ class MacNotification {
     var imagePath: String?
     var identifier: String
     var buttons: [(id: String, label: String, callback: ButtonClickedCallback?, userData: UnsafeMutableRawPointer?)] = []
+    var textInputActions: [(id: String, label: String, placeholder: String, callback: TextInputSubmittedCallback?, userData: UnsafeMutableRawPointer?)] = []
     var clickedCallback: NotificationClickedCallback?
     var clickedUserData: UnsafeMutableRawPointer?
     var closedCallback: NotificationClosedCallback?
@@ -23,6 +24,10 @@ class MacNotification {
 
     func addButton(id: String, label: String, callback: ButtonClickedCallback?, userData: UnsafeMutableRawPointer?) {
         buttons.append((id: id, label: label, callback: callback, userData: userData))
+    }
+
+    func addTextInput(id: String, label: String, placeholder: String, callback: TextInputSubmittedCallback?, userData: UnsafeMutableRawPointer?) {
+        textInputActions.append((id: id, label: label, placeholder: placeholder, callback: callback, userData: userData))
     }
 
     func send() -> Int {
@@ -53,15 +58,28 @@ class MacNotification {
             }
         }
 
-        // Add actions for buttons
-        if !buttons.isEmpty {
+        // Add actions for buttons and text inputs
+        if !buttons.isEmpty || !textInputActions.isEmpty {
             var actions: [UNNotificationAction] = []
 
+            // Add regular button actions
             for button in buttons {
                 let action = UNNotificationAction(
                     identifier: button.id,
                     title: button.label,
                     options: .foreground
+                )
+                actions.append(action)
+            }
+
+            // Add text input actions
+            for textInput in textInputActions {
+                let action = UNTextInputNotificationAction(
+                    identifier: textInput.id,
+                    title: textInput.label,
+                    options: .foreground,
+                    textInputButtonTitle: "Submit",
+                    textInputPlaceholder: textInput.placeholder
                 )
                 actions.append(action)
             }
@@ -137,12 +155,26 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
                     callback?(Unmanaged.passUnretained(notification).toOpaque(), notification.clickedUserData)
                 }
             } else {
-                // Button action
-                for button in notification.buttons where button.id == response.actionIdentifier {
-                    if let callback = button.callback {
-                        callback(Unmanaged.passUnretained(notification).toOpaque(), button.id, button.userData)
+                // Check if it's a text input response
+                if let textInputResponse = response as? UNTextInputNotificationResponse {
+                    let userText = textInputResponse.userText
+                    let actionId = response.actionIdentifier
+
+                    // Find the matching text input action and call its callback
+                    for textInput in notification.textInputActions where textInput.id == actionId {
+                        if let callback = textInput.callback {
+                            callback(Unmanaged.passUnretained(notification).toOpaque(), textInput.id, userText, textInput.userData)
+                        }
+                        break
                     }
-                    break
+                } else {
+                    // Regular button action
+                    for button in notification.buttons where button.id == response.actionIdentifier {
+                        if let callback = button.callback {
+                            callback(Unmanaged.passUnretained(notification).toOpaque(), button.id, button.userData)
+                        }
+                        break
+                    }
                 }
             }
         }
@@ -187,6 +219,24 @@ public func add_button_to_notification(notification: UnsafeMutableRawPointer?,
 
     let notificationObject = Unmanaged<MacNotification>.fromOpaque(notification).takeUnretainedValue()
     notificationObject.addButton(id: buttonIdString, label: buttonLabelString, callback: callback, userData: userData)
+}
+
+@_cdecl("add_text_input_to_notification")
+public func add_text_input_to_notification(notification: UnsafeMutableRawPointer?, 
+                                         actionId: UnsafePointer<CChar>?, 
+                                         actionLabel: UnsafePointer<CChar>?, 
+                                         placeholder: UnsafePointer<CChar>?,
+                                         callback: @convention(c) (UnsafeMutableRawPointer?, UnsafePointer<CChar>?, UnsafePointer<CChar>?, UnsafeMutableRawPointer?) -> Void,
+                                         userData: UnsafeMutableRawPointer?) {
+    guard let notification = notification else { return }
+    guard let actionId = actionId, let actionLabel = actionLabel, let placeholder = placeholder else { return }
+
+    let actionIdString = String(cString: actionId)
+    let actionLabelString = String(cString: actionLabel)
+    let placeholderString = String(cString: placeholder)
+
+    let notificationObject = Unmanaged<MacNotification>.fromOpaque(notification).takeUnretainedValue()
+    notificationObject.addTextInput(id: actionIdString, label: actionLabelString, placeholder: placeholderString, callback: callback, userData: userData)
 }
 
 @_cdecl("set_notification_clicked_callback")
@@ -248,3 +298,4 @@ public func cleanup_notification(notification: UnsafeMutableRawPointer?) {
 public typealias NotificationClickedCallback = (@convention(c) (UnsafeMutableRawPointer?, UnsafeMutableRawPointer?) -> Void)?
 public typealias NotificationClosedCallback = (@convention(c) (UnsafeMutableRawPointer?, UnsafeMutableRawPointer?) -> Void)?
 public typealias ButtonClickedCallback = @convention(c) (UnsafeMutableRawPointer?, UnsafePointer<CChar>?, UnsafeMutableRawPointer?) -> Void
+public typealias TextInputSubmittedCallback = @convention(c) (UnsafeMutableRawPointer?, UnsafePointer<CChar>?, UnsafePointer<CChar>?, UnsafeMutableRawPointer?) -> Void

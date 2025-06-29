@@ -138,6 +138,23 @@ internal class MacNotificationProvider() : NotificationProvider {
                             )
                         }
 
+                        // Add text input actions
+                        builder.textInputActions.forEach { textInputAction ->
+                            val textInputCallback = object : TextInputSubmittedCallback {
+                                override fun invoke(notification: Pointer?, actionId: String?, text: String?, userData: Pointer?) {
+                                    text?.let { textInputAction.onTextSubmitted.invoke(it) }
+                                }
+                            }
+                            lib.add_text_input_to_notification(
+                                notification = notification,
+                                actionId = textInputAction.id,
+                                actionLabel = textInputAction.label,
+                                placeholder = textInputAction.placeholder,
+                                callback = textInputCallback,
+                                userData = Pointer.NULL
+                            )
+                        }
+
                         // Send the notification but catch any exceptions
                         val result = try {
                             lib.send_notification(notification)

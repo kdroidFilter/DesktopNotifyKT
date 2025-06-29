@@ -2,6 +2,7 @@ package io.github.kdroidfilter.knotify.builder
 
 import io.github.kdroidfilter.knotify.model.Button
 import io.github.kdroidfilter.knotify.model.DismissalReason
+import io.github.kdroidfilter.knotify.model.TextInputAction
 
 
 /**
@@ -104,6 +105,7 @@ class NotificationBuilder(
     var onFailed: (() -> Unit)? = null,
 ) {
     internal val buttons = mutableListOf<Button>()
+    internal val textInputActions = mutableListOf<TextInputAction>()
     internal val id: Int = generateUniqueId()
 
     companion object {
@@ -122,6 +124,19 @@ class NotificationBuilder(
      */
     fun button(title: String, onClick: () -> Unit) {
         buttons.add(Button(title, onClick))
+    }
+
+    /**
+     * Adds a text input action to the notification.
+     *
+     * @param id The unique identifier for this text input action
+     * @param label The text displayed on the text input button
+     * @param placeholder The placeholder text displayed in the text input field
+     * @param onTextSubmitted Callback that is invoked when text is submitted, with the submitted text as parameter
+     */
+    @ExperimentalNotificationsApi
+    fun textInput(id: String, label: String, placeholder: String, onTextSubmitted: (String) -> Unit) {
+        textInputActions.add(TextInputAction(id, label, placeholder, onTextSubmitted))
     }
 
 }

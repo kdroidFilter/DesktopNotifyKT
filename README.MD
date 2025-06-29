@@ -37,7 +37,7 @@ The library uses a Kotlin DSL to define notifications in a declarative way, with
 val myNotification = notification(
     title = "Notification from Screen 1",
     message = "This is a test notification from Screen 1",
-    largeImage = Res.getUri("drawable/kdroid.png"),
+    largeIcon = Res.getUri("drawable/kdroid.png"),
     smallIcon = Res.getUri("drawable/small_icon.png"),
     onActivated = { Log.d("NotificationLog", "Notification 1 activated") },
     onDismissed = { reason -> Log.d("NotificationLog", "Notification 1 dismissed: $reason") },
@@ -79,15 +79,43 @@ myNotification.hide()
 
 With this DSL approach, you can create rich and interactive notifications while keeping the code clean and readable. The library handles all the necessary details, allowing you to focus on your app's core logic.
 
+### Creating a Notification with Text Input (macOS)
+
+```kotlin
+// Create a notification with text input
+val textInputNotification = notification(
+    title = "Text Input Notification",
+    message = "This notification has a text input field",
+    largeIcon = Res.getUri("drawable/kdroid.png"),
+    smallIcon = Res.getUri("drawable/compose.png"),
+    onActivated = { Log.d("NotificationLog", "Text Input notification activated") },
+    onDismissed = { reason -> Log.d("NotificationLog", "Text Input notification dismissed: $reason") },
+    onFailed = { Log.d("NotificationLog", "Text Input notification failed") }
+) {
+    textInput(
+        id = "text_input_1",
+        label = "Reply",
+        placeholder = "Type your response here...",
+        onTextSubmitted = { text ->
+            Log.d("NotificationLog", "Text submitted: $text")
+            // Handle the submitted text here
+        }
+    )
+}
+
+// Send the notification
+textInputNotification.send()
+```
 
 This code helps ensure that your app properly manages permissions, updating the notification state as permissions are granted or denied.
 
 ## ⭐ Features
 
-- **Rich Interactive Notifications**: Use a Kotlin DSL to create rich notifications with multiple actions, images, and buttons.
+- **Rich Interactive Notifications**: Use a Kotlin DSL to create rich notifications with multiple actions, images, buttons, and text input fields.
 - **Callbacks for User Interaction**: Handle user actions such as `onActivated`, `onDismissed`, and `onFailed` to add interactivity to your notifications.
 - **Custom Actions**: Add buttons with custom actions to your notifications, such as showing or hiding messages.
 - **Button Support**: Notifications can include interactive buttons, allowing users to take specific actions directly from the notification.
+- **Text Input Support**: Add text input fields to notifications, allowing users to respond directly from the notification (currently supported on macOS).
 - **Cross-Platform Compatibility**: Seamless integration across Linux, Windows, and macOS with platform-specific considerations.
 
 ## 🎨 KNotify Compose
@@ -135,6 +163,37 @@ val notification = notification(
 
 // Send the notification
 notification.send()
+
+// Adding text input to a Compose notification
+val textInputNotification = notification(
+    title = "Compose Text Input",
+    message = "This notification allows you to input text",
+    largeIcon = {
+        // Your Composable UI for large image here
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Your content here
+        }
+    },
+    smallIcon = {
+        // Your Composable UI for small icon here
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Your content here
+        }
+    }
+) {
+    textInput(
+        id = "compose_text_input",
+        label = "Reply",
+        placeholder = "Type your response here...",
+        onTextSubmitted = { text ->
+            // Handle the submitted text here
+            println("Text submitted from compose notification: $text")
+        }
+    )
+}
+
+// Send the text input notification
+textInputNotification.send()
 
 // Or create and send in one step
 sendNotification(

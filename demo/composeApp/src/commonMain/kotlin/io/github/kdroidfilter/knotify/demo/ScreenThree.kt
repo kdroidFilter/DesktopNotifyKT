@@ -76,6 +76,25 @@ fun ScreenThree(
             }
         }
 
+        // Create a notification with text input
+        val textInputNotif = notification(
+            title = "Compose Text Input",
+            message = "This notification allows you to input text",
+            largeIcon = { NotificationLogo() },
+            smallIcon = { NotificationLogo() },
+            onActivated = { logger.d { "Text input notification activated" } },
+            onDismissed = { reason -> logger.d { "Text input notification dismissed: $reason" } },
+            onFailed = { logger.d { "Text input notification failed" } }) {
+            textInput(
+                id = "compose_text_input",
+                label = "Reply",
+                placeholder = "Type your response here...",
+                onTextSubmitted = { text ->
+                    logger.d { "Text submitted from compose notification: $text" }
+                    onShowMessage("You submitted: $text")
+                }
+            )
+        }
 
         Button(
             onClick = {
@@ -93,6 +112,26 @@ fun ScreenThree(
             }, shape = RoundedCornerShape(8.dp), modifier = Modifier.fillMaxWidth(0.6f)
         ) {
             Text("Hide Compose Notification")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {
+                textInputNotif.send()
+            }, shape = RoundedCornerShape(8.dp), modifier = Modifier.fillMaxWidth(0.6f)
+        ) {
+            Text("Send Text Input Notification")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {
+                textInputNotif.hide()
+            }, shape = RoundedCornerShape(8.dp), modifier = Modifier.fillMaxWidth(0.6f)
+        ) {
+            Text("Hide Text Input Notification")
         }
 
         Spacer(modifier = Modifier.height(24.dp))

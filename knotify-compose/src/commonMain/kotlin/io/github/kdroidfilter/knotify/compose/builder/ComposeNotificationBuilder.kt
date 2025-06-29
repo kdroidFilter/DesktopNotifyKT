@@ -5,6 +5,7 @@ import io.github.kdroidfilter.knotify.builder.ExperimentalNotificationsApi
 import io.github.kdroidfilter.knotify.builder.Notification
 import io.github.kdroidfilter.knotify.builder.notification
 import io.github.kdroidfilter.knotify.model.DismissalReason
+import io.github.kdroidfilter.knotify.model.TextInputAction
 import io.github.kdroidfilter.knotify.compose.utils.ComposableIconRenderer
 import io.github.kdroidfilter.knotify.compose.utils.IconRenderProperties
 
@@ -21,11 +22,17 @@ class ComposeNotificationWrapper(
     var onFailed: (() -> Unit)? = null
 ) {
     private val _buttons = mutableListOf<ButtonInfo>()
+    private val _textInputActions = mutableListOf<TextInputInfo>()
 
     /**
      * List of buttons added to the notification.
      */
     val buttons: List<ButtonInfo> get() = _buttons
+
+    /**
+     * List of text input actions added to the notification.
+     */
+    val textInputActions: List<TextInputInfo> get() = _textInputActions
 
     /**
      * Adds a button to the notification.
@@ -38,9 +45,27 @@ class ComposeNotificationWrapper(
     }
 
     /**
+     * Adds a text input action to the notification.
+     *
+     * @param id The unique identifier for this text input action
+     * @param label The text displayed on the text input button
+     * @param placeholder The placeholder text displayed in the text input field
+     * @param onTextSubmitted Callback that is invoked when text is submitted, with the submitted text as parameter
+     */
+    @ExperimentalNotificationsApi
+    fun textInput(id: String, label: String, placeholder: String, onTextSubmitted: (String) -> Unit) {
+        _textInputActions.add(TextInputInfo(id, label, placeholder, onTextSubmitted))
+    }
+
+    /**
      * Information about a button in the notification.
      */
     data class ButtonInfo(val title: String, val onClick: () -> Unit)
+
+    /**
+     * Information about a text input action in the notification.
+     */
+    data class TextInputInfo(val id: String, val label: String, val placeholder: String, val onTextSubmitted: (String) -> Unit)
 }
 
 /**
@@ -99,6 +124,16 @@ fun notification(
         // Add buttons from the wrapper
         wrapper.buttons.forEach { buttonInfo ->
             this.button(buttonInfo.title, buttonInfo.onClick)
+        }
+
+        // Add text input actions from the wrapper
+        wrapper.textInputActions.forEach { textInputInfo ->
+            this.textInput(
+                id = textInputInfo.id,
+                label = textInputInfo.label,
+                placeholder = textInputInfo.placeholder,
+                onTextSubmitted = textInputInfo.onTextSubmitted
+            )
         }
     }
 }
