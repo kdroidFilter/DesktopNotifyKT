@@ -16,6 +16,17 @@ private val logger = Logger.withTag("JarResourceExtractor")
 
 
 fun extractToTempIfDifferent(jarPath: String): File? {
+    // Check if the path is a regular file path or a JAR path
+    if (!jarPath.startsWith("jar:file:") && !jarPath.contains("!")) {
+        // This is a regular file path, not a JAR path
+        val file = File(jarPath)
+        if (file.exists()) {
+            return file
+        } else {
+            throw FileNotFoundException("File does not exist: $jarPath")
+        }
+    }
+
     // Analyze the path to get the file path and the entry path
     val correctedJarFilePath = URLDecoder.decode(jarPath.substringAfter("jar:file:").substringBefore("!"), Charsets.UTF_8.name())
 
@@ -24,7 +35,7 @@ fun extractToTempIfDifferent(jarPath: String): File? {
 
     // Convert the path to File via URI
     val jarFile = try {
-        File(URI(encodedJarFilePath))
+        File(URI("file:" + encodedJarFilePath.replace("\\", "/")))
     } catch (e: IllegalArgumentException) {
         File(correctedJarFilePath.removePrefix("file:"))
     }
