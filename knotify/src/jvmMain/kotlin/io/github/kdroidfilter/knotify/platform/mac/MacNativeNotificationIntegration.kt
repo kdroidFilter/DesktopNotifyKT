@@ -103,6 +103,14 @@ interface MacNativeNotificationIntegration : Library {
     fun set_notification_image(notification: Pointer?, imagePath: String)
 
     /**
+     * Sets a sound file for the notification.
+     *
+     * @param notification The notification to set the sound for
+     * @param soundPath The path to the sound file
+     */
+    fun set_notification_sound(notification: Pointer?, soundPath: String)
+
+    /**
      * Sends the notification.
      *
      * @param notification The notification to send
@@ -190,6 +198,16 @@ private class DummyMacNotificationIntegration : MacNativeNotificationIntegration
     ) {}
 
     override fun set_notification_image(notification: Pointer?, imagePath: String) {}
+
+    override fun set_notification_sound(notification: Pointer?, soundPath: String) {
+        // Vérifier que le chemin du fichier son existe
+        val soundFile = java.io.File(soundPath)
+        if (!soundFile.exists()) {
+            println("Fichier son non trouvé: $soundPath")
+        } else {
+            println("Son personnalisé configuré: $soundPath")
+        }
+    }
 
     override fun send_notification(notification: Pointer?): Int = -1
 

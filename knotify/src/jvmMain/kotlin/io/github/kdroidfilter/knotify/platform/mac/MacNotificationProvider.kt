@@ -122,6 +122,43 @@ internal class MacNotificationProvider() : NotificationProvider {
                             }
                         } ?: logger.d { "No large image path provided" }
 
+                        // Add a sound file if available
+                        val soundFilePath = builder.soundFilePath
+                        logger.d { "Sound file path from builder: $soundFilePath" }
+
+                        soundFilePath?.let { path: String ->
+                            logger.d { "Processing sound file path: $path" }
+                            try {
+                                // Check if the path is a file that exists directly
+                                val file = File(path)
+                                if (file.exists() && file.isFile) {
+                                    logger.d { "Sound file exists directly at: ${file.absolutePath}" }
+                                    // Convert an absolute path to file URL
+                                    val fileUrl = "file://${file.absolutePath}"
+                                    logger.d { "Sound file URL: $fileUrl" }
+                                    lib.set_notification_sound(notification, fileUrl)
+                                    logger.d { "Notification sound set successfully with direct path" }
+                                } else {
+                                    // Try to extract from resources if not a direct file
+                                    val extractedFile = extractToTempIfDifferent(path)
+                                    logger.d { "Extracted file: $extractedFile" }
+
+                                    val soundFileAbsolutePath = extractedFile?.absolutePath
+                                    logger.d { "Sound file absolute path: $soundFileAbsolutePath" }
+
+                                    soundFileAbsolutePath?.let { it: String ->
+                                        // Convert an absolute path to file URL
+                                        val fileUrl = "file://$it"
+                                        logger.d { "Sound file URL: $fileUrl" }
+                                        lib.set_notification_sound(notification, fileUrl)
+                                        logger.d { "Notification sound set successfully" }
+                                    } ?: logger.e { "Failed to get absolute path for sound file" }
+                                }
+                            } catch (e: Exception) {
+                                logger.e { "Exception processing sound file: ${e.message}" }
+                            }
+                        } ?: logger.d { "No sound file path provided" }
+
                         // Add buttons
                         builder.buttons.forEach { button ->
                             val buttonCallback = object : ButtonClickedCallback {

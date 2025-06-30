@@ -7,6 +7,7 @@ class MacNotification {
     var body: String
     var iconPath: String?
     var imagePath: String?
+    var soundFilePath: String?
     var identifier: String
     var buttons: [(id: String, label: String, callback: ButtonClickedCallback?, userData: UnsafeMutableRawPointer?)] = []
     var textInputActions: [(id: String, label: String, placeholder: String, callback: TextInputSubmittedCallback?, userData: UnsafeMutableRawPointer?)] = []
@@ -45,6 +46,8 @@ class MacNotification {
         content.title = title
         content.body = body
 
+        var attachments: [UNNotificationAttachment] = []
+
         // Add image attachment if available
         if let imagePath = imagePath {
             let imageURL = URL(string: imagePath) ?? URL(fileURLWithPath: imagePath)
@@ -52,10 +55,54 @@ class MacNotification {
                 let attachment = try UNNotificationAttachment(identifier: "image",
                                                              url: imageURL,
                                                              options: nil)
-                content.attachments = [attachment]
+                attachments.append(attachment)
             } catch {
                 print("Error attaching image: \(error)")
             }
+        }
+
+        // Add sound if available
+        if let soundPath = soundFilePath {
+            let soundURL = URL(string: soundPath) ?? URL(fileURLWithPath: soundPath)
+
+            do {
+                // Create a temporary directory for sound files if it doesn't exist
+                let tempSoundDir = FileManager.default.temporaryDirectory.appendingPathComponent("NotificationSounds", isDirectory: true)
+                try FileManager.default.createDirectory(at: tempSoundDir, withIntermediateDirectories: true, attributes: nil)
+
+                // Get the sound file name and create a destination URL
+                let soundFileName = soundURL.lastPathComponent
+                let tempSoundURL = tempSoundDir.appendingPathComponent(soundFileName)
+
+                // Copy the sound file to the temporary directory if it doesn't exist
+                if !FileManager.default.fileExists(atPath: tempSoundURL.path) {
+                    try FileManager.default.copyItem(at: soundURL, to: tempSoundURL)
+                }
+
+                print("Setting notification sound: \(soundFileName) from path: \(tempSoundURL.path)")
+
+                // Create a sound notification using the file name
+                let soundNameWithoutExtension = soundFileName.components(separatedBy: ".").dropLast().joined(separator: ".")
+                content.sound = UNNotificationSound(named: UNNotificationSoundName(soundNameWithoutExtension))
+
+                // Attach the sound file as an attachment to make it work
+                let options: [String: Any] = [UNNotificationAttachmentOptionsTypeHintKey: "public.audio"]
+                let attachment = try UNNotificationAttachment(identifier: "sound",
+                                                            url: tempSoundURL,
+                                                            options: options)
+                attachments.append(attachment)
+
+                print("Sound attachment created successfully")
+            } catch {
+                print("Error setting up sound: \(error)")
+                // Fallback to default sound
+                content.sound = UNNotificationSound.default
+            }
+        }
+
+        // Set attachments if any
+        if !attachments.isEmpty {
+            content.attachments = attachments
         }
 
         // Add actions for buttons and text inputs
@@ -268,6 +315,15 @@ public func set_notification_image(notification: UnsafeMutableRawPointer?, image
     let imagePathString = String(cString: imagePath)
     let notificationObject = Unmanaged<MacNotification>.fromOpaque(notification).takeUnretainedValue()
     notificationObject.imagePath = imagePathString
+}
+
+@_cdecl("set_notification_sound")
+public func set_notification_sound(notification: UnsafeMutableRawPointer?, soundPath: UnsafePointer<CChar>?) {
+    guard let notification = notification, let soundPath = soundPath else { return }
+
+    let soundPathString = String(cString: soundPath)
+    let notificationObject = Unmanaged<MacNotification>.fromOpaque(notification).takeUnretainedValue()
+    notificationObject.soundFilePath = soundPathString
 }
 
 @_cdecl("send_notification")
