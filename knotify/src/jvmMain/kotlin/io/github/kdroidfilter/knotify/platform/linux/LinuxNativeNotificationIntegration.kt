@@ -95,6 +95,13 @@ interface LinuxNativeNotificationIntegration : Library {
     fun close_notification(notification: Pointer?): Int
 
     /**
+     * Set a custom sound file for the notification
+     * @param notification Pointer to the notification
+     * @param sound_file_path Path to the sound file
+     */
+    fun set_sound_file(notification: Pointer?, sound_file_path: String)
+
+    /**
      * Start the main loop to handle events
      */
     fun run_main_loop()

@@ -18,12 +18,14 @@ annotation class ExperimentalNotificationsApi
 
 /**
  * Creates a notification with customizable settings. The notification can have an app name,
- * icon, title, message, and a large image. Additionally, various actions can be added to the
+ * icon, title, message, a large image, and a custom sound. Additionally, various actions can be added to the
  * notification using a builder-style DSL.
  *
  * @param title The title of the notification. Defaults to an empty string.
  * @param message The message of the notification. Defaults to an empty string.
  * @param largeIcon The file path to a large image to be displayed within the notification. Can be null.
+ * @param smallIcon The file path to a small icon to be displayed within the notification. Can be null.
+ * @param soundFile The file path to a custom sound file to be played when the notification is displayed. Can be null.
  * @param onActivated Callback that is invoked when the notification is activated.
  * @param onDismissed Callback that is invoked when the notification is dismissed.
  * @param onFailed Callback that is invoked when the notification fails to display.
@@ -36,12 +38,13 @@ fun notification(
     message: String = "",
     largeIcon: String? = null,
     smallIcon: String? = null,
+    soundFile: String? = null,
     onActivated: (() -> Unit)? = null,
     onDismissed: ((DismissalReason) -> Unit)? = null,
     onFailed: (() -> Unit)? = null,
     builderAction: NotificationBuilder.() -> Unit = {}
 ): Notification {
-    val builder = NotificationBuilder(title, message, largeIcon, smallIcon, onActivated, onDismissed, onFailed)
+    val builder = NotificationBuilder(title, message, largeIcon, smallIcon, soundFile, onActivated, onDismissed, onFailed)
     builder.builderAction()
     return Notification(builder)
 }
@@ -52,6 +55,8 @@ fun notification(
  * @param title The title of the notification. Defaults to an empty string.
  * @param message The message of the notification. Defaults to an empty string.
  * @param largeImage The file path to a large image to be displayed within the notification. Can be null.
+ * @param smallIcon The file path to a small icon to be displayed within the notification. Can be null.
+ * @param soundFile The file path to a custom sound file to be played when the notification is displayed. Can be null.
  * @param onActivated Callback that is invoked when the notification is activated.
  * @param onDismissed Callback that is invoked when the notification is dismissed.
  * @param onFailed Callback that is invoked when the notification fails to display.
@@ -64,12 +69,13 @@ suspend fun sendNotification(
     message: String = "",
     largeImage: String? = null,
     smallIcon: String? = null,
+    soundFile: String? = null,
     onActivated: (() -> Unit)? = null,
     onDismissed: ((DismissalReason) -> Unit)? = null,
     onFailed: (() -> Unit)? = null,
     builderAction: NotificationBuilder.() -> Unit = {}
 ): Notification {
-    val notification = notification(title, message, largeImage, smallIcon, onActivated, onDismissed, onFailed, builderAction)
+    val notification = notification(title, message, largeImage, smallIcon, soundFile, onActivated, onDismissed, onFailed, builderAction)
     notification.send()
     return notification
 }
@@ -100,6 +106,7 @@ class NotificationBuilder(
     var message: String = "",
     var largeImagePath: String?,
     var smallIconPath: String? = null,
+    var soundFilePath: String? = null,
     var onActivated: (() -> Unit)? = null,
     var onDismissed: ((DismissalReason) -> Unit)? = null,
     var onFailed: (() -> Unit)? = null,

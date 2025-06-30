@@ -8,6 +8,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import io.github.kdroidfilter.knotify.demo.ScreenFour
 
 @Composable
 fun App() {
@@ -21,7 +22,8 @@ fun App() {
                     onNavigate = { currentScreen = Screen.Screen2 },
                     onNavigateToComposeDemo = { currentScreen = Screen.Screen3 },
                     notificationMessage = notificationMessage,
-                    onShowMessage = { message -> notificationMessage = message }
+                    onShowMessage = { message -> notificationMessage = message },
+                    onNavigateToCustomSoundDemo = { currentScreen = Screen.Screen4 }
                 )
 
                 Screen.Screen2 -> ScreenTwo(
@@ -36,6 +38,12 @@ fun App() {
                     notificationMessage = notificationMessage,
                     onShowMessage = { message -> notificationMessage = message }
                 )
+
+                Screen.Screen4 -> ScreenFour(
+                    onNavigateBack = { currentScreen = Screen.Screen1 },
+                    notificationMessage = notificationMessage,
+                    onShowMessage = { message -> notificationMessage = message }
+                )
             }
         }
     }
@@ -44,5 +52,6 @@ fun App() {
 enum class Screen {
     Screen1,
     Screen2,
-    Screen3
+    Screen3,
+    Screen4
 }

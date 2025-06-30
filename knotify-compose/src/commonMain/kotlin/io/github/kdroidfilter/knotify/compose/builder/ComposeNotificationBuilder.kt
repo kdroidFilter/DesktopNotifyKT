@@ -11,12 +11,14 @@ import io.github.kdroidfilter.knotify.compose.utils.IconRenderProperties
 
 /**
  * A wrapper for notification building that supports Composable content for large images and small icons.
+ * It also supports custom sound files.
  */
 class ComposeNotificationWrapper(
     var title: String = "",
     var message: String = "",
     var largeImageComposable: (@Composable () -> Unit)? = null,
     var smallIconComposable: (@Composable () -> Unit)? = null,
+    var soundFile: String? = null,
     var onActivated: (() -> Unit)? = null,
     var onDismissed: ((DismissalReason) -> Unit)? = null,
     var onFailed: (() -> Unit)? = null
@@ -75,6 +77,7 @@ class ComposeNotificationWrapper(
  * @param message The message of the notification. Defaults to an empty string.
  * @param largeIcon A Composable function that renders the large image for the notification. Can be null.
  * @param smallIcon A Composable function that renders the small icon for the notification. Can be null.
+ * @param soundFile The file path to a custom sound file to be played when the notification is displayed. Can be null.
  * @param onActivated Callback that is invoked when the notification is activated.
  * @param onDismissed Callback that is invoked when the notification is dismissed.
  * @param onFailed Callback that is invoked when the notification fails to display.
@@ -87,12 +90,13 @@ fun notification(
     message: String = "",
     largeIcon: (@Composable () -> Unit)? = null,
     smallIcon: (@Composable () -> Unit)? = null,
+    soundFile: String? = null,
     onActivated: (() -> Unit)? = null,
     onDismissed: ((DismissalReason) -> Unit)? = null,
     onFailed: (() -> Unit)? = null,
     builderAction: ComposeNotificationWrapper.() -> Unit = {}
 ): Notification {
-    val wrapper = ComposeNotificationWrapper(title, message, largeIcon, smallIcon, onActivated, onDismissed, onFailed)
+    val wrapper = ComposeNotificationWrapper(title, message, largeIcon, smallIcon, soundFile, onActivated, onDismissed, onFailed)
     wrapper.builderAction()
 
     // If we have a Composable for the large image, render it to a file
@@ -117,6 +121,7 @@ fun notification(
         message = wrapper.message,
         largeIcon = largeIconPath,
         smallIcon = smallIconPath,
+        soundFile = wrapper.soundFile,
         onActivated = wrapper.onActivated,
         onDismissed = wrapper.onDismissed,
         onFailed = wrapper.onFailed
@@ -145,6 +150,7 @@ fun notification(
  * @param message The message of the notification. Defaults to an empty string.
  * @param largeIcon A Composable function that renders the large image for the notification. Can be null.
  * @param smallIcon A Composable function that renders the small icon for the notification. Can be null.
+ * @param soundFile The file path to a custom sound file to be played when the notification is displayed. Can be null.
  * @param onActivated Callback that is invoked when the notification is activated.
  * @param onDismissed Callback that is invoked when the notification is dismissed.
  * @param onFailed Callback that is invoked when the notification fails to display.
@@ -157,12 +163,13 @@ suspend fun sendComposeNotification(
     message: String = "",
     largeIcon: (@Composable () -> Unit)? = null,
     smallIcon: (@Composable () -> Unit)? = null,
+    soundFile: String? = null,
     onActivated: (() -> Unit)? = null,
     onDismissed: ((DismissalReason) -> Unit)? = null,
     onFailed: (() -> Unit)? = null,
     builderAction: ComposeNotificationWrapper.() -> Unit = {}
 ): Notification {
-    val notification = notification(title, message, largeIcon, smallIcon, onActivated, onDismissed, onFailed, builderAction)
+    val notification = notification(title, message, largeIcon, smallIcon, soundFile, onActivated, onDismissed, onFailed, builderAction)
     notification.send()
     return notification
 }

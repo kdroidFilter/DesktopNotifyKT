@@ -27,7 +27,8 @@ fun ScreenOne(
     onNavigate: () -> Unit,
     onNavigateToComposeDemo: () -> Unit,
     notificationMessage: String?,
-    onShowMessage: (String?) -> Unit
+    onShowMessage: (String?) -> Unit,
+    onNavigateToCustomSoundDemo: () -> Unit
 ) {
     val myNotification = notification(
         title = "Notification from Screen 1",
@@ -140,6 +141,15 @@ fun ScreenOne(
             modifier = Modifier.fillMaxWidth(0.6f)
         ) {
             Text("Go to Compose Notification Demo")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = onNavigateToCustomSoundDemo,
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier.fillMaxWidth(0.6f)
+        ) {
+            Text("Go to Custom Sound Demo")
         }
 
         notificationMessage?.let {

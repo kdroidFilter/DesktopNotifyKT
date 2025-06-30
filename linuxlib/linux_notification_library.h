@@ -58,6 +58,9 @@ void cleanup_notification();
 // Close/hide a notification
 int close_notification(Notification *notification);
 
+// Set a custom sound file for the notification
+void set_sound_file(Notification *notification, const char *sound_file_path);
+
 
 
 #endif // NOTIFICATION_LIBRARY_H

@@ -121,6 +121,14 @@ class LinuxNotificationProvider(
                     }
                 }
 
+                // Set custom sound file if provided
+                val soundFilePath = builder.soundFilePath
+                val soundFileAbsolutePath = soundFilePath?.let { extractToTempIfDifferent(it) }?.absolutePath
+                soundFileAbsolutePath?.let {
+                    logger.d { "Setting sound file: $it" }
+                    lib.set_sound_file(notification, it)
+                }
+
                 // Initialize button callbacks map for this notification
                 buttonCallbacks[notification] = mutableMapOf()
 

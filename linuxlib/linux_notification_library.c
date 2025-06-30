@@ -224,6 +224,27 @@ int close_notification(Notification *notification) {
     return EXIT_SUCCESS;
 }
 
+/* Set a custom sound file for the notification */
+void set_sound_file(Notification *notification, const char *sound_file_path) {
+    if (notification == NULL) {
+        debug_log("Cannot set sound file: notification is NULL\n");
+        return;
+    }
+
+    if (sound_file_path == NULL || sound_file_path[0] == '\0') {
+        debug_log("Sound file path is empty or NULL, not setting sound\n");
+        return;
+    }
+
+    debug_log("Setting sound file: %s\n", sound_file_path);
+
+    /* Set the sound-file hint */
+    notify_notification_set_hint_string(notification, "sound-file", sound_file_path);
+
+    /* Also enable sound in case it's disabled */
+    notify_notification_set_hint_string(notification, "sound-name", "message-new-instant");
+}
+
 /* Compilation as shared library (libnotification.so) */
 /* To compile this library as a .so file (shared library), you can use the following command: */
 /* sudo apt install libnotify-dev libglib2.0-dev libgdk-pixbuf2.0-dev */
