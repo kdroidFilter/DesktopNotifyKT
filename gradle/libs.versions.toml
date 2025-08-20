@@ -1,6 +1,6 @@
 [versions]
 
-kermit = "2.0.4"
+kermit = "2.0.8"
 jna = "5.17.0"
 kotlin = "2.2.10"
 agp = "8.9.2"
