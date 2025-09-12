@@ -1,7 +1,5 @@
 package io.github.kdroidfilter.knotify.platform.linux
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import io.github.kdroidfilter.knotify.builder.NotificationBuilder
 import io.github.kdroidfilter.knotify.builder.NotificationProvider
 import io.github.kdroidfilter.knotify.model.DismissalReason

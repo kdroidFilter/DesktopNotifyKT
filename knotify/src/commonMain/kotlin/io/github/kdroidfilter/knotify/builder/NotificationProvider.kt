@@ -1,7 +1,5 @@
 package io.github.kdroidfilter.knotify.builder
 
-import androidx.compose.runtime.State
-
 interface NotificationProvider {
 
     /**

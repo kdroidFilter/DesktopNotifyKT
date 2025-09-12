@@ -25,7 +25,6 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.kermit)
-            implementation(libs.runtime)
             implementation(libs.platformtools.core)
         }
 
