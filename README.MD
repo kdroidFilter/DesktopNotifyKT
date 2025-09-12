@@ -81,6 +81,24 @@ With this DSL approach, you can create rich and interactive notifications while 
 
 This code helps ensure that your app properly manages permissions, updating the notification state as permissions are granted or denied.
 
+### Configure optional parameters
+
+You may need to set a default application name and icon for notifications.
+
+- Default application name is the first opened Window title or `"Application"` if there is no window or if it's title is an empty string.
+- Default is null so no icon will be displayed or must be defined for every notification.
+
+The notification initialization can be done in the `main` function.
+
+```kotlin
+NotificationInitializer.configure(
+    AppConfig(
+        appName = "My awesome app",
+        smallIcon = Res.getUri("drawable/kdroid.png"),
+    )
+)
+```
+
 ## ⭐ Features
 
 - **Rich Interactive Notifications**: Use a Kotlin DSL to create rich notifications with multiple actions, images, and buttons.

@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import co.touchlab.kermit.Logger
+import io.github.kdroidfilter.knotify.builder.NotificationInitializer
 
 /**
  * Linux implementation of the NotificationProvider interface.
@@ -44,8 +45,8 @@ class LinuxNotificationProvider(
     override fun sendNotification(builder: NotificationBuilder) {
         coroutineScope = CoroutineScope(Dispatchers.IO).also { scope ->
             scope.launch {
-                val appIconPath = builder.smallIconPath
-                val appName = WindowUtils.getWindowsTitle()
+                val appIconPath = builder.smallIconPath ?: NotificationInitializer.appConfiguration.smallIcon
+                val appName = NotificationInitializer.appConfiguration.appName ?: WindowUtils.getWindowsTitle()
                 if (debugMode) logger.d { "Sending notification with app name: $appName" }
 
 
