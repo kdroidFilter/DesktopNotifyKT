@@ -4,8 +4,6 @@ import io.github.kdroidfilter.knotify.platform.windows.callbacks.ToastActivatedA
 import io.github.kdroidfilter.knotify.platform.windows.callbacks.ToastActivatedCallback
 import io.github.kdroidfilter.knotify.platform.windows.callbacks.ToastDismissedCallback
 import io.github.kdroidfilter.knotify.platform.windows.callbacks.ToastFailedCallback
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import io.github.kdroidfilter.knotify.builder.NotificationBuilder
 import io.github.kdroidfilter.knotify.builder.NotificationProvider
 import io.github.kdroidfilter.knotify.model.DismissalReason

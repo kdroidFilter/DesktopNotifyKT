@@ -1,11 +1,7 @@
 package io.github.kdroidfilter.knotify.platform.mac
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import com.sun.jna.Pointer
 import io.github.kdroidfilter.knotify.builder.NotificationBuilder
-import io.github.kdroidfilter.knotify.utils.WindowUtils
 import io.github.kdroidfilter.knotify.builder.NotificationProvider
 import io.github.kdroidfilter.knotify.model.DismissalReason
 import io.github.kdroidfilter.knotify.utils.RuntimeMode
