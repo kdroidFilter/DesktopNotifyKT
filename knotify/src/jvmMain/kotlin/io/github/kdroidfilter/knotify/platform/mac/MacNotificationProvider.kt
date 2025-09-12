@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 import co.touchlab.kermit.Logger
+import io.github.kdroidfilter.knotify.builder.NotificationInitializer
 
 internal class MacNotificationProvider() : NotificationProvider {
 
@@ -40,7 +41,7 @@ internal class MacNotificationProvider() : NotificationProvider {
                         return@launch
                     }
 
-                    val appIconPath = builder.smallIconPath
+                    val appIconPath = builder.smallIconPath ?: NotificationInitializer.appConfiguration.smallIcon
                     logger.d { "Sending notification with title: ${builder.title}" }
 
                     // Try to create the notification but handle any exceptions

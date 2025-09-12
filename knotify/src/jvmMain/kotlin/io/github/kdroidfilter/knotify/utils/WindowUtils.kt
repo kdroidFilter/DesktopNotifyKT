@@ -17,6 +17,6 @@ object WindowUtils {
         return Frame.getFrames()
             .filterIsInstance<JFrame>()
             .map { it.title }
-            .firstOrNull() ?: "Application"
+            .firstOrNull()?.takeIf { it.isNotEmpty() } ?: "Application"
     }
 }

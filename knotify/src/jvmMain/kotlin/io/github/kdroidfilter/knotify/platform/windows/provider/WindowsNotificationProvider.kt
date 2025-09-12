@@ -20,6 +20,8 @@ import com.sun.jna.platform.win32.COM.COMUtils
 import com.sun.jna.platform.win32.WinBase.WAIT_OBJECT_0
 import com.sun.jna.platform.win32.WinError.WAIT_TIMEOUT
 import com.sun.jna.ptr.IntByReference
+import io.github.kdroidfilter.knotify.builder.AppConfig
+import io.github.kdroidfilter.knotify.builder.NotificationInitializer
 import io.github.kdroidfilter.knotify.utils.WindowUtils
 import io.github.kdroidfilter.knotify.platform.windows.constants.PM_REMOVE
 import io.github.kdroidfilter.knotify.platform.windows.constants.QS_ALLEVENTS
@@ -158,11 +160,11 @@ internal class WindowsNotificationProvider : NotificationProvider {
         smallIconPath: String? = null
     ): Boolean {
         return withContext(Dispatchers.IO) {
-            val appName = WindowUtils.getWindowsTitle()
+            val appName = NotificationInitializer.appConfiguration.appName ?: WindowUtils.getWindowsTitle()
             wtlc.WTLC_setAppName(instance, WString(appName))
 
             val aumid = "${appName.replace(" ", "")}Toast"
-            val registeredAUMID = if (registerBasicAUMID(aumid, appName, smallIconPath ?: "")) {
+            val registeredAUMID = if (registerBasicAUMID(aumid, appName, smallIconPath ?: NotificationInitializer.appConfiguration.smallIcon.orEmpty())) {
                 aumid
             } else {
                 logger.w { "Failed to register the AUMID. Using the application name as AUMID." }
